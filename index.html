@@ -28,7 +28,7 @@
             flex-direction: column;
             gap: 14px;
         }
-        /* Шапка в стиле Frog Case */
+        /* Шапка профиля */
         .header {
             display: flex;
             justify-content: space-between;
@@ -46,20 +46,32 @@
             font-size: 14px;
             color: #a0aec0;
         }
+        .balance-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .balance-badge {
             background: #0b0c10;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: #ffcc00;
             border: 1px solid #333b52;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
-        
-        /* Большие карточки меню (как на скрине) */
+        .btn-top-up {
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Карточки меню */
         .menu-card {
             border-radius: 20px;
             padding: 18px 20px;
@@ -76,7 +88,7 @@
             filter: brightness(0.9);
         }
         .menu-content h3 {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 800;
             margin-bottom: 4px;
         }
@@ -86,15 +98,14 @@
             line-height: 1.3;
         }
         .menu-icon {
-            font-size: 38px;
+            font-size: 36px;
         }
 
-        /* Цвета карточек с изюминкой хомяка */
+        /* Цвета карточек кейсов */
         .card-free { background: linear-gradient(135deg, #2b3240, #1c222d); }
-        .card-upgrade { background: linear-gradient(135deg, #d9531e, #b53e10); }
-        .card-roulette { background: linear-gradient(135deg, #c72c41, #8b1e2c); }
-        .card-crash { background: linear-gradient(135deg, #4831d4, #32219c); }
-        .card-arena { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+        .card-case-1 { background: linear-gradient(135deg, #3a506b, #1c2541); } /* Бронза / Обычный */
+        .card-case-2 { background: linear-gradient(135deg, #7209b7, #3a0ca3); } /* Серебро / Редкий */
+        .card-case-3 { background: linear-gradient(135deg, #f72585, #b5179e); } /* Золото / Эпик */
 
         /* Нижняя навигация */
         .nav-bar {
@@ -125,7 +136,7 @@
             margin-bottom: 2px;
         }
 
-        /* Модальное окно с CS:GO рулеткой */
+        /* Модальное окно рулетки */
         .modal {
             display: none;
             position: fixed;
@@ -150,13 +161,19 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #fff;
         }
+        .modal-desc {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
 
-        /* Окно рулетки CS:GO стиля */
+        /* CS:GO Рулетка */
         .csgo-case-container {
             position: relative;
             width: 100%;
@@ -167,7 +184,6 @@
             border: 2px solid #ffcc00;
             margin-bottom: 20px;
         }
-        /* Указатель по центру */
         .csgo-pointer {
             position: absolute;
             top: 0;
@@ -221,87 +237,98 @@
         .btn:active {
             transform: scale(0.98);
         }
+        .btn-disabled {
+            background: #2a2e3d !important;
+            color: #718096 !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Шапка -->
+        <!-- Шапка с балансом и кнопкой пополнения -->
         <div class="header">
             <div class="user-info">
                 <span>🐹</span> <span id="username">Игрок</span>
             </div>
-            <div class="balance-badge">
-                ⭐ <span id="user-balance">0</span>
+            <div class="balance-area">
+                <div class="balance-badge">⭐ <span id="user-balance">0</span></div>
+                <button class="btn-top-up" onclick="topUpBalance()">+ Пополнить</button>
             </div>
         </div>
 
-        <!-- Карточки меню в стиле Frog Case с изюминкой HomaStar -->
-        <div class="menu-card card-free" onclick="alert('Бесплатные кейсы и задания доступны в боте!')">
+        <!-- Слот: Бесплатный кейс с таймером 24 часа -->
+        <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
-                <h3>Бесплатно</h3>
-                <p>Бесплатные кейсы и рефералы</p>
+                <h3>🎁 Бесплатный кейс</h3>
+                <p id="free-timer-text">Доступно раз в 24 часа</p>
             </div>
-            <div class="menu-icon">🎁</div>
+            <div class="menu-icon">⏳</div>
         </div>
 
-        <div class="menu-card card-upgrade" onclick="alert('Апгрейд предметов скоро!')">
+        <!-- Кейс 1: Малый хомяк -->
+        <div class="menu-card card-case-1" onclick="openCaseModal(1)">
             <div class="menu-content">
-                <h3>Апгрейд <span style="background:#ffcc00; color:#000; font-size:10px; padding:2px 6px; border-radius:4px;">NEW</span></h3>
-                <p>Улучшите свои звёзды или приумножайте выигрыш</p>
+                <h3>📦 Малый кейс Хомы</h3>
+                <p>Цена: 5 ⭐ • Шанс на джекпот</p>
             </div>
-            <div class="menu-icon">📈</div>
+            <div class="menu-icon">🥉</div>
         </div>
 
-        <div class="menu-card card-roulette" onclick="startCsgoRoulette()">
+        <!-- Кейс 2: Средний кейс -->
+        <div class="menu-card card-case-2" onclick="openCaseModal(2)">
             <div class="menu-content">
-                <h3>Рулетка Хомы</h3>
-                <p>Крути кейс с анимацией и выигрывай звёзды</p>
+                <h3>⚡ Энерго-кейсик</h3>
+                <p>Цена: 15 ⭐ • Жирные призы</p>
             </div>
-            <div class="menu-icon">⭐</div>
+            <div class="menu-icon">🥈</div>
         </div>
 
-        <div class="menu-card card-crash" onclick="alert('Режим Краш в разработке')">
+        <!-- Кейс 3: Элитный кейс -->
+        <div class="menu-card card-case-3" onclick="openCaseModal(3)">
             <div class="menu-content">
-                <h3>Краш</h3>
-                <p>Успейте забрать выигрыш до взрыва ракеты</p>
+                <h3>👑 Королевский кейс</h3>
+                <p>Цена: 50 ⭐ • Максимальные награды</p>
             </div>
-            <div class="menu-icon">🚀</div>
-        </div>
-
-        <div class="menu-card card-arena" onclick="alert('Переходите в Telegram-бота для участия в Арене!')">
-            <div class="menu-content">
-                <h3>Арена Битв</h3>
-                <p>Турниры по приглашениям по МСК</p>
-            </div>
-            <div class="menu-icon">⚔️</div>
+            <div class="menu-icon">🥇</div>
         </div>
     </div>
 
     <!-- Нижняя навигация -->
     <div class="nav-bar">
-        <div class="nav-item active"><span>🎮</span>Игры</div>
-        <div class="nav-item" onclick="alert('Конкурсы скоро!')"><span>💰</span>Конкурсы</div>
-        <div class="nav-item" onclick="alert('Лидеры скоро!')"><span>🏆</span>Лидеры</div>
-        <div class="nav-item" onclick="alert('Магазин пуст')"><span>🛍️</span>Магазин</div>
-        <div class="nav-item" onclick="alert('Профиль загружается')"><span>👤</span>Профиль</div>
+        <div class="nav-item active"><span>🎮</span>Кейсы</div>
+        <div class="nav-item" onclick="alert('Раздел конкурсов в разработке')"><span>💰</span>Конкурсы</div>
+        <div class="nav-item" onclick="alert('Таблица лидеров пуста')"><span>🏆</span>Лидеры</div>
+        <div class="nav-item" onclick="alert('Магазин временно закрыт')"><span>🛍️</span>Магазин</div>
+        <div class="nav-item" onclick="alert('Профиль игрока загружен')"><span>👤</span>Профиль</div>
     </div>
 
-    <!-- Модальное окно с CS:GO рулеткой -->
-    <div class="modal" id="modal">
+    <!-- Модальное окно платных кейсов с CS:GO анимацией -->
+    <div class="modal" id="case-modal">
         <div class="modal-content">
-            <div class="modal-title" id="modal-heading">Кейс: Рулетка Хомы</div>
+            <div class="modal-title" id="case-modal-title">Открытие кейса</div>
             
-            <!-- Лента рулетки -->
             <div class="csgo-case-container">
                 <div class="csgo-pointer"></div>
-                <div class="csgo-track" id="csgo-track">
-                    <!-- Элементы генерируются скриптом -->
-                </div>
+                <div class="csgo-track" id="csgo-track"></div>
             </div>
 
-            <button class="btn" id="action-btn" onclick="spinRoulette()">Крутить за 10 ⭐</button>
-            <button class="btn" id="close-btn" style="display:none; background:#333; margin-top:10px;" onclick="closeModal()">Закрыть</button>
+            <button class="btn" id="spin-btn" onclick="executeSpin()">Крутить кейс</button>
+            <button class="btn" id="close-modal-btn" style="display:none; background:#333; margin-top:10px;" onclick="closeModal()">Забрать в инвентарь</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно бесплатного кейса (условия) -->
+    <div class="modal" id="free-modal">
+        <div class="modal-content">
+            <div class="modal-title">🎁 Бесплатный кейс</div>
+            <div class="modal-desc" id="free-modal-desc">
+                Чтобы получить бесплатную прокрутку, убедитесь, что вы подписаны на наш Telegram-канал и пригласили 3 друзей!
+            </div>
+            <button class="btn" id="free-action-btn" onclick="claimFreeCase()">Проверить условия</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="closeFreeModal()">Назад</button>
         </div>
     </div>
 
@@ -309,102 +336,183 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userBalance = 0; // Баланс строго с нуля!
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
-        }
-        function updateBalance() {
+        let userBalance = 0; // Строго 0 при старте
+        let activeCaseId = 1;
+
+        // Пуллы наград для разных кейсов
+        const pools = {
+            1: [
+                { name: '+1 ⭐', val: 1, icon: '⭐' },
+                { name: '+3 ⭐', val: 3, icon: '⭐' },
+                { name: '+5 ⭐', val: 5, icon: '🌟' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+10 ⭐', val: 10, icon: '🔥' }
+            ],
+            2: [
+                { name: '+5 ⭐', val: 5, icon: '⭐' },
+                { name: '+10 ⭐', val: 10, icon: '🌟' },
+                { name: '+25 ⭐', val: 25, icon: '🔥' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+50 ⭐', val: 50, icon: '💎' }
+            ],
+            3: [
+                { name: '+20 ⭐', val: 20, icon: '🌟' },
+                { name: '+50 ⭐', val: 50, icon: '🔥' },
+                { name: '+100 ⭐', val: 100, icon: '💎' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: 'ДЖЕКПОТ 300⭐', val: 300, icon: '👑' }
+            ]
+        };
+
+        const caseCosts = { 1: 5, 2: 15, 3: 50 };
+
+        function updateBalanceUI() {
             document.getElementById('user-balance').innerText = userBalance;
         }
-        updateBalance();
+        updateBalanceUI();
 
-        const allPrizePool = [
-            { name: '+2 ⭐', val: 2, icon: '⭐' },
-            { name: '+5 ⭐', val: 5, icon: '🌟' },
-            { name: '+10 ⭐', val: 10, icon: '🔥' },
-            { name: '+25 ⭐', val: 25, icon: '💎' },
-            { name: 'ПУСТО', val: 0, icon: '❌' },
-            { name: 'ДЖЕКПОТ 100⭐', val: 100, icon: '👑' }
-        ];
-
-        function startCsgoRoulette() {
-            document.getElementById('modal').style.display = 'flex';
-            document.getElementById('action-btn').style.display = 'block';
-            document.getElementById('close-btn').style.display = 'none';
-            document.getElementById('modal-heading').innerText = "Кейс: Рулетка Хомы";
-            buildTrack(false);
-        }
-
-        function buildShiftItems() {
-            return allPrizePool[Math.floor(Math.random() * allPrizePool.length)];
-        }
-
-        function buildTrack(isAnimated, winningIndex = 0) {
-            const track = document.getElementById('csgo-track');
-            track.style.transition = 'none';
-            track.style.transform = 'translateX(0px)';
-            
-            let html = '';
-            // Создаем ленту из 50 элементов для крутого эффекта прокрутки CS:GO
-            window.currentItemsList = [];
-            for (let i = 0; i < 50; i++) {
-                let item = buildShiftItems();
-                if (i === 35) { // Элемент на который остановимся (примерно на 35 позиции)
-                    if (isAnimated) item = window.winningItemObj;
-                }
-                window.currentItemsList.push(item);
-                html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
+        // Тестовое пополнение баланса прямо в приложении (в будущем заменится на Telegram Stars инвойс)
+        function topUpBalance() {
+            let add = prompt("Сколько звезд хотите добавить на баланс для теста?", "50");
+            if (add && !isNaN(add)) {
+                userBalance += parseInt(add);
+                updateBalanceUI();
+                alert(`✅ Успешно пополнено на ${add} ⭐!`);
             }
-            track.innerHTML = html;
         }
 
-        function spinRoulette() {
-            const cost = 10;
+        // Открытие модалки платного кейса
+        function openCaseModal(caseId) {
+            activeCaseId = caseId;
+            const cost = caseCosts[caseId];
+            
+            document.getElementById('case-modal').style.display = 'flex';
+            document.getElementById('case-modal-title').innerText = `Кейс #${caseId} (Цена: ${cost} ⭐)`;
+            document.getElementById('close-modal-btn').style.display = 'none';
+            
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.style.display = 'block';
+
+            // Проверка баланса: если не хватает — блокируем кнопку
             if (userBalance < cost) {
-                // Для теста дадим возможность покрутить, если баланс 0, но вообще проверяем:
-                // Убираем жесткую ошибку, чтобы ты мог протестировать анимацию прямо сейчас:
-                // userBalance -= cost; (В реале раскомментируешь проверку)
+                spinBtn.innerText = `❌ Недостаточно звезд (нужно ${cost} ⭐)`;
+                spinBtn.className = "btn btn-disabled";
+            } else {
+                spinBtn.innerText = `Крутить за ${cost} ⭐`;
+                spinBtn.className = "btn";
             }
 
-            document.getElementById('action-btn').style.display = 'none';
-            
-            // Выбираем выигрышный элемент заранее (например, на 35 позиции)
-            const winningItem = allPrizePool[Math.floor(Math.random() * allPrizePool.length)];
-            window.winningItemObj = winningItem;
+            buildTrack(pools[caseId]);
+        }
 
-            // Перестраиваем ленту, чтобы на 35 индексе стоял именно выигрыш
+        function buildTrack(currentPool) {
+            const track = document.getElementById('csgo-track');
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            
+            let html = '';
+            for (let i = 0; i < 50; i++) {
+                let item = currentPool[Math.floor(Math.random() * currentPool.length)];
+                html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
+            }
+            track.innerHTML = html;
+        }
+
+        function executeSpin() {
+            const cost = caseCosts[activeCaseId];
+            if (userBalance < cost) {
+                alert("У вас нулевой или недостаточный баланс! Пополните счет кнопкой «+ Пополнить».");
+                return;
+            }
+
+            // Списываем звезды за прокрут
+            userBalance -= cost;
+            updateBalanceUI();
+
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.style.display = 'none';
+
+            const currentPool = pools[activeCaseId];
+            const winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
+
+            // Перестраиваем ленту так, чтобы на 35 позиции стоял выигрыш
             const track = document.getElementById('csgo-track');
             let html = '';
             for (let i = 0; i < 50; i++) {
-                let item = (i === 35) ? winningItem : buildShiftItems();
+                let item = (i === 35) ? winningItem : currentPool[Math.floor(Math.random() * currentPool.length)];
                 html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
             }
             track.innerHTML = html;
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
 
-            // Запускаем анимацию прокрутки через микропаузу
+            // Анимация прокрутки CS:GO
             setTimeout(() => {
-                // Ширина элемента (98px с учетом отступа 8px) * 35 минус половина контейнера для точного центра
                 const itemWidth = 98;
-                // 35 элемент минус центровка по указателю
                 const targetPx = (35 * itemWidth) - 130 + (Math.random() * 40 - 20);
-                
                 track.style.transition = 'transform 4s cubic-bezier(0.08, 0.82, 0.12, 1)';
                 track.style.transform = `translateX(-${targetPx}px)`;
             }, 50);
 
-            // Показываем результат после окончания анимации (4 секунды)
+            // Итог прокрутки
             setTimeout(() => {
                 userBalance += winningItem.val;
-                updateBalance();
-                document.getElementById('modal-heading').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
-                document.getElementById('close-btn').style.display = 'block';
+                updateBalanceUI();
+                document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
+                document.getElementById('close-modal-btn').style.display = 'block';
             }, 4100);
         }
 
         function closeModal() {
-            document.getElementById('modal').style.display = 'none';
+            document.getElementById('case-modal').style.display = 'none';
+        }
+
+        // Логика бесплатного кейса с таймером 24 часа
+        function openFreeCaseModal() {
+            document.getElementById('free-modal').style.display = 'flex';
+            checkFreeTimer();
+        }
+
+        function closeFreeModal() {
+            document.getElementById('free-modal').style.display = 'none';
+        }
+
+        function checkFreeTimer() {
+            const lastClaim = localStorage.getItem('homa_free_claim');
+            const now = new Date().getTime();
+            const btn = document.getElementById('free-action-btn');
+            const desc = document.getElementById('free-modal-desc');
+
+            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
+                const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (now - lastClaim)) / (1000 * 60 * 60));
+                desc.innerText = `⏳ Бесплатный кейс уже открывался. Следующий будет доступен через ${hoursLeft} ч.`;
+                btn.innerText = "Уже получено";
+                btn.className = "btn btn-disabled";
+            } else {
+                desc.innerText = "Условие: Подпишитесь на наш Telegram-канал и пригласите 3 друзей, чтобы забрать бесплатный кейс!";
+                btn.innerText = "Забрать бесплатно";
+                btn.className = "btn";
+            }
+        }
+
+        function claimFreeCase() {
+            const lastClaim = localStorage.getItem('homa_free_claim');
+            const now = new Date().getTime();
+
+            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
+                alert("⏳ Таймер еще не истек! Приходите через 24 часа.");
+                return;
+            }
+
+            // Фиксируем время получения
+            localStorage.setItem('homa_free_claim', now);
+            
+            // Награда за бесплатный кейс (например, даем 3 звезды)
+            userBalance += 3;
+            updateBalanceUI();
+            
+            alert("🎉 Успешно! Вы открыли бесплатный кейс и получили +3 ⭐!");
+            closeFreeModal();
         }
     </script>
 </body>
