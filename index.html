@@ -343,6 +343,7 @@
             width: 100%;
             box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
             transition: transform 0.1s;
+            margin-bottom: 8px;
         }
         .btn:active { transform: scale(0.98); }
         .btn-disabled {
@@ -391,7 +392,7 @@
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
-                <p id="free-subtitle">Пригласите 3 друзей (0/3)</p>
+                <p id="free-subtitle">Условия: Подписка + 3 друга</p>
             </div>
             <div class="menu-icon">⏳</div>
         </div>
@@ -444,16 +445,19 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса (упрощенная система приглашений) -->
+    <!-- Модалка бесплатного кейса (Подписка на канал + Друзья) -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
-                Поделитесь ссылкой на бота с 3 друзьями, чтобы сразу разблокировать бесплатную прокрутку!
+                Выполните условия, чтобы запустить бесплатную рулетку!
             </div>
-            <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 Поделиться ссылкой (0/3)</button>
-            <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="closeFreeModal()">Назад</button>
+            
+            <button class="btn" id="sub-btn" onclick="subscribeChannel()">📢 1. Подписаться на канал</button>
+            <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 2. Пригласить друзей (0/3)</button>
+            
+            <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 5px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
+            <button class="btn" style="background:#333; margin-top:5px;" onclick="closeFreeModal()">Назад</button>
         </div>
     </div>
 
@@ -462,19 +466,20 @@
         tg.expand();
 
         let userBalance = 0.0;
+        let isSubscribed = localStorage.getItem('homa_sub') === 'true';
         let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        // Бесплатный кейс: визуально крутые призы, но падают микро-награды (без пустых секторов!)
+        // Бесплатный кейс: визуал мощный, но падают награды от 0.5 до 1.0 звезды
         const freeVisualPool = [
-            { name: '+0.1 ⭐', val: 0.1, icon: '⭐' },
-            { name: '+0.2 ⭐', val: 0.2, icon: '⭐' },
-            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' },
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
-            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' },
-            { name: '+0.15 ⭐', val: 0.15, icon: '⭐' },
-            { name: '+50.0 ⭐', val: 50.0, icon: '👑' }
+            { name: '+0.8 ⭐', val: 0.8, icon: '⭐' },
+            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' }, // Приманка
+            { name: '+1.0 ⭐', val: 1.0, icon: '⭐' },
+            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' }, // Приманка
+            { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
+            { name: '+50.0 ⭐', val: 50.0, icon: '👑' } // Джекпот-приманка
         ];
 
         const pools = {
@@ -491,10 +496,10 @@
         function updateUI() {
             document.getElementById('user-balance').innerText = userBalance.toFixed(1);
             const subtitle = document.getElementById('free-subtitle');
-            if (invitedFriends >= 3) {
+            if (isSubscribed && invitedFriends >= 3) {
                 subtitle.innerText = "✅ Доступно!";
             } else {
-                subtitle.innerText = `Пригласите 3 друзей (${invitedFriends}/3)`;
+                subtitle.innerText = `Подписка + Друзья (${invitedFriends}/3)`;
             }
         }
         updateUI();
@@ -549,8 +554,8 @@
         }
 
         function openFreeSpinModal() {
-            if (invitedFriends < 3) {
-                alert("❌ Сначала поделитесь ссылкой с 3 друзьями!");
+            if (!isSubscribed || invitedFriends < 3) {
+                alert("❌ Выполните оба условия: подпишитесь на канал и пригласите 3 друзей!");
                 return;
             }
             closeFreeModal();
@@ -586,9 +591,9 @@
 
             if (isFreeSpinMode) {
                 currentPool = freeVisualPool;
-                // В бесплатном кейсе выпадают только мелкие призы (первые элементы пула)
-                const microWins = [freeVisualPool[0], freeVisualPool[1], freeVisualPool[3], freeVisualPool[5]];
-                winningItem = microWins[Math.floor(Math.random() * microWins.length)];
+                // В бесплатном кейсе выпадают честные базовые награды от 0.5 до 1.0 звезды
+                const baseWins = [freeVisualPool[0], freeVisualPool[1], freeVisualPool[3], freeVisualPool[5]];
+                winningItem = baseWins[Math.floor(Math.random() * baseWins.length)];
             } else {
                 cost = caseCosts[activeCaseId];
                 if (userBalance < cost) {
@@ -628,7 +633,9 @@
 
                 if (isFreeSpinMode) {
                     invitedFriends = 0;
+                    isSubscribed = false;
                     localStorage.setItem('homa_invited', '0');
+                    localStorage.setItem('homa_sub', 'false');
                     updateUI();
                 }
             }, 4100);
@@ -648,26 +655,45 @@
         }
 
         function updateFreeModalState() {
+            const subBtn = document.getElementById('sub-btn');
             const inviteBtn = document.getElementById('invite-btn');
             const claimBtn = document.getElementById('claim-free-btn');
-            const desc = document.getElementById('free-modal-desc');
 
-            inviteBtn.innerText = `👥 Поделиться ссылкой (${invitedFriends}/3)`;
+            if (isSubscribed) {
+                subBtn.innerText = "✅ Подписка оформлена";
+                subBtn.className = "btn btn-disabled";
+            } else {
+                subBtn.innerText = "📢 1. Подписаться на канал";
+                subBtn.className = "btn";
+            }
 
-            if (invitedFriends >= 3) {
-                desc.innerText = "✅ Вы поделились ссылкой 3 раза! Нажмите кнопку ниже, чтобы запустить бесплатную рулетку.";
+            inviteBtn.innerText = `👥 2. Пригласить друзей (${invitedFriends}/3)`;
+
+            if (isSubscribed && invitedFriends >= 3) {
                 claimBtn.className = "btn";
             } else {
-                desc.innerText = `Поделитесь ссылкой с друзьями (${invitedFriends}/3). Счётчик засчитывает каждое нажатие на отправку!`;
                 claimBtn.className = "btn btn-disabled";
             }
+        }
+
+        function subscribeChannel() {
+            // Ссылка на твой основной Telegram-канал (подставь свою при необходимости)
+            const channelUrl = "https://t.me/HomaStarr_bot"; 
+            if (tg.openTelegramLink) {
+                tg.openTelegramLink(channelUrl);
+            } else {
+                window.open(channelUrl, '_blank');
+            }
+
+            isSubscribed = true;
+            localStorage.setItem('homa_sub', 'true');
+            updateFreeModalState();
         }
 
         function shareRefLink() {
             const userId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '12345';
             const refLink = `https://t.me/HomaStarr_bot?start=ref_${userId}`;
             
-            // Вызываем нативный диалог отправки сообщения в Telegram
             if (tg.openTelegramLink) {
                 tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🎁 Залетай в HomaStar Clash, получай кейсы и звезды!")}`);
             } else {
@@ -675,7 +701,6 @@
                 alert("📋 Ссылка скопирована!");
             }
 
-            // Сразу засчитываем +1 другу при каждой отправке
             if (invitedFriends < 3) {
                 invitedFriends++;
                 localStorage.setItem('homa_invited', invitedFriends);
