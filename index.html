@@ -21,13 +21,46 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Анимация плавного появления сайта при входе */
+        /* Боковые анимированные элементы Огня и Воды */
+        .side-decor {
+            position: fixed;
+            top: 0;
+            width: 60px;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 32px;
+        }
+        .side-left {
+            left: 5px;
+            animation: pulseFire 3s infinite alternate;
+        }
+        .side-right {
+            right: 5px;
+            animation: pulseWater 3s infinite alternate;
+        }
+        @keyframes pulseFire {
+            from { filter: drop-shadow(0 0 5px #ff4500); transform: scale(0.95); }
+            to { filter: drop-shadow(0 0 20px #ff8c00); transform: scale(1.05); }
+        }
+        @keyframes pulseWater {
+            from { filter: drop-shadow(0 0 5px #00bfff); transform: scale(0.95); }
+            to { filter: drop-shadow(0 0 20px #1e90ff); transform: scale(1.05); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         .container {
             width: 100%;
             max-width: 420px;
@@ -35,37 +68,39 @@
             flex-direction: column;
             gap: 14px;
             animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            z-index: 2;
         }
 
-        /* LIVE-лента побед в левом верхнем углу (как в Frog Cash) */
+        /* LIVE-лента побед */
         .live-ticker {
             position: fixed;
             top: 10px;
             left: 12px;
-            background: rgba(21, 24, 35, 0.85);
+            background: rgba(21, 24, 35, 0.9);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 204, 0, 0.3);
-            padding: 6px 12px;
+            border: 1px solid rgba(255, 204, 0, 0.4);
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 11px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             z-index: 99;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             animation: fadeIn 0.8s ease;
         }
         .live-dot {
             width: 7px;
             height: 7px;
-            background-color: #ff3333;
+            background-color: #00ff66;
             border-radius: 50%;
-            box-shadow: 0 0 8px #ff3333;
+            box-shadow: 0 0 8px #00ff66;
             animation: pulseDot 1.5s infinite;
         }
         @keyframes pulseDot {
             0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.2); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 1; }
             100% { transform: scale(0.9); opacity: 0.7; }
         }
 
@@ -78,7 +113,7 @@
             padding: 12px 16px;
             border-radius: 16px;
             border: 1px solid rgba(69, 162, 158, 0.3);
-            margin-top: 25px; /* чтобы не перекрывалось LIVE-строкой */
+            margin-top: 25px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
         .user-info {
@@ -113,11 +148,10 @@
             font-size: 12px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(255, 69, 0, 0.4);
-            transition: transform 0.1s;
         }
         .btn-top-up:active { transform: scale(0.95); }
 
-        /* Красивый баннер-заголовок */
+        /* Баннер */
         .hero-banner {
             background: linear-gradient(135deg, #1f2833, #0b0c10);
             border: 1px solid #2c3542;
@@ -126,6 +160,7 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
         .hero-banner h1 {
             font-size: 20px;
@@ -140,7 +175,7 @@
             color: #8892b0;
         }
 
-        /* Карточки меню с неоновым переливом */
+        /* Карточки меню */
         .menu-card {
             border-radius: 20px;
             padding: 18px 20px;
@@ -172,9 +207,9 @@
         }
 
         .card-free { background: linear-gradient(135deg, #2b3240, #1c222d); }
-        .card-case-1 { background: linear-gradient(135deg, #2d4356, #1c2a38); }
-        .card-case-2 { background: linear-gradient(135deg, #5c2086, #32124c); }
-        .card-case-3 { background: linear-gradient(135deg, #d62828, #9e1b1b); }
+        .card-case-1 { background: linear-gradient(135deg, #2d4356, #1c2a38); } /* От 20 ⭐ */
+        .card-case-2 { background: linear-gradient(135deg, #5c2086, #32124c); } /* От 50 ⭐ */
+        .card-case-3 { background: linear-gradient(135deg, #d62828, #9e1b1b); } /* От 100 ⭐ */
 
         /* Нижняя навигация */
         .nav-bar {
@@ -289,10 +324,10 @@
             align-items: center;
             border: 1px solid #2c3542;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
         }
         .csgo-item span {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 4px;
         }
 
@@ -320,10 +355,18 @@
 </head>
 <body>
 
-    <!-- LIVE-лента побед в левом верхнем углу -->
+    <!-- Боковые декорации Огня и Воды -->
+    <div class="side-decor side-left">
+        <span>🔥</span><span>⚔️</span><span>🔥</span><span>⚔️</span><span>🔥</span>
+    </div>
+    <div class="side-decor side-right">
+        <span>💧</span><span>⚔️</span><span>💧</span><span>⚔️</span><span>💧</span>
+    </div>
+
+    <!-- LIVE-лента побед -->
     <div class="live-ticker">
         <div class="live-dot"></div>
-        <span id="live-text">Игрок Alex выиграл +25 ⭐</span>
+        <span id="live-text">⭐ <b>@crypto_king</b> выиграл +25 ⭐</span>
     </div>
 
     <div class="container">
@@ -333,7 +376,7 @@
                 <span>🐹</span> <span id="username">Игрок</span>
             </div>
             <div class="balance-area">
-                <div class="balance-badge">⭐ <span id="user-balance">0</span></div>
+                <div class="balance-badge">⭐ <span id="user-balance">0.0</span></div>
                 <button class="btn-top-up" onclick="topUpBalance()">+ Пополнить</button>
             </div>
         </div>
@@ -341,10 +384,10 @@
         <!-- Баннер -->
         <div class="hero-banner">
             <h1>🔥 HomaStar Clash 💧</h1>
-            <p>Открывай кейсы, крути рулетку и забирай звёзды!</p>
+            <p>Арена битв хомяков • Звёздные кейсы</p>
         </div>
 
-        <!-- Слот: Бесплатный кейс -->
+        <!-- Бесплатный кейс (0.1 - 0.5 ⭐) -->
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
@@ -353,27 +396,27 @@
             <div class="menu-icon">⏳</div>
         </div>
 
-        <!-- Платные кейсы -->
+        <!-- Платные кейсы (минимальный от 20 звезд) -->
         <div class="menu-card card-case-1" onclick="openCaseModal(1)">
             <div class="menu-content">
-                <h3>📦 Малый кейс Хомы</h3>
-                <p>Цена: 5 ⭐ • Шанс х2</p>
+                <h3>🥉 Стандартный кейс</h3>
+                <p>Цена: 20 ⭐ • Шанс на старт</p>
             </div>
-            <div class="menu-icon">🥉</div>
+            <div class="menu-icon">📦</div>
         </div>
 
         <div class="menu-card card-case-2" onclick="openCaseModal(2)">
             <div class="menu-content">
-                <h3>⚡ Энерго-кейсик</h3>
-                <p>Цена: 15 ⭐ • Топовый лут</p>
+                <h3>🥈 Энерго-кейсик</h3>
+                <p>Цена: 50 ⭐ • Сочный лут</p>
             </div>
-            <div class="menu-icon">🥈</div>
+            <div class="menu-icon">⚡</div>
         </div>
 
         <div class="menu-card card-case-3" onclick="openCaseModal(3)">
             <div class="menu-content">
                 <h3>👑 Королевский кейс</h3>
-                <p>Цена: 50 ⭐ • Джекпот 300⭐</p>
+                <p>Цена: 100 ⭐ • Джекпот 500⭐</p>
             </div>
             <div class="menu-icon">🥇</div>
         </div>
@@ -388,7 +431,7 @@
         <div class="nav-item" onclick="alert('Профиль загружен')"><span>👤</span>Профиль</div>
     </div>
 
-    <!-- Модалка платных кейсов -->
+    <!-- Модалка рулетки кейсов -->
     <div class="modal" id="case-modal">
         <div class="modal-content">
             <div class="modal-title" id="case-modal-title">Открытие кейса</div>
@@ -401,15 +444,15 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса -->
+    <!-- Модалка бесплатного кейса с рефералами -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
-                Пригласите **3 друзей** по вашей реферальной ссылке, чтобы разблокировать бесплатный прокрут.
+                Пригласите **3 друзей** по вашей реферальной ссылке, чтобы разблокировать прокрут.
             </div>
             <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 Поделиться ссылкой (0/3)</button>
-            <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="claimFreeCase()">Открыть кейс!</button>
+            <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
             <button class="btn" style="background:#333; margin-top:10px;" onclick="closeFreeModal()">Назад</button>
         </div>
     </div>
@@ -418,37 +461,34 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userBalance = 0;
+        let userBalance = 0.0;
         let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
         let activeCaseId = 1;
+        let isFreeSpinMode = false;
 
-        // LIVE-лента побед (динамически меняет сообщения каждые 3 секунды)
-        const liveWins = [
-            "Игрок Максим выбил +50 ⭐",
-            "Деня забрал ДЖЕКПОТ 300 ⭐",
-            "Игрок Артур выиграл +10 ⭐",
-            "Александр открыл Королевский кейс",
-            "Игрок Кирил выбил +25 ⭐",
-            "Богдан забрал +100 ⭐"
+        // Бесплатный кейс: микро-награды от 0.1 до 0.5 звезды
+        const freePool = [
+            { name: '+0.1 ⭐', val: 0.1, icon: '⭐' },
+            { name: '+0.2 ⭐', val: 0.2, icon: '⭐' },
+            { name: '+0.15 ⭐', val: 0.15, icon: '⭐' },
+            { name: 'ПУСТО', val: 0.0, icon: '❌' },
+            { name: '+0.5 ⭐', val: 0.5, icon: '🌟' }
         ];
-        setInterval(() => {
-            const randomWin = liveWins[Math.floor(Math.random() * liveWins.length)];
-            document.getElementById('live-text').innerText = randomWin;
-        }, 3500);
 
+        // Платные кейсы (старт от 20, 50 и 100 звезд)
         const pools = {
-            1: [{ name: '+1 ⭐', val: 1, icon: '⭐' }, { name: '+3 ⭐', val: 3, icon: '⭐' }, { name: '+5 ⭐', val: 5, icon: '🌟' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+10 ⭐', val: 10, icon: '🔥' }],
-            2: [{ name: '+5 ⭐', val: 5, icon: '⭐' }, { name: '+10 ⭐', val: 10, icon: '🌟' }, { name: '+25 ⭐', val: 25, icon: '🔥' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+50 ⭐', val: 50, icon: '💎' }],
-            3: [{ name: '+20 ⭐', val: 20, icon: '🌟' }, { name: '+50 ⭐', val: 50, icon: '🔥' }, { name: '+100 ⭐', val: 100, icon: '💎' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: 'ДЖЕКПОТ 300⭐', val: 300, icon: '👑' }]
+            1: [{ name: '+5 ⭐', val: 5, icon: '⭐' }, { name: '+10 ⭐', val: 10, icon: '⭐' }, { name: '+25 ⭐', val: 25, icon: '🔥' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+40 ⭐', val: 40, icon: '💎' }],
+            2: [{ name: '+15 ⭐', val: 15, icon: '⭐' }, { name: '+30 ⭐', val: 30, icon: '🔥' }, { name: '+70 ⭐', val: 70, icon: '💎' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+120 ⭐', val: 120, icon: '👑' }],
+            3: [{ name: '+40 ⭐', val: 40, icon: '🔥' }, { name: '+100 ⭐', val: 100, icon: '💎' }, { name: '+250 ⭐', val: 250, icon: '👑' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: 'ДЖЕКПОТ 500⭐', val: 500, icon: '🚀' }]
         };
-        const caseCosts = { 1: 5, 2: 15, 3: 50 };
+        const caseCosts = { 1: 20, 2: 50, 3: 100 };
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
         }
 
         function updateUI() {
-            document.getElementById('user-balance').innerText = userBalance;
+            document.getElementById('user-balance').innerText = userBalance.toFixed(1);
             const subtitle = document.getElementById('free-subtitle');
             if (invitedFriends >= 3) {
                 subtitle.innerText = "✅ Доступно!";
@@ -458,16 +498,36 @@
         }
         updateUI();
 
+        // Рандомная смена LIVE-ленты побед каждые 30–90 секунд
+        const liveWins = [
+            "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
+            "👑 <b>@homa_lord</b> сорвал джекпот 500 ⭐",
+            "🔥 <b>@sasha_777</b> забрал +120 ⭐",
+            "⭐ <b>@elon_homyak</b> открыл Королевский кейс",
+            "💎 <b>@dark_1999</b> выбил +70 ⭐",
+            "⚡ <b>@bogdan_tG</b> выиграл +40 ⭐"
+        ];
+        function scheduleNextLiveWin() {
+            const randomDelay = (Math.floor(Math.random() * 61) + 30) * 1000;
+            setTimeout(() => {
+                const randomWin = liveWins[Math.floor(Math.random() * liveWins.length)];
+                document.getElementById('live-text').innerHTML = randomWin;
+                scheduleNextLiveWin();
+            }, randomDelay);
+        }
+        scheduleNextLiveWin();
+
         function topUpBalance() {
-            let add = prompt("Сколько звезд хотите добавить на баланс для теста?", "50");
+            let add = prompt("Сколько звезд хотите добавить на баланс для теста?", "100");
             if (add && !isNaN(add)) {
-                userBalance += parseInt(add);
+                userBalance += parseFloat(add);
                 updateUI();
                 alert(`✅ Успешно пополнено на ${add} ⭐!`);
             }
         }
 
         function openCaseModal(caseId) {
+            isFreeSpinMode = false;
             activeCaseId = caseId;
             const cost = caseCosts[caseId];
             document.getElementById('case-modal').style.display = 'flex';
@@ -487,6 +547,25 @@
             buildTrack(pools[caseId]);
         }
 
+        function openFreeSpinModal() {
+            if (invitedFriends < 3) {
+                alert("❌ Сначала пригласите 3 друзей!");
+                return;
+            }
+            closeFreeModal();
+            isFreeSpinMode = true;
+            document.getElementById('case-modal').style.display = 'flex';
+            document.getElementById('case-modal-title').innerText = `🎁 Бесплатный кейс Хомы`;
+            document.getElementById('close-modal-btn').style.display = 'none';
+            
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.style.display = 'block';
+            spinBtn.innerText = `Крутить бесплатно!`;
+            spinBtn.className = "btn";
+
+            buildTrack(freePool);
+        }
+
         function buildTrack(currentPool) {
             const track = document.getElementById('csgo-track');
             track.style.transition = 'none';
@@ -500,16 +579,23 @@
         }
 
         function executeSpin() {
-            const cost = caseCosts[activeCaseId];
-            if (userBalance < cost) {
-                alert("У вас недостаточно звезд! Пополните баланс.");
-                return;
-            }
-            userBalance -= cost;
-            updateUI();
-            document.getElementById('spin-btn').style.display = 'none';
+            let cost = 0;
+            let currentPool;
 
-            const currentPool = pools[activeCaseId];
+            if (isFreeSpinMode) {
+                currentPool = freePool;
+            } else {
+                cost = caseCosts[activeCaseId];
+                if (userBalance < cost) {
+                    alert("У вас недостаточно звезд!");
+                    return;
+                }
+                userBalance -= cost;
+                updateUI();
+                currentPool = pools[activeCaseId];
+            }
+
+            document.getElementById('spin-btn').style.display = 'none';
             const winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
 
             const track = document.getElementById('csgo-track');
@@ -534,6 +620,12 @@
                 updateUI();
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
                 document.getElementById('close-modal-btn').style.display = 'block';
+
+                if (isFreeSpinMode) {
+                    invitedFriends = 0;
+                    localStorage.setItem('homa_invited', '0');
+                    updateUI();
+                }
             }, 4100);
         }
 
@@ -558,10 +650,10 @@
             inviteBtn.innerText = `👥 Поделиться ссылкой (${invitedFriends}/3)`;
 
             if (invitedFriends >= 3) {
-                desc.innerText = "✅ Вы выполнили условие! Теперь вам доступно открытие бесплатного кейса.";
+                desc.innerText = "✅ Условие выполнено! Нажмите кнопку ниже, чтобы запустить бесплатную рулетку.";
                 claimBtn.className = "btn";
             } else {
-                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Отправьте свою реферальную ссылку друзьям, чтобы разблокировать бесплатный кейс!`;
+                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Отправьте реферальную ссылку друзьям, чтобы разблокировать прокрут!`;
                 claimBtn.className = "btn btn-disabled";
             }
         }
@@ -583,22 +675,6 @@
                 updateUI();
                 updateFreeModalState();
             }
-        }
-
-        function claimFreeCase() {
-            if (invitedFriends < 3) {
-                alert("❌ Сначала пригласите 3 друзей!");
-                return;
-            }
-            
-            userBalance += 5;
-            updateUI();
-            alert("🎉 Вы успешно открыли бесплатный кейс и получили +5 ⭐!");
-            
-            invitedFriends = 0;
-            localStorage.setItem('homa_invited', '0');
-            closeFreeModal();
-            updateUI();
         }
     </script>
 </body>
