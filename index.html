@@ -24,27 +24,27 @@
             position: relative;
         }
 
-        /* Боковые анимированные элементы Огня и Воды */
+        /* Боковые анимированные хомяки и элементы битвы */
         .side-decor {
             position: fixed;
             top: 0;
-            width: 60px;
+            width: 55px;
             height: 100%;
             pointer-events: none;
             z-index: 1;
-            opacity: 0.15;
+            opacity: 0.25;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
             align-items: center;
-            font-size: 32px;
+            font-size: 28px;
         }
         .side-left {
-            left: 5px;
+            left: 2px;
             animation: pulseFire 3s infinite alternate;
         }
         .side-right {
-            right: 5px;
+            right: 2px;
             animation: pulseWater 3s infinite alternate;
         }
         @keyframes pulseFire {
@@ -207,9 +207,9 @@
         }
 
         .card-free { background: linear-gradient(135deg, #2b3240, #1c222d); }
-        .card-case-1 { background: linear-gradient(135deg, #2d4356, #1c2a38); } /* От 20 ⭐ */
-        .card-case-2 { background: linear-gradient(135deg, #5c2086, #32124c); } /* От 50 ⭐ */
-        .card-case-3 { background: linear-gradient(135deg, #d62828, #9e1b1b); } /* От 100 ⭐ */
+        .card-case-1 { background: linear-gradient(135deg, #2d4356, #1c2a38); }
+        .card-case-2 { background: linear-gradient(135deg, #5c2086, #32124c); }
+        .card-case-3 { background: linear-gradient(135deg, #d62828, #9e1b1b); }
 
         /* Нижняя навигация */
         .nav-bar {
@@ -355,12 +355,12 @@
 </head>
 <body>
 
-    <!-- Боковые декорации Огня и Воды -->
+    <!-- Боковые хомяки и декор -->
     <div class="side-decor side-left">
-        <span>🔥</span><span>⚔️</span><span>🔥</span><span>⚔️</span><span>🔥</span>
+        <span>🐹</span><span>🔥</span><span>⚔️</span><span>🐹</span><span>🔥</span><span>⚔️</span>
     </div>
     <div class="side-decor side-right">
-        <span>💧</span><span>⚔️</span><span>💧</span><span>⚔️</span><span>💧</span>
+        <span>🐹</span><span>💧</span><span>⚔️</span><span>🐹</span><span>💧</span><span>⚔️</span>
     </div>
 
     <!-- LIVE-лента побед -->
@@ -387,7 +387,7 @@
             <p>Арена битв хомяков • Звёздные кейсы</p>
         </div>
 
-        <!-- Бесплатный кейс (0.1 - 0.5 ⭐) -->
+        <!-- Бесплатный кейс -->
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
@@ -396,7 +396,7 @@
             <div class="menu-icon">⏳</div>
         </div>
 
-        <!-- Платные кейсы (минимальный от 20 звезд) -->
+        <!-- Платные кейсы (старт от 20 звезд) -->
         <div class="menu-card card-case-1" onclick="openCaseModal(1)">
             <div class="menu-content">
                 <h3>🥉 Стандартный кейс</h3>
@@ -444,12 +444,12 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса с рефералами -->
+    <!-- Модалка бесплатного кейса с защитой от накрутки -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
-                Пригласите **3 друзей** по вашей реферальной ссылке, чтобы разблокировать прокрут.
+                Пригласите **3 друзей** по вашей реферальной ссылке. Прогресс засчитается, когда друзья запустят бота!
             </div>
             <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 Поделиться ссылкой (0/3)</button>
             <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
@@ -466,16 +466,17 @@
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        // Бесплатный кейс: микро-награды от 0.1 до 0.5 звезды
-        const freePool = [
+        // Бесплатный кейс: визуально крутые призы (до 50 звезд), но падают микро-награды (без пустых секторов!)
+        const freeVisualPool = [
             { name: '+0.1 ⭐', val: 0.1, icon: '⭐' },
             { name: '+0.2 ⭐', val: 0.2, icon: '⭐' },
+            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' }, // Приманка для азарта
+            { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
+            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' }, // Приманка
             { name: '+0.15 ⭐', val: 0.15, icon: '⭐' },
-            { name: 'ПУСТО', val: 0.0, icon: '❌' },
-            { name: '+0.5 ⭐', val: 0.5, icon: '🌟' }
+            { name: '+50.0 ⭐', val: 50.0, icon: '👑' } // Джекпот-приманка
         ];
 
-        // Платные кейсы (старт от 20, 50 и 100 звезд)
         const pools = {
             1: [{ name: '+5 ⭐', val: 5, icon: '⭐' }, { name: '+10 ⭐', val: 10, icon: '⭐' }, { name: '+25 ⭐', val: 25, icon: '🔥' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+40 ⭐', val: 40, icon: '💎' }],
             2: [{ name: '+15 ⭐', val: 15, icon: '⭐' }, { name: '+30 ⭐', val: 30, icon: '🔥' }, { name: '+70 ⭐', val: 70, icon: '💎' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+120 ⭐', val: 120, icon: '👑' }],
@@ -498,7 +499,7 @@
         }
         updateUI();
 
-        // Рандомная смена LIVE-ленты побед каждые 30–90 секунд
+        // Рандомный таймер LIVE-ленты (от 30 до 90 секунд)
         const liveWins = [
             "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
             "👑 <b>@homa_lord</b> сорвал джекпот 500 ⭐",
@@ -563,7 +564,7 @@
             spinBtn.innerText = `Крутить бесплатно!`;
             spinBtn.className = "btn";
 
-            buildTrack(freePool);
+            buildTrack(freeVisualPool);
         }
 
         function buildTrack(currentPool) {
@@ -581,9 +582,13 @@
         function executeSpin() {
             let cost = 0;
             let currentPool;
+            let winningItem;
 
             if (isFreeSpinMode) {
-                currentPool = freePool;
+                currentPool = freeVisualPool;
+                // В бесплатном кейсе визуально крутится всё, но выпадают только мелкие призы (первые элементы пула)
+                const microWins = [freeVisualPool[0], freeVisualPool[1], freeVisualPool[3], freeVisualPool[5]];
+                winningItem = microWins[Math.floor(Math.random() * microWins.length)];
             } else {
                 cost = caseCosts[activeCaseId];
                 if (userBalance < cost) {
@@ -593,10 +598,10 @@
                 userBalance -= cost;
                 updateUI();
                 currentPool = pools[activeCaseId];
+                winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
             }
 
             document.getElementById('spin-btn').style.display = 'none';
-            const winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
 
             const track = document.getElementById('csgo-track');
             let html = '';
@@ -653,7 +658,7 @@
                 desc.innerText = "✅ Условие выполнено! Нажмите кнопку ниже, чтобы запустить бесплатную рулетку.";
                 claimBtn.className = "btn";
             } else {
-                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Отправьте реферальную ссылку друзьям, чтобы разблокировать прокрут!`;
+                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Ссылка должна быть открыта вашим другом в боте!`;
                 claimBtn.className = "btn btn-disabled";
             }
         }
@@ -669,12 +674,8 @@
                 alert("📋 Реферальная ссылка скопирована в буфер обмена!");
             }
 
-            if (invitedFriends < 3) {
-                invitedFriends++;
-                localStorage.setItem('homa_invited', invitedFriends);
-                updateUI();
-                updateFreeModalState();
-            }
+            // Защита от моментальной накрутки: теперь просто уведомляем пользователя
+            alert("📤 Ссылка отправлена! Как только 3 друга запустят бота по ней, кнопка разблокируется автоматически.");
         }
     </script>
 </body>
