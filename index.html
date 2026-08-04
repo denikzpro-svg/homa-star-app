@@ -388,11 +388,11 @@
             <p>Арена битв хомяков • Звёздные кейсы</p>
         </div>
 
-        <!-- Бесплатный кейс -->
+        <!-- Бесплатный кейс с таймером -->
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
-                <p id="free-subtitle">Условия: Подписка + 3 друга</p>
+                <p id="free-subtitle">Проверка доступности...</p>
             </div>
             <div class="menu-icon">⏳</div>
         </div>
@@ -445,7 +445,7 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса (Подписка на канал + Друзья) -->
+    <!-- Модалка бесплатного кейса -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
@@ -471,15 +471,28 @@
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        // Бесплатный кейс: визуал мощный, но падают награды от 0.5 до 1.0 звезды
+        // Логика таймера 24 часа для бесплатного кейса
+        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+
+        function getRemainingCooldown() {
+            const lastClaim = parseInt(localStorage.getItem('homa_last_claim') || '0');
+            const now = new Date().getTime();
+            const elapsed = now - lastClaim;
+            if (elapsed < COOLDOWN_TIME) {
+                return COOLDOWN_TIME - elapsed;
+            }
+            return 0;
+        }
+
+        // Бесплатный кейс: награды от 0.5 до 1.0 звезды
         const freeVisualPool = [
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
             { name: '+0.8 ⭐', val: 0.8, icon: '⭐' },
-            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' }, // Приманка
+            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' },
             { name: '+1.0 ⭐', val: 1.0, icon: '⭐' },
-            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' }, // Приманка
+            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' },
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
-            { name: '+50.0 ⭐', val: 50.0, icon: '👑' } // Джекпот-приманка
+            { name: '+50.0 ⭐', val: 50.0, icon: '👑' }
         ];
 
         const pools = {
@@ -496,13 +509,22 @@
         function updateUI() {
             document.getElementById('user-balance').innerText = userBalance.toFixed(1);
             const subtitle = document.getElementById('free-subtitle');
-            if (isSubscribed && invitedFriends >= 3) {
+            
+            const timeLeft = getRemainingCooldown();
+            if (timeLeft > 0) {
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                subtitle.innerText = `⏳ Доступно через ${hours}ч ${minutes}м`;
+            } else if (isSubscribed && invitedFriends >= 3) {
                 subtitle.innerText = "✅ Доступно!";
             } else {
                 subtitle.innerText = `Подписка + Друзья (${invitedFriends}/3)`;
             }
         }
         updateUI();
+
+        // Каждую секунду обновляем текст таймера на главной
+        setInterval(updateUI, 1000);
 
         // Рандомный таймер LIVE-ленты (от 30 до 90 секунд)
         const liveWins = [
@@ -554,6 +576,10 @@
         }
 
         function openFreeSpinModal() {
+            if (getRemainingCooldown() > 0) {
+                alert("⏳ Таймер 24 часа еще не истек! Подождите.");
+                return;
+            }
             if (!isSubscribed || invitedFriends < 3) {
                 alert("❌ Выполните оба условия: подпишитесь на канал и пригласите 3 друзей!");
                 return;
@@ -590,8 +616,12 @@
             let winningItem;
 
             if (isFreeSpinMode) {
+                if (getRemainingCooldown() > 0) {
+                    alert("⏳ Ошибка: таймер еще активен!");
+                    closeModal();
+                    return;
+                }
                 currentPool = freeVisualPool;
-                // В бесплатном кейсе выпадают честные базовые награды от 0.5 до 1.0 звезды
                 const baseWins = [freeVisualPool[0], freeVisualPool[1], freeVisualPool[3], freeVisualPool[5]];
                 winningItem = baseWins[Math.floor(Math.random() * baseWins.length)];
             } else {
@@ -632,6 +662,9 @@
                 document.getElementById('close-modal-btn').style.display = 'block';
 
                 if (isFreeSpinMode) {
+                    // Записываем текущее время как точку отсчета таймера на 24 часа
+                    localStorage.setItem('homa_last_claim', new Date().getTime().toString());
+                    // Сбрасываем условия для следующего раза
                     invitedFriends = 0;
                     isSubscribed = false;
                     localStorage.setItem('homa_invited', '0');
@@ -646,6 +679,12 @@
         }
 
         function openFreeCaseModal() {
+            if (getRemainingCooldown() > 0) {
+                const timeLeft = getRemainingCooldown();
+                const hours = Math.ceil(timeLeft / (1000 * 60 * 60));
+                alert(`⏳ Бесплатный кейс на перезарядке! Следующий прокрут будет доступен через ${hours} ч.`);
+                return;
+            }
             document.getElementById('free-modal').style.display = 'flex';
             updateFreeModalState();
         }
@@ -677,8 +716,9 @@
         }
 
         function subscribeChannel() {
-            // Ссылка на твой основной Telegram-канал (подставь свою при необходимости)
-            const channelUrl = "https://t.me/HomaStarr_bot"; 
+            // 👇 НЕ ЗАБУДЬ ЗАМЕНИТЬ НА ССЫЛКУ СВОЕГО КАНАЛА 👇
+            const channelUrl = "https://t.me/ТВОЙ_КАНАЛ_ЗДЕСЬ"; 
+            
             if (tg.openTelegramLink) {
                 tg.openTelegramLink(channelUrl);
             } else {
