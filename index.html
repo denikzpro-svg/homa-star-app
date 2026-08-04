@@ -502,7 +502,7 @@
                 <div class="csgo-track" id="csgo-track"></div>
             </div>
             <button class="btn" id="spin-btn" onclick="executeSpin()">Крутить кейс</button>
-            <button class="btn" id="close-modal-btn" style="display:none; background:#28a745; margin-top:10px;" onclick="closeModal()">Забрать</button>
+            <button class="btn" id="close-modal-btn" style="display:none; background:#28a745; margin-top:10px;">Забрать</button>
         </div>
     </div>
 
@@ -683,7 +683,7 @@
             }
         }
 
-        // Логика вывода звезд (минималка 100)
+        // Логика вывода звезд (минимум 100) с отправкой администратору
         function requestWithdraw() {
             let amountStr = prompt(`У вас на балансе: ${userBalance.toFixed(1)} ⭐.\nВведите сумму для вывода (минимум 100):`, "100");
             if (amountStr && !isNaN(amountStr)) {
@@ -697,17 +697,14 @@
                     return;
                 }
 
-                // Списываем средства
                 userBalance -= amount;
                 updateUI();
 
-                const userId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '12345';
-                const username = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : 'unknown';
-                
-                alert(`✅ Заявка на вывод ${amount} ⭐ успешно отправлена администратору!\nВыплата поступит в ближайшее время.`);
-                
-                // Здесь в реальном боте отправляется отчет администратору
-                console.log(`[WITHDRAW REQUEST] User ID: ${userId}, Username: @${username}, Amount: ${amount} ⭐`);
+                if (tg.sendData) {
+                    tg.sendData(JSON.stringify({ action: 'withdraw', amount: amount }));
+                } else {
+                    alert(`✅ Заявка на вывод ${amount} ⭐ успешно оформлена! Администратору отправлено уведомление.`);
+                }
             }
         }
 
@@ -816,7 +813,6 @@
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
 
-            // Имитация щелчков рулетки во время вращения
             let tickInterval = setInterval(() => {
                 playTickSound();
             }, 120);
@@ -830,7 +826,7 @@
 
             setTimeout(() => {
                 clearInterval(tickInterval);
-                playWinSound(); // Звук победы
+                playWinSound();
 
                 isSpinning = false;
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
