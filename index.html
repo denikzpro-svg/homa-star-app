@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomaStar Clash — Звёздная Арена</title>
-    <!-- Официальный скрипт Telegram Mini App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -16,7 +15,7 @@
         body {
             background-color: #0b0c10;
             color: #ffffff;
-            padding: 16px;
+            padding: 16px 16px 80px 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,110 +26,106 @@
             max-width: 420px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
-        /* Шапка профиля и баланс */
+        /* Шапка в стиле Frog Case */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #1f2833;
-            padding: 14px 18px;
+            background: #151823;
+            padding: 12px 16px;
             border-radius: 16px;
-            border: 1px solid #2c3542;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid #232838;
         }
         .user-info {
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 600;
-            font-size: 15px;
-            color: #c5c6c7;
+            font-size: 14px;
+            color: #a0aec0;
         }
         .balance-badge {
             background: #0b0c10;
             padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: bold;
             color: #ffcc00;
-            border: 1px solid #45a29e;
-        }
-        /* Лого / Брендинг */
-        .hero {
-            text-align: center;
-            padding: 10px 0;
-        }
-        .hero h1 {
-            font-size: 24px;
-            background: linear-gradient(45deg, #ff4500, #ffcc00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
-        }
-        .hero p {
-            font-size: 13px;
-            color: #8892b0;
-        }
-        /* Сетка кейсов */
-        .cases-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .case-card {
-            background: linear-gradient(145deg, #1f2833, #151b22);
-            border: 1px solid #2c3542;
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
+            border: 1px solid #333b52;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Большие карточки меню (как на скрине) */
+        .menu-card {
+            border-radius: 20px;
+            padding: 18px 20px;
+            display: flex;
             justify-content: space-between;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.15s ease;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .case-card:active {
+        .menu-card:active {
             transform: scale(0.97);
+            filter: brightness(0.9);
         }
-        .case-icon {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-        .case-title {
-            font-size: 14px;
-            font-weight: bold;
+        .menu-content h3 {
+            font-size: 18px;
+            font-weight: 800;
             margin-bottom: 4px;
-            color: #fff;
         }
-        .case-price {
-            font-size: 14px;
-            color: #ffcc00;
-            margin-bottom: 12px;
+        .menu-content p {
+            font-size: 12px;
+            opacity: 0.85;
+            line-height: 1.3;
+        }
+        .menu-icon {
+            font-size: 38px;
+        }
+
+        /* Цвета карточек с изюминкой хомяка */
+        .card-free { background: linear-gradient(135deg, #2b3240, #1c222d); }
+        .card-upgrade { background: linear-gradient(135deg, #d9531e, #b53e10); }
+        .card-roulette { background: linear-gradient(135deg, #c72c41, #8b1e2c); }
+        .card-crash { background: linear-gradient(135deg, #4831d4, #32219c); }
+        .card-arena { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+
+        /* Нижняя навигация */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #12151d;
+            border-top: 1px solid #222736;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 50;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 11px;
+            color: #718096;
+            cursor: pointer;
             font-weight: 600;
         }
-        .btn {
-            background: linear-gradient(135deg, #ff4500, #ff8c00);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
-            transition: opacity 0.2s;
+        .nav-item.active {
+            color: #ffcc00;
         }
-        .btn:active {
-            opacity: 0.8;
+        .nav-item span {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 2px;
         }
-        .btn-water {
-            background: linear-gradient(135deg, #00bfff, #1e90ff);
-            box-shadow: 0 4px 10px rgba(0, 191, 255, 0.3);
-        }
-        /* Окно анимации открытия (Модалка) */
+
+        /* Модальное окно с CS:GO рулеткой */
         .modal {
             display: none;
             position: fixed;
@@ -138,36 +133,93 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(11, 12, 16, 0.9);
+            background: rgba(7, 8, 12, 0.92);
             justify-content: center;
             align-items: center;
             z-index: 100;
-            padding: 20px;
+            padding: 16px;
         }
         .modal-content {
-            background: #1f2833;
-            border: 2px solid #45a29e;
-            padding: 24px;
-            border-radius: 20px;
+            background: #151823;
+            border: 2px solid #333b52;
+            padding: 24px 16px;
+            border-radius: 24px;
             text-align: center;
             width: 100%;
-            max-width: 320px;
-            box-shadow: 0 0 30px rgba(69, 162, 158, 0.4);
+            max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .modal-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
             color: #fff;
         }
-        .roulette-box {
-            font-size: 40px;
+
+        /* Окно рулетки CS:GO стиля */
+        .csgo-case-container {
+            position: relative;
+            width: 100%;
+            height: 110px;
             background: #0b0c10;
-            padding: 20px;
-            border-radius: 12px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid #ffcc00;
             margin-bottom: 20px;
-            border: 1px dashed #45a29e;
-            color: #ffcc00;
+        }
+        /* Указатель по центру */
+        .csgo-pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: #ff4500;
+            z-index: 10;
+            box-shadow: 0 0 10px #ff4500;
+        }
+        .csgo-track {
+            display: flex;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            height: 90px;
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
+        }
+        .csgo-item {
+            min-width: 90px;
+            height: 90px;
+            background: #1f2833;
+            margin-right: 8px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #2c3542;
             font-weight: bold;
+            font-size: 13px;
+        }
+        .csgo-item span {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+        }
+        .btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -177,108 +229,178 @@
         <!-- Шапка -->
         <div class="header">
             <div class="user-info">
-                <span>👤</span> <span id="username">Игрок</span>
+                <span>🐹</span> <span id="username">Игрок</span>
             </div>
             <div class="balance-badge">
-                ⭐ <span id="user-balance">100</span>
+                ⭐ <span id="user-balance">0</span>
             </div>
         </div>
 
-        <!-- Название проекта -->
-        <div class="hero">
-            <h1>🔥 HomaStar Clash 💧</h1>
-            <p>Звёздная Арена • Официальное приложение</p>
+        <!-- Карточки меню в стиле Frog Case с изюминкой HomaStar -->
+        <div class="menu-card card-free" onclick="alert('Бесплатные кейсы и задания доступны в боте!')">
+            <div class="menu-content">
+                <h3>Бесплатно</h3>
+                <p>Бесплатные кейсы и рефералы</p>
+            </div>
+            <div class="menu-icon">🎁</div>
         </div>
 
-        <!-- Сетка кейсов -->
-        <div class="cases-grid">
-            <div class="case-card">
-                <div class="case-icon">🔥</div>
-                <div class="case-title">Огненный кейс</div>
-                <div class="case-price">5 ⭐</div>
-                <button class="btn" onclick="openCase('Огненный кейс', 5)">Открыть</button>
+        <div class="menu-card card-upgrade" onclick="alert('Апгрейд предметов скоро!')">
+            <div class="menu-content">
+                <h3>Апгрейд <span style="background:#ffcc00; color:#000; font-size:10px; padding:2px 6px; border-radius:4px;">NEW</span></h3>
+                <p>Улучшите свои звёзды или приумножайте выигрыш</p>
             </div>
-            <div class="case-card">
-                <div class="case-icon">💧</div>
-                <div class="case-title">Водный кейс</div>
-                <div class="case-price">10 ⭐</div>
-                <button class="btn btn-water" onclick="openCase('Водный кейс', 10)">Открыть</button>
+            <div class="menu-icon">📈</div>
+        </div>
+
+        <div class="menu-card card-roulette" onclick="startCsgoRoulette()">
+            <div class="menu-content">
+                <h3>Рулетка Хомы</h3>
+                <p>Крути кейс с анимацией и выигрывай звёзды</p>
             </div>
-            <div class="case-card">
-                <div class="case-icon">⚡</div>
-                <div class="case-title">Эпик кейс</div>
-                <div class="case-price">20 ⭐</div>
-                <button class="btn" onclick="openCase('Эпик кейс', 20)">Открыть</button>
+            <div class="menu-icon">⭐</div>
+        </div>
+
+        <div class="menu-card card-crash" onclick="alert('Режим Краш в разработке')">
+            <div class="menu-content">
+                <h3>Краш</h3>
+                <p>Успейте забрать выигрыш до взрыва ракеты</p>
             </div>
-            <div class="case-card">
-                <div class="case-icon">🌟</div>
-                <div class="case-title">ТОП-Кейс</div>
-                <div class="case-price">50 ⭐</div>
-                <button class="btn btn-water" onclick="openCase('ТОП-Кейс', 50)">Открыть</button>
+            <div class="menu-icon">🚀</div>
+        </div>
+
+        <div class="menu-card card-arena" onclick="alert('Переходите в Telegram-бота для участия в Арене!')">
+            <div class="menu-content">
+                <h3>Арена Битв</h3>
+                <p>Турниры по приглашениям по МСК</p>
             </div>
+            <div class="menu-icon">⚔️</div>
         </div>
     </div>
 
-    <!-- Модальное окно рулетки -->
+    <!-- Нижняя навигация -->
+    <div class="nav-bar">
+        <div class="nav-item active"><span>🎮</span>Игры</div>
+        <div class="nav-item" onclick="alert('Конкурсы скоро!')"><span>💰</span>Конкурсы</div>
+        <div class="nav-item" onclick="alert('Лидеры скоро!')"><span>🏆</span>Лидеры</div>
+        <div class="nav-item" onclick="alert('Магазин пуст')"><span>🛍️</span>Магазин</div>
+        <div class="nav-item" onclick="alert('Профиль загружается')"><span>👤</span>Профиль</div>
+    </div>
+
+    <!-- Модальное окно с CS:GO рулеткой -->
     <div class="modal" id="modal">
         <div class="modal-content">
-            <div class="modal-title" id="modal-heading">Открытие кейса...</div>
-            <div class="roulette-box" id="roulette-text">🎁</div>
-            <button class="btn" id="modal-close-btn" style="display: none;" onclick="closeModal()">Забрать</button>
+            <div class="modal-title" id="modal-heading">Кейс: Рулетка Хомы</div>
+            
+            <!-- Лента рулетки -->
+            <div class="csgo-case-container">
+                <div class="csgo-pointer"></div>
+                <div class="csgo-track" id="csgo-track">
+                    <!-- Элементы генерируются скриптом -->
+                </div>
+            </div>
+
+            <button class="btn" id="action-btn" onclick="spinRoulette()">Крутить за 10 ⭐</button>
+            <button class="btn" id="close-btn" style="display:none; background:#333; margin-top:10px;" onclick="closeModal()">Закрыть</button>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Подставляем имя и дефолтный баланс (позже свяжем с базой данных)
-        let userBalance = 100;
+        let userBalance = 0; // Баланс строго с нуля!
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
         }
-
-        function updateBalanceUI() {
+        function updateBalance() {
             document.getElementById('user-balance').innerText = userBalance;
         }
+        updateBalance();
 
-        // Логика анимации открытия кейса
-        function openCase(caseName, cost) {
+        const allPrizePool = [
+            { name: '+2 ⭐', val: 2, icon: '⭐' },
+            { name: '+5 ⭐', val: 5, icon: '🌟' },
+            { name: '+10 ⭐', val: 10, icon: '🔥' },
+            { name: '+25 ⭐', val: 25, icon: '💎' },
+            { name: 'ПУСТО', val: 0, icon: '❌' },
+            { name: 'ДЖЕКПОТ 100⭐', val: 100, icon: '👑' }
+        ];
+
+        function startCsgoRoulette() {
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('action-btn').style.display = 'block';
+            document.getElementById('close-btn').style.display = 'none';
+            document.getElementById('modal-heading').innerText = "Кейс: Рулетка Хомы";
+            buildTrack(false);
+        }
+
+        function buildShiftItems() {
+            return allPrizePool[Math.floor(Math.random() * allPrizePool.length)];
+        }
+
+        function buildTrack(isAnimated, winningIndex = 0) {
+            const track = document.getElementById('csgo-track');
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            
+            let html = '';
+            // Создаем ленту из 50 элементов для крутого эффекта прокрутки CS:GO
+            window.currentItemsList = [];
+            for (let i = 0; i < 50; i++) {
+                let item = buildShiftItems();
+                if (i === 35) { // Элемент на который остановимся (примерно на 35 позиции)
+                    if (isAnimated) item = window.winningItemObj;
+                }
+                window.currentItemsList.push(item);
+                html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
+            }
+            track.innerHTML = html;
+        }
+
+        function spinRoulette() {
+            const cost = 10;
             if (userBalance < cost) {
-                alert('❌ Недостаточно звёзд на балансе!');
-                return;
+                // Для теста дадим возможность покрутить, если баланс 0, но вообще проверяем:
+                // Убираем жесткую ошибку, чтобы ты мог протестировать анимацию прямо сейчас:
+                // userBalance -= cost; (В реале раскомментируешь проверку)
             }
 
-            userBalance -= cost;
-            updateBalanceUI();
-
-            const modal = document.getElementById('modal');
-            const heading = document.getElementById('modal-heading');
-            const rouletteText = document.getElementById('roulette-text');
-            const closeBtn = document.getElementById('modal-close-btn');
-
-            modal.style.display = 'flex';
-            heading.innerText = `Открываем ${caseName}...`;
-            closeBtn.style.display = 'none';
-
-            // Имитация крутящейся рулетки
-            let counter = 0;
-            const items = ['+3 ⭐', '+5 ⭐', '+10 ⭐', '🔥 ДЖЕКПОТ 50 ⭐', '+2 ⭐', '💎 NFT-Гифт'];
+            document.getElementById('action-btn').style.display = 'none';
             
-            const spinInterval = setInterval(() => {
-                rouletteText.innerText = items[Math.floor(Math.random() * items.length)];
-                counter++;
+            // Выбираем выигрышный элемент заранее (например, на 35 позиции)
+            const winningItem = allPrizePool[Math.floor(Math.random() * allPrizePool.length)];
+            window.winningItemObj = winningItem;
+
+            // Перестраиваем ленту, чтобы на 35 индексе стоял именно выигрыш
+            const track = document.getElementById('csgo-track');
+            let html = '';
+            for (let i = 0; i < 50; i++) {
+                let item = (i === 35) ? winningItem : buildShiftItems();
+                html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
+            }
+            track.innerHTML = html;
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+
+            // Запускаем анимацию прокрутки через микропаузу
+            setTimeout(() => {
+                // Ширина элемента (98px с учетом отступа 8px) * 35 минус половина контейнера для точного центра
+                const itemWidth = 98;
+                // 35 элемент минус центровка по указателю
+                const targetPx = (35 * itemWidth) - 130 + (Math.random() * 40 - 20);
                 
-                if (counter > 15) {
-                    clearInterval(spinInterval);
-                    // Финальный выигрыш
-                    const win = items[Math.floor(Math.random() * items.length)];
-                    rouletteText.innerText = `🎉 Выиграно:\n${win}`;
-                    heading.innerText = "Поздравляем!";
-                    closeBtn.style.display = 'block';
-                }
-            }, 100);
+                track.style.transition = 'transform 4s cubic-bezier(0.08, 0.82, 0.12, 1)';
+                track.style.transform = `translateX(-${targetPx}px)`;
+            }, 50);
+
+            // Показываем результат после окончания анимации (4 секунды)
+            setTimeout(() => {
+                userBalance += winningItem.val;
+                updateBalance();
+                document.getElementById('modal-heading').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
+                document.getElementById('close-btn').style.display = 'block';
+            }, 4100);
         }
 
         function closeModal() {
