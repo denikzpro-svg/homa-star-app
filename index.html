@@ -707,25 +707,32 @@
             }, 50);
 
             setTimeout(() => {
-                userBalance += winningItem.val;
-                updateUI();
-                isSpinning = false; // Разблокируем возможность закрыть окно
+                // Награду НЕ начисляем второй раз тут, так как она уже добавлена в баланс при старте вращения (или начисляем по факту клика на Забрать). 
+                // Сделаем так: баланс уже списался при старте, а при выигрыше мы показываем кнопку «Забрать», по клику на которую окно закроется.
+                isSpinning = false;
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
                 document.getElementById('close-modal-btn').style.display = 'block';
 
-                if (isFreeSpinMode) {
-                    localStorage.setItem('homa_last_claim', new Date().getTime().toString());
-                    invitedFriends = 0;
-                    isSubscribed = false;
-                    localStorage.setItem('homa_invited', '0');
-                    localStorage.setItem('homa_sub', 'false');
+                // Временно сохраняем выигранную сумму в атрибут кнопки, чтобы забрать её по клику
+                document.getElementById('close-modal-btn').onclick = function() {
+                    userBalance += winningItem.val;
                     updateUI();
-                }
+                    if (isFreeSpinMode) {
+                        localStorage.setItem('homa_last_claim', new Date().getTime().toString());
+                        invitedFriends = 0;
+                        isSubscribed = false;
+                        localStorage.setItem('homa_invited', '0');
+                        localStorage.setItem('homa_sub', 'false');
+                        updateUI();
+                    }
+                    document.getElementById('case-modal').style.display = 'none';
+                };
+
             }, 6100);
         }
 
         function closeModal() {
-            if (isSpinning) return; // Нельзя закрыть модалку во время вращения
+            if (isSpinning) return; 
             document.getElementById('case-modal').style.display = 'none';
         }
 
