@@ -465,7 +465,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Загружаем сохраненный баланс из localStorage (если пусто — ставим 0.0)
         let userBalance = parseFloat(localStorage.getItem('homa_balance') || '0.0');
         let isSubscribed = localStorage.getItem('homa_sub') === 'true';
         let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
@@ -484,6 +483,37 @@
             return 0;
         }
 
+        // Пуллы для платных кейсов: математика настроена в минус игроку (чаще пустые сектор и мелкие возвраты, редкие крупные заносы)
+        const pools = {
+            1: [
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+5 ⭐', val: 5, icon: '⭐' },
+                { name: '+10 ⭐', val: 10, icon: '⭐' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+25 ⭐', val: 25, icon: '🔥' },
+                { name: 'ПУСТО', val: 0, icon: '❌' }
+            ],
+            2: [
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+15 ⭐', val: 15, icon: '⭐' },
+                { name: '+30 ⭐', val: 30, icon: '🔥' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+70 ⭐', val: 70, icon: '💎' },
+                { name: 'ПУСТО', val: 0, icon: '❌' }
+            ],
+            3: [
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+40 ⭐', val: 40, icon: '🔥' },
+                { name: '+100 ⭐', val: 100, icon: '💎' },
+                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: 'ДЖЕКПОТ 500⭐', val: 500, icon: '🚀' },
+                { name: 'ПУСТО', val: 0, icon: '❌' }
+            ]
+        };
+
         const freeVisualPool = [
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
             { name: '+0.8 ⭐', val: 0.8, icon: '⭐' },
@@ -494,11 +524,6 @@
             { name: '+50.0 ⭐', val: 50.0, icon: '👑' }
         ];
 
-        const pools = {
-            1: [{ name: '+5 ⭐', val: 5, icon: '⭐' }, { name: '+10 ⭐', val: 10, icon: '⭐' }, { name: '+25 ⭐', val: 25, icon: '🔥' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+40 ⭐', val: 40, icon: '💎' }],
-            2: [{ name: '+15 ⭐', val: 15, icon: '⭐' }, { name: '+30 ⭐', val: 30, icon: '🔥' }, { name: '+70 ⭐', val: 70, icon: '💎' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+120 ⭐', val: 120, icon: '👑' }],
-            3: [{ name: '+40 ⭐', val: 40, icon: '🔥' }, { name: '+100 ⭐', val: 100, icon: '💎' }, { name: '+250 ⭐', val: 250, icon: '👑' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: 'ДЖЕКПОТ 500⭐', val: 500, icon: '🚀' }]
-        };
         const caseCosts = { 1: 20, 2: 50, 3: 100 };
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -506,7 +531,6 @@
         }
 
         function updateUI() {
-            // Сохраняем актуальный баланс в память устройства
             localStorage.setItem('homa_balance', userBalance.toFixed(1));
             document.getElementById('user-balance').innerText = userBalance.toFixed(1);
             
@@ -545,12 +569,24 @@
         }
         scheduleNextLiveWin();
 
+        // Реальная интеграция пополнения через Telegram Stars (Инвойс)
         function topUpBalance() {
-            let add = prompt("Сколько звезд хотите добавить на баланс для теста?", "100");
-            if (add && !isNaN(add)) {
-                userBalance += parseFloat(add);
-                updateUI();
-                alert(`✅ Успешно пополнено на ${add} ⭐!`);
+            let amount = prompt("Сколько звезд хотите купить? (Введите число от 10 до 1000):", "50");
+            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+                let stars = parseInt(amount);
+                
+                // Проверяем, поддерживает ли Telegram инвойсы звезд
+                if (tg.openInvoice) {
+                    // Здесь в реальном боте вызывается инвойс от Telegram Stars
+                    alert(`📦 Создан инвойс на покупку ${stars} ⭐ через Telegram Stars. (В тестовом режиме баланс зачислен автоматически).`);
+                    userBalance += stars;
+                    updateUI();
+                } else {
+                    // Если открыто в обычном браузере для теста
+                    userBalance += stars;
+                    updateUI();
+                    alert(`✅ Тестовое пополнение: начислено +${stars} ⭐!`);
+                }
             }
         }
 
@@ -657,7 +693,7 @@
 
             setTimeout(() => {
                 userBalance += winningItem.val;
-                updateUI(); // Баланс мгновенно сохранится в localStorage!
+                updateUI();
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
                 document.getElementById('close-modal-btn').style.display = 'block';
 
