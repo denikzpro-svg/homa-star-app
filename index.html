@@ -39,14 +39,8 @@
             align-items: center;
             font-size: 28px;
         }
-        .side-left {
-            left: 2px;
-            animation: pulseFire 3s infinite alternate;
-        }
-        .side-right {
-            right: 2px;
-            animation: pulseWater 3s infinite alternate;
-        }
+        .side-left { left: 2px; animation: pulseFire 3s infinite alternate; }
+        .side-right { right: 2px; animation: pulseWater 3s infinite alternate; }
         @keyframes pulseFire {
             from { filter: drop-shadow(0 0 5px #ff4500); transform: scale(0.95); }
             to { filter: drop-shadow(0 0 20px #ff8c00); transform: scale(1.05); }
@@ -388,7 +382,7 @@
             <p>Арена битв хомяков • Звёздные кейсы</p>
         </div>
 
-        <!-- Бесплатный кейс с таймером -->
+        <!-- Бесплатный кейс -->
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
@@ -417,7 +411,7 @@
         <div class="menu-card card-case-3" onclick="openCaseModal(3)">
             <div class="menu-content">
                 <h3>👑 Королевский кейс</h3>
-                <p>Цена: 100 ⭐ • Джекпот 500⭐</p>
+                <p>Цена: 100 ⭐ • Джекпот 300⭐</p>
             </div>
             <div class="menu-icon">🥇</div>
         </div>
@@ -471,7 +465,7 @@
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа
+        const COOLDOWN_TIME = 24 * 60 * 60 * 1000;
 
         function getRemainingCooldown() {
             const lastClaim = parseInt(localStorage.getItem('homa_last_claim') || '0');
@@ -483,34 +477,36 @@
             return 0;
         }
 
-        // Пуллы для платных кейсов: математика настроена в минус игроку (чаще пустые сектор и мелкие возвраты, редкие крупные заносы)
+        // БЕЗ «ПУСТОТИ» И С УМЕРЕННЫМ КАЗИНО-МИНУСОМ:
+        // Вместо слова «ПУСТО» игрок всегда выигрывает утешительный микро-приз (меньше стоимости кейса).
+        // Джекпот на 100-звездном кейсе снижен до 300 и выпадает очень редко.
         const pools = {
             1: [
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+5 ⭐', val: 5, icon: '⭐' },
+                { name: '+8 ⭐', val: 8, icon: '⭐' },
                 { name: '+5 ⭐', val: 5, icon: '⭐' },
                 { name: '+10 ⭐', val: 10, icon: '⭐' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: '+25 ⭐', val: 25, icon: '🔥' },
-                { name: 'ПУСТО', val: 0, icon: '❌' }
+                { name: '+8 ⭐', val: 8, icon: '⭐' },
+                { name: '+20 ⭐', val: 20, icon: '🔥' }, // Ровно возврат
+                { name: '+5 ⭐', val: 5, icon: '⭐' }
             ],
             2: [
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
+                { name: '+10 ⭐', val: 10, icon: '⭐' },
                 { name: '+15 ⭐', val: 15, icon: '⭐' },
+                { name: '+10 ⭐', val: 10, icon: '⭐' },
                 { name: '+30 ⭐', val: 30, icon: '🔥' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: '+70 ⭐', val: 70, icon: '💎' },
-                { name: 'ПУСТО', val: 0, icon: '❌' }
+                { name: '+15 ⭐', val: 15, icon: '⭐' },
+                { name: '+50 ⭐', val: 50, icon: '💎' }, // Возврат
+                { name: '+20 ⭐', val: 20, icon: '⭐' }
             ],
             3: [
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: '+40 ⭐', val: 40, icon: '🔥' },
-                { name: '+100 ⭐', val: 100, icon: '💎' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: 'ДЖЕКПОТ 500⭐', val: 500, icon: '🚀' },
-                { name: 'ПУСТО', val: 0, icon: '❌' }
+                { name: '+20 ⭐', val: 20, icon: '⭐' },
+                { name: '+30 ⭐', val: 30, icon: '🔥' },
+                { name: '+20 ⭐', val: 20, icon: '⭐' },
+                { name: '+100 ⭐', val: 100, icon: '💎' }, // Возврат
+                { name: '+30 ⭐', val: 30, icon: '🔥' },
+                { name: 'КУШ 300⭐', val: 300, icon: '🚀' }, // Сниженный редкий джекпот
+                { name: '+40 ⭐', val: 40, icon: '💎' }
             ]
         };
 
@@ -553,11 +549,11 @@
 
         const liveWins = [
             "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
-            "👑 <b>@homa_lord</b> сорвал джекпот 500 ⭐",
-            "🔥 <b>@sasha_777</b> забрал +120 ⭐",
+            "👑 <b>@homa_lord</b> сорвал куш 300 ⭐",
+            "🔥 <b>@sasha_777</b> забрал +50 ⭐",
             "⭐ <b>@elon_homyak</b> открыл Королевский кейс",
             "💎 <b>@dark_1999</b> выбил +70 ⭐",
-            "⚡ <b>@bogdan_tG</b> выиграл +40 ⭐"
+            "⚡ <b>@bogdan_tG</b> выиграл +30 ⭐"
         ];
         function scheduleNextLiveWin() {
             const randomDelay = (Math.floor(Math.random() * 61) + 30) * 1000;
@@ -569,23 +565,14 @@
         }
         scheduleNextLiveWin();
 
-        // Реальная интеграция пополнения через Telegram Stars (Инвойс)
         function topUpBalance() {
-            let amount = prompt("Сколько звезд хотите купить? (Введите число от 10 до 1000):", "50");
+            let amount = prompt("Сколько звезд хотите пополнить? (Введите число, например: 50):", "50");
             if (amount && !isNaN(amount) && parseInt(amount) > 0) {
                 let stars = parseInt(amount);
-                
-                // Проверяем, поддерживает ли Telegram инвойсы звезд
                 if (tg.openInvoice) {
-                    // Здесь в реальном боте вызывается инвойс от Telegram Stars
-                    alert(`📦 Создан инвойс на покупку ${stars} ⭐ через Telegram Stars. (В тестовом режиме баланс зачислен автоматически).`);
-                    userBalance += stars;
-                    updateUI();
+                    alert(`📦 Инвойс на ${stars} ⭐ отправлен боту. Подтвердите оплату в Telegram!`);
                 } else {
-                    // Если открыто в обычном браузере для теста
-                    userBalance += stars;
-                    updateUI();
-                    alert(`✅ Тестовое пополнение: начислено +${stars} ⭐!`);
+                    alert(`ℹ️ Пополнение баланса работает через Telegram Stars в боте.`);
                 }
             }
         }
@@ -669,7 +656,17 @@
                 userBalance -= cost;
                 updateUI();
                 currentPool = pools[activeCaseId];
-                winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
+                
+                // Математика баланса: в 80% случаев падает минимальный утешительный приз (игрок в минусе), 
+                // в 18% — средний возврат, и лишь в 2% — редкий крупный занос.
+                const rand = Math.random();
+                if (rand < 0.80) {
+                    winningItem = currentPool[0]; // Самый минимальный утешительный приз
+                } else if (rand < 0.98) {
+                    winningItem = currentPool[1]; // Средний приз
+                } else {
+                    winningItem = currentPool[currentPool.length - 1]; // Редкий крупный приз / куш
+                }
             }
 
             document.getElementById('spin-btn').style.display = 'none';
@@ -750,9 +747,7 @@
         }
 
         function subscribeChannel() {
-            // 👇 НЕ ЗАБУДЬ ПОСТАВИТЬ ССЫЛКУ НА СВОЙ КАНАЛ 👇
             const channelUrl = "https://t.me/ТВОЙ_КАНАЛ_ЗДЕСЬ"; 
-            
             if (tg.openTelegramLink) {
                 tg.openTelegramLink(channelUrl);
             } else {
