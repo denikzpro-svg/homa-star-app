@@ -24,7 +24,7 @@
             position: relative;
         }
 
-        /* Боковые анимированные хомяки и элементы битвы */
+        /* Боковые хомяки и декор */
         .side-decor {
             position: fixed;
             top: 0;
@@ -396,7 +396,7 @@
             <div class="menu-icon">⏳</div>
         </div>
 
-        <!-- Платные кейсы (старт от 20 звезд) -->
+        <!-- Платные кейсы -->
         <div class="menu-card card-case-1" onclick="openCaseModal(1)">
             <div class="menu-content">
                 <h3>🥉 Стандартный кейс</h3>
@@ -444,12 +444,12 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса с защитой от накрутки -->
+    <!-- Модалка бесплатного кейса (упрощенная система приглашений) -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
-                Пригласите **3 друзей** по вашей реферальной ссылке. Прогресс засчитается, когда друзья запустят бота!
+                Поделитесь ссылкой на бота с 3 друзьями, чтобы сразу разблокировать бесплатную прокрутку!
             </div>
             <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 Поделиться ссылкой (0/3)</button>
             <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
@@ -466,15 +466,15 @@
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        // Бесплатный кейс: визуально крутые призы (до 50 звезд), но падают микро-награды (без пустых секторов!)
+        // Бесплатный кейс: визуально крутые призы, но падают микро-награды (без пустых секторов!)
         const freeVisualPool = [
             { name: '+0.1 ⭐', val: 0.1, icon: '⭐' },
             { name: '+0.2 ⭐', val: 0.2, icon: '⭐' },
-            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' }, // Приманка для азарта
+            { name: '+5.0 ⭐', val: 5.0, icon: '🌟' },
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
-            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' }, // Приманка
+            { name: '+10.0 ⭐', val: 10.0, icon: '🔥' },
             { name: '+0.15 ⭐', val: 0.15, icon: '⭐' },
-            { name: '+50.0 ⭐', val: 50.0, icon: '👑' } // Джекпот-приманка
+            { name: '+50.0 ⭐', val: 50.0, icon: '👑' }
         ];
 
         const pools = {
@@ -550,7 +550,7 @@
 
         function openFreeSpinModal() {
             if (invitedFriends < 3) {
-                alert("❌ Сначала пригласите 3 друзей!");
+                alert("❌ Сначала поделитесь ссылкой с 3 друзьями!");
                 return;
             }
             closeFreeModal();
@@ -586,7 +586,7 @@
 
             if (isFreeSpinMode) {
                 currentPool = freeVisualPool;
-                // В бесплатном кейсе визуально крутится всё, но выпадают только мелкие призы (первые элементы пула)
+                // В бесплатном кейсе выпадают только мелкие призы (первые элементы пула)
                 const microWins = [freeVisualPool[0], freeVisualPool[1], freeVisualPool[3], freeVisualPool[5]];
                 winningItem = microWins[Math.floor(Math.random() * microWins.length)];
             } else {
@@ -655,10 +655,10 @@
             inviteBtn.innerText = `👥 Поделиться ссылкой (${invitedFriends}/3)`;
 
             if (invitedFriends >= 3) {
-                desc.innerText = "✅ Условие выполнено! Нажмите кнопку ниже, чтобы запустить бесплатную рулетку.";
+                desc.innerText = "✅ Вы поделились ссылкой 3 раза! Нажмите кнопку ниже, чтобы запустить бесплатную рулетку.";
                 claimBtn.className = "btn";
             } else {
-                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Ссылка должна быть открыта вашим другом в боте!`;
+                desc.innerText = `Поделитесь ссылкой с друзьями (${invitedFriends}/3). Счётчик засчитывает каждое нажатие на отправку!`;
                 claimBtn.className = "btn btn-disabled";
             }
         }
@@ -667,15 +667,21 @@
             const userId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '12345';
             const refLink = `https://t.me/HomaStarr_bot?start=ref_${userId}`;
             
+            // Вызываем нативный диалог отправки сообщения в Telegram
             if (tg.openTelegramLink) {
                 tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🎁 Залетай в HomaStar Clash, получай кейсы и звезды!")}`);
             } else {
                 navigator.clipboard.writeText(refLink);
-                alert("📋 Реферальная ссылка скопирована в буфер обмена!");
+                alert("📋 Ссылка скопирована!");
             }
 
-            // Защита от моментальной накрутки: теперь просто уведомляем пользователя
-            alert("📤 Ссылка отправлена! Как только 3 друга запустят бота по ней, кнопка разблокируется автоматически.");
+            // Сразу засчитываем +1 другу при каждой отправке
+            if (invitedFriends < 3) {
+                invitedFriends++;
+                localStorage.setItem('homa_invited', invitedFriends);
+                updateUI();
+                updateFreeModalState();
+            }
         }
     </script>
 </body>
