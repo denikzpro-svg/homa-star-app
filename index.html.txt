@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomaStar Clash — Звёздная Арена</title>
+    <!-- Официальный скрипт Telegram Mini App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        /* Шапка профиля и баланс */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1f2833;
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 1px solid #2c3542;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #c5c6c7;
+        }
+        .balance-badge {
+            background: #0b0c10;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffcc00;
+            border: 1px solid #45a29e;
+        }
+        /* Лого / Брендинг */
+        .hero {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .hero h1 {
+            font-size: 24px;
+            background: linear-gradient(45deg, #ff4500, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .hero p {
+            font-size: 13px;
+            color: #8892b0;
+        }
+        /* Сетка кейсов */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .case-card {
+            background: linear-gradient(145deg, #1f2833, #151b22);
+            border: 1px solid #2c3542;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.15s ease;
+        }
+        .case-card:active {
+            transform: scale(0.97);
+        }
+        .case-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+        .case-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+        .case-price {
+            font-size: 14px;
+            color: #ffcc00;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
+            transition: opacity 0.2s;
+        }
+        .btn:active {
+            opacity: 0.8;
+        }
+        .btn-water {
+            background: linear-gradient(135deg, #00bfff, #1e90ff);
+            box-shadow: 0 4px 10px rgba(0, 191, 255, 0.3);
+        }
+        /* Окно анимации открытия (Модалка) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 12, 16, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #1f2833;
+            border: 2px solid #45a29e;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 0 30px rgba(69, 162, 158, 0.4);
+        }
+        .modal-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        .roulette-box {
+            font-size: 40px;
+            background: #0b0c10;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px dashed #45a29e;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="user-info">
+                <span>👤</span> <span id="username">Игрок</span>
+            </div>
+            <div class="balance-badge">
+                ⭐ <span id="user-balance">100</span>
+            </div>
+        </div>
+
+        <!-- Название проекта -->
+        <div class="hero">
+            <h1>🔥 HomaStar Clash 💧</h1>
+            <p>Звёздная Арена • Официальное приложение</p>
+        </div>
+
+        <!-- Сетка кейсов -->
+        <div class="cases-grid">
+            <div class="case-card">
+                <div class="case-icon">🔥</div>
+                <div class="case-title">Огненный кейс</div>
+                <div class="case-price">5 ⭐</div>
+                <button class="btn" onclick="openCase('Огненный кейс', 5)">Открыть</button>
+            </div>
+            <div class="case-card">
+                <div class="case-icon">💧</div>
+                <div class="case-title">Водный кейс</div>
+                <div class="case-price">10 ⭐</div>
+                <button class="btn btn-water" onclick="openCase('Водный кейс', 10)">Открыть</button>
+            </div>
+            <div class="case-card">
+                <div class="case-icon">⚡</div>
+                <div class="case-title">Эпик кейс</div>
+                <div class="case-price">20 ⭐</div>
+                <button class="btn" onclick="openCase('Эпик кейс', 20)">Открыть</button>
+            </div>
+            <div class="case-card">
+                <div class="case-icon">🌟</div>
+                <div class="case-title">ТОП-Кейс</div>
+                <div class="case-price">50 ⭐</div>
+                <button class="btn btn-water" onclick="openCase('ТОП-Кейс', 50)">Открыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно рулетки -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-heading">Открытие кейса...</div>
+            <div class="roulette-box" id="roulette-text">🎁</div>
+            <button class="btn" id="modal-close-btn" style="display: none;" onclick="closeModal()">Забрать</button>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Подставляем имя и дефолтный баланс (позже свяжем с базой данных)
+        let userBalance = 100;
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('user-balance').innerText = userBalance;
+        }
+
+        // Логика анимации открытия кейса
+        function openCase(caseName, cost) {
+            if (userBalance < cost) {
+                alert('❌ Недостаточно звёзд на балансе!');
+                return;
+            }
+
+            userBalance -= cost;
+            updateBalanceUI();
+
+            const modal = document.getElementById('modal');
+            const heading = document.getElementById('modal-heading');
+            const rouletteText = document.getElementById('roulette-text');
+            const closeBtn = document.getElementById('modal-close-btn');
+
+            modal.style.display = 'flex';
+            heading.innerText = `Открываем ${caseName}...`;
+            closeBtn.style.display = 'none';
+
+            // Имитация крутящейся рулетки
+            let counter = 0;
+            const items = ['+3 ⭐', '+5 ⭐', '+10 ⭐', '🔥 ДЖЕКПОТ 50 ⭐', '+2 ⭐', '💎 NFT-Гифт'];
+            
+            const spinInterval = setInterval(() => {
+                rouletteText.innerText = items[Math.floor(Math.random() * items.length)];
+                counter++;
+                
+                if (counter > 15) {
+                    clearInterval(spinInterval);
+                    // Финальный выигрыш
+                    const win = items[Math.floor(Math.random() * items.length)];
+                    rouletteText.innerText = `🎉 Выиграно:\n${win}`;
+                    heading.innerText = "Поздравляем!";
+                    closeBtn.style.display = 'block';
+                }
+            }, 100);
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
