@@ -261,12 +261,30 @@
             width: 100%;
             max-width: 380px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            position: relative; /* для крестика */
         }
+        
+        /* Кнопка закрытия (крестик) в правом верхнем углу */
+        .modal-close-x {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #a0aec0;
+            font-size: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .modal-close-x:hover { color: #fff; }
+
         .modal-title {
             font-size: 19px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #fff;
+            padding-right: 20px; /* чтобы текст не наползал на крестик */
         }
         .modal-desc {
             font-size: 13px;
@@ -275,7 +293,7 @@
             line-height: 1.4;
         }
 
-        /* CS:GO Рулетка */
+        /* CS:GO Рулетка с плавной, долгой анимацией (6 секунд) */
         .csgo-case-container {
             position: relative;
             width: 100%;
@@ -304,7 +322,8 @@
             top: 10px;
             left: 0;
             height: 90px;
-            transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
+            /* Плавная замедляющаяся кривая анимации на 6 секунд */
+            transition: transform 6s cubic-bezier(0.12, 0.75, 0.12, 1);
         }
         .csgo-item {
             min-width: 90px;
@@ -426,9 +445,10 @@
         <div class="nav-item" onclick="alert('Профиль загружен')"><span>👤</span>Профиль</div>
     </div>
 
-    <!-- Модалка рулетки кейсов -->
+    <!-- Модалка рулетки кейсов с крестиком закрытия -->
     <div class="modal" id="case-modal">
         <div class="modal-content">
+            <button class="modal-close-x" onclick="closeModal()">×</button>
             <div class="modal-title" id="case-modal-title">Открытие кейса</div>
             <div class="csgo-case-container">
                 <div class="csgo-pointer"></div>
@@ -439,9 +459,10 @@
         </div>
     </div>
 
-    <!-- Модалка бесплатного кейса -->
+    <!-- Модалка бесплатного кейса с крестиком закрытия -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
+            <button class="modal-close-x" onclick="closeFreeModal()">×</button>
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
                 Выполните условия, чтобы запустить бесплатную рулетку!
@@ -451,7 +472,6 @@
             <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 2. Пригласить друзей (0/3)</button>
             
             <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 5px;" onclick="openFreeSpinModal()">Крутить бесплатно!</button>
-            <button class="btn" style="background:#333; margin-top:5px;" onclick="closeFreeModal()">Назад</button>
         </div>
     </div>
 
@@ -464,6 +484,7 @@
         let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
         let activeCaseId = 1;
         let isFreeSpinMode = false;
+        let isSpinning = false; // Защита от кликов во время вращения
 
         const COOLDOWN_TIME = 24 * 60 * 60 * 1000;
 
@@ -477,14 +498,13 @@
             return 0;
         }
 
-        // ПОЛНОЕ УДАЛЕНИЕ СЛОВА «ПУСТО» И АЛГОРИТМ ПЛАВНЫХ ВОЛН (Минус есть, но человек ВСЕГДА что-то выигрывает):
         const pools = {
             1: [
                 { name: '+5 ⭐', val: 5, icon: '⭐' },
                 { name: '+10 ⭐', val: 10, icon: '⭐' },
                 { name: '+15 ⭐', val: 15, icon: '🔥' },
                 { name: '+8 ⭐', val: 8, icon: '⭐' },
-                { name: '+25 ⭐', val: 25, icon: '💎' }, // Небольшой плюс
+                { name: '+25 ⭐', val: 25, icon: '💎' },
                 { name: '+12 ⭐', val: 12, icon: '⭐' }
             ],
             2: [
@@ -492,7 +512,7 @@
                 { name: '+20 ⭐', val: 20, icon: '⭐' },
                 { name: '+35 ⭐', val: 35, icon: '🔥' },
                 { name: '+25 ⭐', val: 25, icon: '⭐' },
-                { name: '+60 ⭐', val: 60, icon: '💎' }, // Плюс
+                { name: '+60 ⭐', val: 60, icon: '💎' },
                 { name: '+40 ⭐', val: 40, icon: '⭐' }
             ],
             3: [
@@ -500,8 +520,8 @@
                 { name: '+40 ⭐', val: 40, icon: '⭐' },
                 { name: '+90 ⭐', val: 90, icon: '🔥' },
                 { name: '+50 ⭐', val: 50, icon: '⭐' },
-                { name: '+150 ⭐', val: 150, icon: '💎' }, // Плюс
-                { name: '+200 ⭐', val: 200, icon: '🚀' }, // Крупный занос
+                { name: '+150 ⭐', val: 150, icon: '💎' },
+                { name: '+200 ⭐', val: 200, icon: '🚀' },
                 { name: '+30 ⭐', val: 30, icon: '⭐' }
             ]
         };
@@ -618,11 +638,12 @@
         }
 
         function buildTrack(currentPool) {
+            isSpinning = false;
             const track = document.getElementById('csgo-track');
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
             let html = '';
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 60; i++) {
                 let item = currentPool[Math.floor(Math.random() * currentPool.length)];
                 html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
             }
@@ -630,6 +651,7 @@
         }
 
         function executeSpin() {
+            if (isSpinning) return;
             let cost = 0;
             let currentPool;
             let winningItem;
@@ -653,24 +675,23 @@
                 updateUI();
                 currentPool = pools[activeCaseId];
                 
-                // Честный рандом по волнам: в 75% случаев выпадают мелкие призы (уход в небольшой минус),
-                // в 22% — средний возврат, и в 3% — яркий занос (плюс). Никаких нулей и пустоты!
                 const rand = Math.random();
                 if (rand < 0.75) {
-                    winningItem = currentPool[0]; // Меньше стоимости кейса
+                    winningItem = currentPool[0]; 
                 } else if (rand < 0.97) {
-                    winningItem = currentPool[Math.floor(Math.random() * (currentPool.length - 2)) + 1]; // Средний приз
+                    winningItem = currentPool[Math.floor(Math.random() * (currentPool.length - 2)) + 1]; 
                 } else {
-                    winningItem = currentPool[currentPool.length - 1]; // Топовый крупный занос
+                    winningItem = currentPool[currentPool.length - 1]; 
                 }
             }
 
+            isSpinning = true;
             document.getElementById('spin-btn').style.display = 'none';
 
             const track = document.getElementById('csgo-track');
             let html = '';
-            for (let i = 0; i < 50; i++) {
-                let item = (i === 35) ? winningItem : currentPool[Math.floor(Math.random() * currentPool.length)];
+            for (let i = 0; i < 60; i++) {
+                let item = (i === 42) ? winningItem : currentPool[Math.floor(Math.random() * currentPool.length)];
                 html += `<div class="csgo-item"><span>${item.icon}</span>${item.name}</div>`;
             }
             track.innerHTML = html;
@@ -679,8 +700,9 @@
 
             setTimeout(() => {
                 const itemWidth = 98;
-                const targetPx = (35 * itemWidth) - 130 + (Math.random() * 40 - 20);
-                track.style.transition = 'transform 4s cubic-bezier(0.08, 0.82, 0.12, 1)';
+                // Долгая 6-секундная плавная прокрутка (остановка на 42-м элементе)
+                const targetPx = (42 * itemWidth) - 130 + (Math.random() * 40 - 20);
+                track.style.transition = 'transform 6s cubic-bezier(0.12, 0.75, 0.12, 1)';
                 track.style.transform = `translateX(-${targetPx}px)`;
             }, 50);
 
@@ -698,10 +720,11 @@
                     localStorage.setItem('homa_sub', 'false');
                     updateUI();
                 }
-            }, 4100);
+            }, 6100);
         }
 
         function closeModal() {
+            if (isSpinning) return; // Нельзя закрыть модалку во время вращения рулетки
             document.getElementById('case-modal').style.display = 'none';
         }
 
