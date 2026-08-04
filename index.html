@@ -20,6 +20,13 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Анимация плавного появления сайта при входе */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .container {
             width: 100%;
@@ -27,16 +34,52 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* LIVE-лента побед в левом верхнем углу (как в Frog Cash) */
+        .live-ticker {
+            position: fixed;
+            top: 10px;
+            left: 12px;
+            background: rgba(21, 24, 35, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 99;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            animation: fadeIn 0.8s ease;
+        }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff3333;
+            animation: pulseDot 1.5s infinite;
+        }
+        @keyframes pulseDot {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
         /* Шапка профиля */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #151823;
+            background: linear-gradient(135deg, #151823, #1f2638);
             padding: 12px 16px;
             border-radius: 16px;
-            border: 1px solid #232838;
+            border: 1px solid rgba(69, 162, 158, 0.3);
+            margin-top: 25px; /* чтобы не перекрывалось LIVE-строкой */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
         .user-info {
             display: flex;
@@ -44,7 +87,7 @@
             gap: 8px;
             font-weight: 600;
             font-size: 14px;
-            color: #a0aec0;
+            color: #c5c6c7;
         }
         .balance-area {
             display: flex;
@@ -58,7 +101,7 @@
             font-size: 14px;
             font-weight: bold;
             color: #ffcc00;
-            border: 1px solid #333b52;
+            border: 1px solid #45a29e;
         }
         .btn-top-up {
             background: linear-gradient(135deg, #ff4500, #ff8c00);
@@ -69,9 +112,35 @@
             font-weight: bold;
             font-size: 12px;
             cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.4);
+            transition: transform 0.1s;
+        }
+        .btn-top-up:active { transform: scale(0.95); }
+
+        /* Красивый баннер-заголовок */
+        .hero-banner {
+            background: linear-gradient(135deg, #1f2833, #0b0c10);
+            border: 1px solid #2c3542;
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner h1 {
+            font-size: 20px;
+            background: linear-gradient(45deg, #ff4500, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+        .hero-banner p {
+            font-size: 12px;
+            color: #8892b0;
         }
 
-        /* Карточки меню */
+        /* Карточки меню с неоновым переливом */
         .menu-card {
             border-radius: 20px;
             padding: 18px 20px;
@@ -79,9 +148,9 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.15s ease, filter 0.15s ease;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s ease, filter 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
         }
         .menu-card:active {
             transform: scale(0.97);
@@ -98,14 +167,14 @@
             line-height: 1.3;
         }
         .menu-icon {
-            font-size: 36px;
+            font-size: 38px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
-        /* Цвета карточек кейсов */
         .card-free { background: linear-gradient(135deg, #2b3240, #1c222d); }
-        .card-case-1 { background: linear-gradient(135deg, #3a506b, #1c2541); } /* Бронза / Обычный */
-        .card-case-2 { background: linear-gradient(135deg, #7209b7, #3a0ca3); } /* Серебро / Редкий */
-        .card-case-3 { background: linear-gradient(135deg, #f72585, #b5179e); } /* Золото / Эпик */
+        .card-case-1 { background: linear-gradient(135deg, #2d4356, #1c2a38); }
+        .card-case-2 { background: linear-gradient(135deg, #5c2086, #32124c); }
+        .card-case-3 { background: linear-gradient(135deg, #d62828, #9e1b1b); }
 
         /* Нижняя навигация */
         .nav-bar {
@@ -113,7 +182,8 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: #12151d;
+            background: rgba(18, 21, 29, 0.95);
+            backdrop-filter: blur(10px);
             border-top: 1px solid #222736;
             display: flex;
             justify-content: space-around;
@@ -126,6 +196,7 @@
             color: #718096;
             cursor: pointer;
             font-weight: 600;
+            transition: color 0.2s;
         }
         .nav-item.active {
             color: #ffcc00;
@@ -136,7 +207,7 @@
             margin-bottom: 2px;
         }
 
-        /* Модальное окно рулетки */
+        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -145,23 +216,25 @@
             width: 100%;
             height: 100%;
             background: rgba(7, 8, 12, 0.92);
+            backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
             z-index: 100;
             padding: 16px;
+            animation: fadeIn 0.3s ease;
         }
         .modal-content {
             background: #151823;
-            border: 2px solid #333b52;
+            border: 2px solid #45a29e;
             padding: 24px 16px;
             border-radius: 24px;
             text-align: center;
             width: 100%;
             max-width: 380px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
         }
         .modal-title {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #fff;
@@ -183,6 +256,7 @@
             overflow: hidden;
             border: 2px solid #ffcc00;
             margin-bottom: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
         }
         .csgo-pointer {
             position: absolute;
@@ -232,11 +306,10 @@
             font-size: 15px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
+            transition: transform 0.1s;
         }
-        .btn:active {
-            transform: scale(0.98);
-        }
+        .btn:active { transform: scale(0.98); }
         .btn-disabled {
             background: #2a2e3d !important;
             color: #718096 !important;
@@ -247,8 +320,14 @@
 </head>
 <body>
 
+    <!-- LIVE-лента побед в левом верхнем углу -->
+    <div class="live-ticker">
+        <div class="live-dot"></div>
+        <span id="live-text">Игрок Alex выиграл +25 ⭐</span>
+    </div>
+
     <div class="container">
-        <!-- Шапка с балансом и кнопкой пополнения -->
+        <!-- Шапка -->
         <div class="header">
             <div class="user-info">
                 <span>🐹</span> <span id="username">Игрок</span>
@@ -259,38 +338,42 @@
             </div>
         </div>
 
-        <!-- Слот: Бесплатный кейс с таймером 24 часа -->
+        <!-- Баннер -->
+        <div class="hero-banner">
+            <h1>🔥 HomaStar Clash 💧</h1>
+            <p>Открывай кейсы, крути рулетку и забирай звёзды!</p>
+        </div>
+
+        <!-- Слот: Бесплатный кейс -->
         <div class="menu-card card-free" onclick="openFreeCaseModal()">
             <div class="menu-content">
                 <h3>🎁 Бесплатный кейс</h3>
-                <p id="free-timer-text">Доступно раз в 24 часа</p>
+                <p id="free-subtitle">Пригласите 3 друзей (0/3)</p>
             </div>
             <div class="menu-icon">⏳</div>
         </div>
 
-        <!-- Кейс 1: Малый хомяк -->
+        <!-- Платные кейсы -->
         <div class="menu-card card-case-1" onclick="openCaseModal(1)">
             <div class="menu-content">
                 <h3>📦 Малый кейс Хомы</h3>
-                <p>Цена: 5 ⭐ • Шанс на джекпот</p>
+                <p>Цена: 5 ⭐ • Шанс х2</p>
             </div>
             <div class="menu-icon">🥉</div>
         </div>
 
-        <!-- Кейс 2: Средний кейс -->
         <div class="menu-card card-case-2" onclick="openCaseModal(2)">
             <div class="menu-content">
                 <h3>⚡ Энерго-кейсик</h3>
-                <p>Цена: 15 ⭐ • Жирные призы</p>
+                <p>Цена: 15 ⭐ • Топовый лут</p>
             </div>
             <div class="menu-icon">🥈</div>
         </div>
 
-        <!-- Кейс 3: Элитный кейс -->
         <div class="menu-card card-case-3" onclick="openCaseModal(3)">
             <div class="menu-content">
                 <h3>👑 Королевский кейс</h3>
-                <p>Цена: 50 ⭐ • Максимальные награды</p>
+                <p>Цена: 50 ⭐ • Джекпот 300⭐</p>
             </div>
             <div class="menu-icon">🥇</div>
         </div>
@@ -299,35 +382,34 @@
     <!-- Нижняя навигация -->
     <div class="nav-bar">
         <div class="nav-item active"><span>🎮</span>Кейсы</div>
-        <div class="nav-item" onclick="alert('Раздел конкурсов в разработке')"><span>💰</span>Конкурсы</div>
-        <div class="nav-item" onclick="alert('Таблица лидеров пуста')"><span>🏆</span>Лидеры</div>
-        <div class="nav-item" onclick="alert('Магазин временно закрыт')"><span>🛍️</span>Магазин</div>
-        <div class="nav-item" onclick="alert('Профиль игрока загружен')"><span>👤</span>Профиль</div>
+        <div class="nav-item" onclick="alert('Скоро!')"><span>💰</span>Конкурсы</div>
+        <div class="nav-item" onclick="alert('Скоро!')"><span>🏆</span>Лидеры</div>
+        <div class="nav-item" onclick="alert('Скоро!')"><span>🛍️</span>Магазин</div>
+        <div class="nav-item" onclick="alert('Профиль загружен')"><span>👤</span>Профиль</div>
     </div>
 
-    <!-- Модальное окно платных кейсов с CS:GO анимацией -->
+    <!-- Модалка платных кейсов -->
     <div class="modal" id="case-modal">
         <div class="modal-content">
             <div class="modal-title" id="case-modal-title">Открытие кейса</div>
-            
             <div class="csgo-case-container">
                 <div class="csgo-pointer"></div>
                 <div class="csgo-track" id="csgo-track"></div>
             </div>
-
             <button class="btn" id="spin-btn" onclick="executeSpin()">Крутить кейс</button>
-            <button class="btn" id="close-modal-btn" style="display:none; background:#333; margin-top:10px;" onclick="closeModal()">Забрать в инвентарь</button>
+            <button class="btn" id="close-modal-btn" style="display:none; background:#333; margin-top:10px;" onclick="closeModal()">Забрать</button>
         </div>
     </div>
 
-    <!-- Модальное окно бесплатного кейса (условия) -->
+    <!-- Модалка бесплатного кейса -->
     <div class="modal" id="free-modal">
         <div class="modal-content">
             <div class="modal-title">🎁 Бесплатный кейс</div>
             <div class="modal-desc" id="free-modal-desc">
-                Чтобы получить бесплатную прокрутку, убедитесь, что вы подписаны на наш Telegram-канал и пригласили 3 друзей!
+                Пригласите **3 друзей** по вашей реферальной ссылке, чтобы разблокировать бесплатный прокрут.
             </div>
-            <button class="btn" id="free-action-btn" onclick="claimFreeCase()">Проверить условия</button>
+            <button class="btn" id="invite-btn" onclick="shareRefLink()">👥 Поделиться ссылкой (0/3)</button>
+            <button class="btn btn-disabled" id="claim-free-btn" style="margin-top: 10px;" onclick="claimFreeCase()">Открыть кейс!</button>
             <button class="btn" style="background:#333; margin-top:10px;" onclick="closeFreeModal()">Назад</button>
         </div>
     </div>
@@ -336,64 +418,65 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userBalance = 0; // Строго 0 при старте
+        let userBalance = 0;
+        let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
         let activeCaseId = 1;
 
-        // Пуллы наград для разных кейсов
-        const pools = {
-            1: [
-                { name: '+1 ⭐', val: 1, icon: '⭐' },
-                { name: '+3 ⭐', val: 3, icon: '⭐' },
-                { name: '+5 ⭐', val: 5, icon: '🌟' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: '+10 ⭐', val: 10, icon: '🔥' }
-            ],
-            2: [
-                { name: '+5 ⭐', val: 5, icon: '⭐' },
-                { name: '+10 ⭐', val: 10, icon: '🌟' },
-                { name: '+25 ⭐', val: 25, icon: '🔥' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: '+50 ⭐', val: 50, icon: '💎' }
-            ],
-            3: [
-                { name: '+20 ⭐', val: 20, icon: '🌟' },
-                { name: '+50 ⭐', val: 50, icon: '🔥' },
-                { name: '+100 ⭐', val: 100, icon: '💎' },
-                { name: 'ПУСТО', val: 0, icon: '❌' },
-                { name: 'ДЖЕКПОТ 300⭐', val: 300, icon: '👑' }
-            ]
-        };
+        // LIVE-лента побед (динамически меняет сообщения каждые 3 секунды)
+        const liveWins = [
+            "Игрок Максим выбил +50 ⭐",
+            "Деня забрал ДЖЕКПОТ 300 ⭐",
+            "Игрок Артур выиграл +10 ⭐",
+            "Александр открыл Королевский кейс",
+            "Игрок Кирил выбил +25 ⭐",
+            "Богдан забрал +100 ⭐"
+        ];
+        setInterval(() => {
+            const randomWin = liveWins[Math.floor(Math.random() * liveWins.length)];
+            document.getElementById('live-text').innerText = randomWin;
+        }, 3500);
 
+        const pools = {
+            1: [{ name: '+1 ⭐', val: 1, icon: '⭐' }, { name: '+3 ⭐', val: 3, icon: '⭐' }, { name: '+5 ⭐', val: 5, icon: '🌟' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+10 ⭐', val: 10, icon: '🔥' }],
+            2: [{ name: '+5 ⭐', val: 5, icon: '⭐' }, { name: '+10 ⭐', val: 10, icon: '🌟' }, { name: '+25 ⭐', val: 25, icon: '🔥' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: '+50 ⭐', val: 50, icon: '💎' }],
+            3: [{ name: '+20 ⭐', val: 20, icon: '🌟' }, { name: '+50 ⭐', val: 50, icon: '🔥' }, { name: '+100 ⭐', val: 100, icon: '💎' }, { name: 'ПУСТО', val: 0, icon: '❌' }, { name: 'ДЖЕКПОТ 300⭐', val: 300, icon: '👑' }]
+        };
         const caseCosts = { 1: 5, 2: 15, 3: 50 };
 
-        function updateBalanceUI() {
-            document.getElementById('user-balance').innerText = userBalance;
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
         }
-        updateBalanceUI();
 
-        // Тестовое пополнение баланса прямо в приложении (в будущем заменится на Telegram Stars инвойс)
+        function updateUI() {
+            document.getElementById('user-balance').innerText = userBalance;
+            const subtitle = document.getElementById('free-subtitle');
+            if (invitedFriends >= 3) {
+                subtitle.innerText = "✅ Доступно!";
+            } else {
+                subtitle.innerText = `Пригласите 3 друзей (${invitedFriends}/3)`;
+            }
+        }
+        updateUI();
+
         function topUpBalance() {
             let add = prompt("Сколько звезд хотите добавить на баланс для теста?", "50");
             if (add && !isNaN(add)) {
                 userBalance += parseInt(add);
-                updateBalanceUI();
+                updateUI();
                 alert(`✅ Успешно пополнено на ${add} ⭐!`);
             }
         }
 
-        // Открытие модалки платного кейса
         function openCaseModal(caseId) {
             activeCaseId = caseId;
             const cost = caseCosts[caseId];
-            
             document.getElementById('case-modal').style.display = 'flex';
-            document.getElementById('case-modal-title').innerText = `Кейс #${caseId} (Цена: ${cost} ⭐)`;
+            document.getElementById('case-modal-title').innerText = `Кейс #${caseId} (${cost} ⭐)`;
             document.getElementById('close-modal-btn').style.display = 'none';
             
             const spinBtn = document.getElementById('spin-btn');
             spinBtn.style.display = 'block';
 
-            // Проверка баланса: если не хватает — блокируем кнопку
             if (userBalance < cost) {
                 spinBtn.innerText = `❌ Недостаточно звезд (нужно ${cost} ⭐)`;
                 spinBtn.className = "btn btn-disabled";
@@ -401,7 +484,6 @@
                 spinBtn.innerText = `Крутить за ${cost} ⭐`;
                 spinBtn.className = "btn";
             }
-
             buildTrack(pools[caseId]);
         }
 
@@ -409,7 +491,6 @@
             const track = document.getElementById('csgo-track');
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
-            
             let html = '';
             for (let i = 0; i < 50; i++) {
                 let item = currentPool[Math.floor(Math.random() * currentPool.length)];
@@ -421,21 +502,16 @@
         function executeSpin() {
             const cost = caseCosts[activeCaseId];
             if (userBalance < cost) {
-                alert("У вас нулевой или недостаточный баланс! Пополните счет кнопкой «+ Пополнить».");
+                alert("У вас недостаточно звезд! Пополните баланс.");
                 return;
             }
-
-            // Списываем звезды за прокрут
             userBalance -= cost;
-            updateBalanceUI();
-
-            const spinBtn = document.getElementById('spin-btn');
-            spinBtn.style.display = 'none';
+            updateUI();
+            document.getElementById('spin-btn').style.display = 'none';
 
             const currentPool = pools[activeCaseId];
             const winningItem = currentPool[Math.floor(Math.random() * currentPool.length)];
 
-            // Перестраиваем ленту так, чтобы на 35 позиции стоял выигрыш
             const track = document.getElementById('csgo-track');
             let html = '';
             for (let i = 0; i < 50; i++) {
@@ -446,7 +522,6 @@
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
 
-            // Анимация прокрутки CS:GO
             setTimeout(() => {
                 const itemWidth = 98;
                 const targetPx = (35 * itemWidth) - 130 + (Math.random() * 40 - 20);
@@ -454,10 +529,9 @@
                 track.style.transform = `translateX(-${targetPx}px)`;
             }, 50);
 
-            // Итог прокрутки
             setTimeout(() => {
                 userBalance += winningItem.val;
-                updateBalanceUI();
+                updateUI();
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
                 document.getElementById('close-modal-btn').style.display = 'block';
             }, 4100);
@@ -467,52 +541,64 @@
             document.getElementById('case-modal').style.display = 'none';
         }
 
-        // Логика бесплатного кейса с таймером 24 часа
         function openFreeCaseModal() {
             document.getElementById('free-modal').style.display = 'flex';
-            checkFreeTimer();
+            updateFreeModalState();
         }
 
         function closeFreeModal() {
             document.getElementById('free-modal').style.display = 'none';
         }
 
-        function checkFreeTimer() {
-            const lastClaim = localStorage.getItem('homa_free_claim');
-            const now = new Date().getTime();
-            const btn = document.getElementById('free-action-btn');
+        function updateFreeModalState() {
+            const inviteBtn = document.getElementById('invite-btn');
+            const claimBtn = document.getElementById('claim-free-btn');
             const desc = document.getElementById('free-modal-desc');
 
-            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
-                const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (now - lastClaim)) / (1000 * 60 * 60));
-                desc.innerText = `⏳ Бесплатный кейс уже открывался. Следующий будет доступен через ${hoursLeft} ч.`;
-                btn.innerText = "Уже получено";
-                btn.className = "btn btn-disabled";
+            inviteBtn.innerText = `👥 Поделиться ссылкой (${invitedFriends}/3)`;
+
+            if (invitedFriends >= 3) {
+                desc.innerText = "✅ Вы выполнили условие! Теперь вам доступно открытие бесплатного кейса.";
+                claimBtn.className = "btn";
             } else {
-                desc.innerText = "Условие: Подпишитесь на наш Telegram-канал и пригласите 3 друзей, чтобы забрать бесплатный кейс!";
-                btn.innerText = "Забрать бесплатно";
-                btn.className = "btn";
+                desc.innerText = `Приглашено друзей: ${invitedFriends}/3. Отправьте свою реферальную ссылку друзьям, чтобы разблокировать бесплатный кейс!`;
+                claimBtn.className = "btn btn-disabled";
+            }
+        }
+
+        function shareRefLink() {
+            const userId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '12345';
+            const refLink = `https://t.me/HomaStarr_bot?start=ref_${userId}`;
+            
+            if (tg.openTelegramLink) {
+                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🎁 Залетай в HomaStar Clash, получай кейсы и звезды!")}`);
+            } else {
+                navigator.clipboard.writeText(refLink);
+                alert("📋 Реферальная ссылка скопирована в буфер обмена!");
+            }
+
+            if (invitedFriends < 3) {
+                invitedFriends++;
+                localStorage.setItem('homa_invited', invitedFriends);
+                updateUI();
+                updateFreeModalState();
             }
         }
 
         function claimFreeCase() {
-            const lastClaim = localStorage.getItem('homa_free_claim');
-            const now = new Date().getTime();
-
-            if (lastClaim && (now - lastClaim < 24 * 60 * 60 * 1000)) {
-                alert("⏳ Таймер еще не истек! Приходите через 24 часа.");
+            if (invitedFriends < 3) {
+                alert("❌ Сначала пригласите 3 друзей!");
                 return;
             }
-
-            // Фиксируем время получения
-            localStorage.setItem('homa_free_claim', now);
             
-            // Награда за бесплатный кейс (например, даем 3 звезды)
-            userBalance += 3;
-            updateBalanceUI();
+            userBalance += 5;
+            updateUI();
+            alert("🎉 Вы успешно открыли бесплатный кейс и получили +5 ⭐!");
             
-            alert("🎉 Успешно! Вы открыли бесплатный кейс и получили +3 ⭐!");
+            invitedFriends = 0;
+            localStorage.setItem('homa_invited', '0');
             closeFreeModal();
+            updateUI();
         }
     </script>
 </body>
