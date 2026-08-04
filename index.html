@@ -411,7 +411,7 @@
         <div class="menu-card card-case-3" onclick="openCaseModal(3)">
             <div class="menu-content">
                 <h3>👑 Королевский кейс</h3>
-                <p>Цена: 100 ⭐ • Джекпот 300⭐</p>
+                <p>Цена: 100 ⭐ • Джекпот 250⭐</p>
             </div>
             <div class="menu-icon">🥇</div>
         </div>
@@ -477,36 +477,32 @@
             return 0;
         }
 
-        // БЕЗ «ПУСТОТИ» И С УМЕРЕННЫМ КАЗИНО-МИНУСОМ:
-        // Вместо слова «ПУСТО» игрок всегда выигрывает утешительный микро-приз (меньше стоимости кейса).
-        // Джекпот на 100-звездном кейсе снижен до 300 и выпадает очень редко.
+        // ПОЛНОЕ УДАЛЕНИЕ СЛОВА «ПУСТО» И АЛГОРИТМ ПЛАВНЫХ ВОЛН (Минус есть, но человек ВСЕГДА что-то выигрывает):
         const pools = {
             1: [
                 { name: '+5 ⭐', val: 5, icon: '⭐' },
-                { name: '+8 ⭐', val: 8, icon: '⭐' },
-                { name: '+5 ⭐', val: 5, icon: '⭐' },
                 { name: '+10 ⭐', val: 10, icon: '⭐' },
+                { name: '+15 ⭐', val: 15, icon: '🔥' },
                 { name: '+8 ⭐', val: 8, icon: '⭐' },
-                { name: '+20 ⭐', val: 20, icon: '🔥' }, // Ровно возврат
-                { name: '+5 ⭐', val: 5, icon: '⭐' }
+                { name: '+25 ⭐', val: 25, icon: '💎' }, // Небольшой плюс
+                { name: '+12 ⭐', val: 12, icon: '⭐' }
             ],
             2: [
-                { name: '+10 ⭐', val: 10, icon: '⭐' },
                 { name: '+15 ⭐', val: 15, icon: '⭐' },
-                { name: '+10 ⭐', val: 10, icon: '⭐' },
-                { name: '+30 ⭐', val: 30, icon: '🔥' },
-                { name: '+15 ⭐', val: 15, icon: '⭐' },
-                { name: '+50 ⭐', val: 50, icon: '💎' }, // Возврат
-                { name: '+20 ⭐', val: 20, icon: '⭐' }
+                { name: '+20 ⭐', val: 20, icon: '⭐' },
+                { name: '+35 ⭐', val: 35, icon: '🔥' },
+                { name: '+25 ⭐', val: 25, icon: '⭐' },
+                { name: '+60 ⭐', val: 60, icon: '💎' }, // Плюс
+                { name: '+40 ⭐', val: 40, icon: '⭐' }
             ],
             3: [
                 { name: '+20 ⭐', val: 20, icon: '⭐' },
-                { name: '+30 ⭐', val: 30, icon: '🔥' },
-                { name: '+20 ⭐', val: 20, icon: '⭐' },
-                { name: '+100 ⭐', val: 100, icon: '💎' }, // Возврат
-                { name: '+30 ⭐', val: 30, icon: '🔥' },
-                { name: 'КУШ 300⭐', val: 300, icon: '🚀' }, // Сниженный редкий джекпот
-                { name: '+40 ⭐', val: 40, icon: '💎' }
+                { name: '+40 ⭐', val: 40, icon: '⭐' },
+                { name: '+90 ⭐', val: 90, icon: '🔥' },
+                { name: '+50 ⭐', val: 50, icon: '⭐' },
+                { name: '+150 ⭐', val: 150, icon: '💎' }, // Плюс
+                { name: '+200 ⭐', val: 200, icon: '🚀' }, // Крупный занос
+                { name: '+30 ⭐', val: 30, icon: '⭐' }
             ]
         };
 
@@ -549,11 +545,11 @@
 
         const liveWins = [
             "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
-            "👑 <b>@homa_lord</b> сорвал куш 300 ⭐",
-            "🔥 <b>@sasha_777</b> забрал +50 ⭐",
+            "👑 <b>@homa_lord</b> сорвал куш 200 ⭐",
+            "🔥 <b>@sasha_777</b> забрал +60 ⭐",
             "⭐ <b>@elon_homyak</b> открыл Королевский кейс",
-            "💎 <b>@dark_1999</b> выбил +70 ⭐",
-            "⚡ <b>@bogdan_tG</b> выиграл +30 ⭐"
+            "💎 <b>@dark_1999</b> выбил +150 ⭐",
+            "⚡ <b>@bogdan_tG</b> выиграл +40 ⭐"
         ];
         function scheduleNextLiveWin() {
             const randomDelay = (Math.floor(Math.random() * 61) + 30) * 1000;
@@ -657,15 +653,15 @@
                 updateUI();
                 currentPool = pools[activeCaseId];
                 
-                // Математика баланса: в 80% случаев падает минимальный утешительный приз (игрок в минусе), 
-                // в 18% — средний возврат, и лишь в 2% — редкий крупный занос.
+                // Честный рандом по волнам: в 75% случаев выпадают мелкие призы (уход в небольшой минус),
+                // в 22% — средний возврат, и в 3% — яркий занос (плюс). Никаких нулей и пустоты!
                 const rand = Math.random();
-                if (rand < 0.80) {
-                    winningItem = currentPool[0]; // Самый минимальный утешительный приз
-                } else if (rand < 0.98) {
-                    winningItem = currentPool[1]; // Средний приз
+                if (rand < 0.75) {
+                    winningItem = currentPool[0]; // Меньше стоимости кейса
+                } else if (rand < 0.97) {
+                    winningItem = currentPool[Math.floor(Math.random() * (currentPool.length - 2)) + 1]; // Средний приз
                 } else {
-                    winningItem = currentPool[currentPool.length - 1]; // Редкий крупный приз / куш
+                    winningItem = currentPool[currentPool.length - 1]; // Топовый крупный занос
                 }
             }
 
