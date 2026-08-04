@@ -465,14 +465,14 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userBalance = 0.0;
+        // Загружаем сохраненный баланс из localStorage (если пусто — ставим 0.0)
+        let userBalance = parseFloat(localStorage.getItem('homa_balance') || '0.0');
         let isSubscribed = localStorage.getItem('homa_sub') === 'true';
         let invitedFriends = parseInt(localStorage.getItem('homa_invited') || '0');
         let activeCaseId = 1;
         let isFreeSpinMode = false;
 
-        // Логика таймера 24 часа для бесплатного кейса
-        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа
 
         function getRemainingCooldown() {
             const lastClaim = parseInt(localStorage.getItem('homa_last_claim') || '0');
@@ -484,7 +484,6 @@
             return 0;
         }
 
-        // Бесплатный кейс: награды от 0.5 до 1.0 звезды
         const freeVisualPool = [
             { name: '+0.5 ⭐', val: 0.5, icon: '⭐' },
             { name: '+0.8 ⭐', val: 0.8, icon: '⭐' },
@@ -507,10 +506,13 @@
         }
 
         function updateUI() {
+            // Сохраняем актуальный баланс в память устройства
+            localStorage.setItem('homa_balance', userBalance.toFixed(1));
             document.getElementById('user-balance').innerText = userBalance.toFixed(1);
-            const subtitle = document.getElementById('free-subtitle');
             
+            const subtitle = document.getElementById('free-subtitle');
             const timeLeft = getRemainingCooldown();
+            
             if (timeLeft > 0) {
                 const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -523,10 +525,8 @@
         }
         updateUI();
 
-        // Каждую секунду обновляем текст таймера на главной
         setInterval(updateUI, 1000);
 
-        // Рандомный таймер LIVE-ленты (от 30 до 90 секунд)
         const liveWins = [
             "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
             "👑 <b>@homa_lord</b> сорвал джекпот 500 ⭐",
@@ -657,14 +657,12 @@
 
             setTimeout(() => {
                 userBalance += winningItem.val;
-                updateUI();
+                updateUI(); // Баланс мгновенно сохранится в localStorage!
                 document.getElementById('case-modal-title').innerText = `🎉 Вы выиграли: ${winningItem.name}!`;
                 document.getElementById('close-modal-btn').style.display = 'block';
 
                 if (isFreeSpinMode) {
-                    // Записываем текущее время как точку отсчета таймера на 24 часа
                     localStorage.setItem('homa_last_claim', new Date().getTime().toString());
-                    // Сбрасываем условия для следующего раза
                     invitedFriends = 0;
                     isSubscribed = false;
                     localStorage.setItem('homa_invited', '0');
@@ -716,7 +714,7 @@
         }
 
         function subscribeChannel() {
-            // 👇 НЕ ЗАБУДЬ ЗАМЕНИТЬ НА ССЫЛКУ СВОЕГО КАНАЛА 👇
+            // 👇 НЕ ЗАБУДЬ ПОСТАВИТЬ ССЫЛКУ НА СВОЙ КАНАЛ 👇
             const channelUrl = "https://t.me/ТВОЙ_КАНАЛ_ЗДЕСЬ"; 
             
             if (tg.openTelegramLink) {
