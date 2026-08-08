@@ -2,20 +2,17 @@ import asyncio
 import json
 import logging
 import os
+import random
 from datetime import datetime, timedelta, timezone
 
 from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    LabeledPrice,
     Message,
-    PreCheckoutQuery,
     WebAppInfo,
 )
 from aiohttp import web
@@ -25,7 +22,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 BOT_TOKEN = "8978125889:AAH4WRBVCTUFykQCbxpzucuqp8ySXuKf4G4"
 MONGO_URI = "mongodb+srv://denikzpro_db_user:kUTYTo4uyKTgC8uE@cluster0.oome800.mongodb.net/?appName=Cluster0"
 CHANNEL_ID = "@hamster_arenas"
-ADMIN_ID = 7910818906  # Твой Telegram ID
+ADMIN_ID = 7910818906
 
 WEB_APP_URL = "https://homa-star-app.vercel.app"
 
@@ -37,38 +34,36 @@ client = AsyncIOMotorClient(MONGO_URI)
 db = client["star_arena_bot"]
 users_col = db["users"]
 battles_col = db["battles"]
-withdrawals_col = db["withdrawals"]
+queue_col = db["queue"]
 
 MSK_TZ = timezone(timedelta(hours=3))
 
+# Минимальные цели по голосам для каждого раунда
+STAGE_GOALS = {1: 5, 2: 10, 3: 50}
+
 
 # ================= HELPER FUNCTIONS =================
-async def get_user(user_id: int):
+async def get_user(user_id: int, username: str = None):
     user = await users_col.find_one({"user_id": user_id})
     if not user:
         user = {
             "user_id": user_id,
+            "username": username or "Игрок",
             "balance": 0,
-            "invited_count": 0,
-            "referred_by": None,
-            "active_tournament": False,
-            "tournament_stage": 0,
-            "tournament_invited": 0,
-            "round_start_time": None,
+            "active_battle_id": None,
+            "stage": 1,
+            "status": "idle",  # idle, searching, in_battle, waiting_next_stage
         }
         await users_col.insert_one(user)
+    else:
+        if username and user.get("username") != username:
+            await users_col.update_one(
+                {"user_id": user_id}, {"$set": {"username": username}}
+            )
+            user["username"] = username
     return user
 
 
-async def check_subscription(bot: Bot, user_id: int) -> bool:
-    try:
-        member = await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=user_id)
-        return member.status in ["member", "creator", "administrator"]
-    except Exception:
-        return False
-
-
-# ================= KEYBOARDS =================
 def main_menu_kb():
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -80,355 +75,339 @@ def main_menu_kb():
             ],
             [
                 InlineKeyboardButton(
-                    text="⚔️ Начать блиц-турнир", callback_data="start_tournament"
+                    text="⚔️ Начать Блиц-Турнир", callback_data="find_match"
                 )
             ],
         ]
     )
 
 
-# ================= HANDLERS: START & MENU =================
+# ================= START & MENU =================
 @router.message(Command("start"))
-async def cmd_start(message: Message, bot: Bot):
-    args = message.text.split()
+async def cmd_start(message: Message):
     user_id = message.from_user.id
-    user = await get_user(user_id)
-
-    if len(args) > 1 and args[1].isdigit():
-        referrer_id = int(args[1])
-        if referrer_id != user_id and not user.get("referred_by"):
-            await users_col.update_one(
-                {"user_id": user_id}, {"$set": {"referred_by": referrer_id}}
-            )
-            await users_col.update_one(
-                {"user_id": referrer_id}, {"$inc": {"invited_count": 1}}
-            )
-
-            ref_user = await get_user(referrer_id)
-            if ref_user.get("active_tournament"):
-                await users_col.update_one(
-                    {"user_id": referrer_id}, {"$inc": {"tournament_invited": 1}}
-                )
-
-    is_subbed = await check_subscription(bot, user_id)
-    if not is_subbed:
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="📢 Подписаться на канал",
-                        url="https://t.me/hamster_arenas",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="✅ Я подписался", callback_data="check_sub"
-                    )
-                ],
-            ]
-        )
-        await message.answer(
-            "👋 Привет! Чтобы пользоваться ботом и играть, подпишись на наш канал:",
-            reply_markup=kb,
-        )
-        return
+    username = (
+        message.from_user.username
+        or message.from_user.first_name
+        or f"id{user_id}"
+    )
+    await get_user(user_id, username)
 
     await message.answer(
-        "🔥 **Добро пожаловать в Звёздную Арену!**\n\nНажми кнопку ниже, чтобы запустить приложение или участвовать в турнирах!",
+        "🔥 **Добро пожаловать в Звёздную Арену!**\n\nЗапускай приложение или вступай в Блиц-Турнир Стихий!",
         reply_markup=main_menu_kb(),
         parse_mode="Markdown",
     )
 
 
-@router.callback_query(F.data == "check_sub")
-async def process_check_sub(callback: CallbackQuery, bot: Bot):
-    is_subbed = await check_subscription(bot, callback.from_user.id)
-    if not is_subbed:
-        await callback.answer(
-            "❌ Ты ещё не подписался на канал!", show_alert=True
-        )
-        return
-
-    await callback.message.edit_text(
-        "✅ Подписка подтверждена!\n\nДобро пожаловать в Звёздную Арену:",
-        reply_markup=main_menu_kb(),
-    )
-
-
-@router.callback_query(F.data == "main_menu")
-async def process_main_menu(callback: CallbackQuery):
-    await callback.message.edit_text(
-        "🎮 **Главное меню Звёздной Арены:**",
-        reply_markup=main_menu_kb(),
-        parse_mode="Markdown",
-    )
-
-
-# ================= TOURNAMENT LOGIC (ПОЧИНЕНО) =================
-class TournamentStates(StatesGroup):
-    waiting_for_round_1 = State()
-    waiting_for_round_2 = State()
-    waiting_for_round_3 = State()
-
-
-@router.callback_query(F.data == "start_tournament")
-async def process_start_tournament(callback: CallbackQuery, state: FSMContext):
+# ================= ПОИСК СОПЕРНИКА И БАТЛЫ =================
+@router.callback_query(F.data == "find_match")
+async def process_find_match(callback: CallbackQuery, bot: Bot):
     user_id = callback.from_user.id
-    user = await get_user(user_id)
+    username = (
+        callback.from_user.username
+        or callback.from_user.first_name
+        or f"id{user_id}"
+    )
+    user = await get_user(user_id, username)
 
-    # Авто-сброс турнира, если с момента старта прошлого прошло больше 3 часов
-    if user.get("round_start_time"):
-        if datetime.utcnow() - user.get("round_start_time") > timedelta(
-            hours=3
-        ):
+    if user.get("status") == "in_battle":
+        return await callback.answer(
+            "❌ Ты уже участвуешь в активном батле!", show_alert=True
+        )
+
+    if user.get("status") == "searching":
+        return await callback.answer("⏳ Ты уже в очереди поиска!", show_alert=True)
+
+    stage = user.get("stage", 1)
+
+    # Ищем другого игрока такого же Stage в очереди
+    opponent = await queue_col.find_one_and_delete(
+        {"stage": stage, "user_id": {"$ne": user_id}}
+    )
+
+    if not opponent:
+        # Становимся в очередь
+        await queue_col.insert_one(
+            {
+                "user_id": user_id,
+                "username": username,
+                "stage": stage,
+                "created_at": datetime.utcnow(),
+            }
+        )
+        await users_col.update_one(
+            {"user_id": user_id}, {"$set": {"status": "searching"}}
+        )
+
+        kb = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="❌ Отменить поиск", callback_data="cancel_search"
+                    )
+                ]
+            ]
+        )
+        return await callback.message.edit_text(
+            f"🔍 **Поиск соперника для Раунда {stage}...**\n\nКак только найдем равного игрока, батл появится в канале {CHANNEL_ID}!",
+            reply_markup=kb,
+            parse_mode="Markdown",
+        )
+
+    # Соперник найден! Запускаем батл
+    p1_id, p1_name = user_id, username
+    p2_id, p2_name = opponent["user_id"], opponent["username"]
+
+    # Распределение стихий
+    if random.choice([True, False]):
+        fire_id, fire_name = p1_id, p1_name
+        water_id, water_name = p2_id, p2_name
+    else:
+        fire_id, fire_name = p2_id, p2_name
+        water_id, water_name = p1_id, p1_name
+
+    goal = STAGE_GOALS.get(stage, 5)
+    stage_title = (
+        "РАУНД 1"
+        if stage == 1
+        else ("ПОЛУФИНАЛ" if stage == 2 else "👑 ГРАНД-ФИНАЛ 👑")
+    )
+
+    # Создаем пост в канале
+    post_text = (
+        f"⚔️ **БИТВА СТИХИЙ | {stage_title}**\n\n"
+        f"🔥 **Огонь:** @{fire_name}\n"
+        f"💧 **Вода:** @{water_name}\n\n"
+        f"🎯 **Цель раунда:** Набрать минимум **{goal} голосов**!\n"
+        f"⏰ **Время на голосование:** 1 час!\n"
+        f"Поддержите своего фаворита ниже 👇"
+    )
+
+    # Временный ID для кнопок (пока пост не создан)
+    battle_doc = {
+        "stage": stage,
+        "fire_id": fire_id,
+        "fire_name": fire_name,
+        "fire_votes": 0,
+        "water_id": water_id,
+        "water_name": water_name,
+        "water_votes": 0,
+        "voted_users": [],
+        "created_at": datetime.utcnow(),
+        "status": "active",
+    }
+    res = await battles_col.insert_one(battle_doc)
+    battle_id = str(res.inserted_id)
+
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f"🔥 Огонь (@{fire_name}) — 0",
+                    callback_data=f"vote_{battle_id}_fire",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=f"💧 Вода (@{water_name}) — 0",
+                    callback_data=f"vote_{battle_id}_water",
+                )
+            ],
+        ]
+    )
+
+    try:
+        msg = await bot.send_message(
+            CHANNEL_ID, post_text, reply_markup=kb, parse_mode="Markdown"
+        )
+        await battles_col.update_one(
+            {"_id": res.inserted_id}, {"$set": {"msg_id": msg.message_id}}
+        )
+
+        # Обновляем статусы участников
+        for uid in [fire_id, water_id]:
             await users_col.update_one(
-                {"user_id": user_id}, {"$set": {"active_tournament": False}}
+                {"user_id": uid},
+                {"$set": {"status": "in_battle", "active_battle_id": battle_id}},
             )
-            user["active_tournament"] = False
 
-    if user.get("active_tournament"):
-        await callback.answer(
-            "❌ Ты уже участвуешь в активном турнире!", show_alert=True
-        )
-        return
+        # Уведомления в ЛС
+        post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg.message_id}"
+        notify_text = f"⚔️ **Соперник найден!** Твой батл ({stage_title}) начался!\n\n🎯 Цель: **{goal} голосов**.\n🔗Ссылка на батл: {post_link}"
 
-    now_msk = datetime.now(MSK_TZ)
-    end_time = now_msk + timedelta(hours=1)
-    end_time_str = end_time.strftime("%H:%M")
+        await bot.send_message(fire_id, notify_text)
+        await bot.send_message(water_id, notify_text)
 
-    await users_col.update_one(
-        {"user_id": user_id},
-        {
-            "$set": {
-                "active_tournament": True,
-                "tournament_stage": 1,
-                "tournament_invited": 0,
-                "round_start_time": datetime.utcnow(),
-                "round_end_time_msk": end_time_str,
-            }
-        },
-    )
-    await state.set_state(TournamentStates.waiting_for_round_1)
+        # Запускаем таймер на 1 час для проверки итогов
+        asyncio.create_task(schedule_battle_end(bot, battle_id, 3600))
 
-    text = (
-        "⚔️ **Блиц-турнир: Раунд 1**\n\n"
-        "🎯 **Цель:** Пригласи минимум **2 человека**.\n"
-        f"⏰ **Дедлайн:** до {end_time_str} МСК (1 час)!\n"
-        "⚠️ *Если не успеешь — вылет!*\n\n"
-        f"🔗 Твоя реф-ссылка:\n`https://t.me/{(await callback.bot.get_me()).username}?start={user_id}`"
-    )
-    kb = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="🔍 Проверить Раунд 1",
-                    callback_data="check_t_round_1",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="❌ Сдаться / Покинуть",
-                    callback_data="fail_tournament",
-                )
-            ],
-        ]
-    )
+    except Exception as e:
+        logging.error(f"Ошибка создания батла: {e}")
+
+
+@router.callback_query(F.data == "cancel_search")
+async def process_cancel_search(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    await queue_col.delete_many({"user_id": user_id})
+    await users_col.update_one({"user_id": user_id}, {"$set": {"status": "idle"}})
     await callback.message.edit_text(
-        text, reply_markup=kb, parse_mode="Markdown"
+        "❌ Поиск отменен.", reply_markup=main_menu_kb()
     )
 
 
-@router.callback_query(F.data == "check_t_round_1")
-async def process_check_t_round_1(callback: CallbackQuery, state: FSMContext):
-    user = await get_user(callback.from_user.id)
-    start_time = user.get("round_start_time")
+# ================= ОБРАБОТКА ГОЛОСОВАНИЯ =================
+@router.callback_query(F.data.startswith("vote_"))
+async def process_vote(callback: CallbackQuery, bot: Bot):
+    parts = callback.data.split("_")
+    battle_id = parts[1]
+    side = parts[2]
+    voter_id = callback.from_user.id
 
-    if not start_time or (
-        datetime.utcnow() - start_time > timedelta(hours=1)
-    ):
-        await fail_tournament_logic(
-            callback.from_user.id, state, callback.message
-        )
-        return
+    from bson.objectid import ObjectId
 
-    invited = user.get("tournament_invited", 0)
-    if invited >= 2:
-        now_msk = datetime.now(MSK_TZ)
-        end_time_str = (now_msk + timedelta(hours=1)).strftime("%H:%M")
+    battle = await battles_col.find_one({"_id": ObjectId(battle_id)})
 
-        await users_col.update_one(
-            {"user_id": callback.from_user.id},
-            {
-                "$set": {
-                    "tournament_stage": 2,
-                    "tournament_invited": 0,
-                    "round_start_time": datetime.utcnow(),
-                }
-            },
-        )
-        await state.set_state(TournamentStates.waiting_for_round_2)
+    if not battle or battle.get("status") != "active":
+        return await callback.answer("❌ Батл уже завершен!", show_alert=True)
 
-        text = (
-            "✅ **Раунд 1 пройден!**\n\n"
-            "⚔️ **Раунд 2: Полуфинал**\n"
-            "🎯 **Цель:** Пригласи **15 человек**.\n"
-            f"⏰ **Дедлайн:** до {end_time_str} МСК!"
-        )
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="🔍 Проверить Раунд 2",
-                        callback_data="check_t_round_2",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="❌ Сдаться", callback_data="fail_tournament"
-                    )
-                ],
-            ]
-        )
-        await callback.message.edit_text(
-            text, reply_markup=kb, parse_mode="Markdown"
-        )
-    else:
-        await callback.answer(
-            f"❌ Нужно 2 человека! У тебя: {invited}/2", show_alert=True
+    if voter_id in battle.get("voted_users", []):
+        return await callback.answer(
+            "❌ Ты уже проголосовал в этом батле!", show_alert=True
         )
 
-
-@router.callback_query(F.data == "check_t_round_2")
-async def process_check_t_round_2(callback: CallbackQuery, state: FSMContext):
-    user = await get_user(callback.from_user.id)
-    start_time = user.get("round_start_time")
-
-    if not start_time or (
-        datetime.utcnow() - start_time > timedelta(hours=1)
-    ):
-        await fail_tournament_logic(
-            callback.from_user.id, state, callback.message
-        )
-        return
-
-    invited = user.get("tournament_invited", 0)
-    if invited >= 15:
-        now_msk = datetime.now(MSK_TZ)
-        end_time_str = (now_msk + timedelta(hours=1)).strftime("%H:%M")
-
-        await users_col.update_one(
-            {"user_id": callback.from_user.id},
-            {
-                "$set": {
-                    "tournament_stage": 3,
-                    "tournament_invited": 0,
-                    "round_start_time": datetime.utcnow(),
-                }
-            },
-        )
-        await state.set_state(TournamentStates.waiting_for_round_3)
-
-        text = (
-            "🏆 **Полуфинал пройден! Ты в Гранд-Финале!**\n\n"
-            "⚔️ **Раунд 3: Гранд-Финал**\n"
-            "🎯 **Цель:** Пригласи **50 человек**.\n"
-            f"⏰ **Дедлайн:** до {end_time_str} МСК!\n"
-            "👑 *Победитель забирает 100 звёзд!*"
-        )
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="🔍 Проверить Гранд-Финал",
-                        callback_data="check_t_round_3",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="❌ Сдаться", callback_data="fail_tournament"
-                    )
-                ],
-            ]
-        )
-        await callback.message.edit_text(
-            text, reply_markup=kb, parse_mode="Markdown"
-        )
-    else:
-        await callback.answer(
-            f"❌ Нужно 15 человек! У тебя: {invited}/15", show_alert=True
-        )
-
-
-@router.callback_query(F.data == "check_t_round_3")
-async def process_check_t_round_3(callback: CallbackQuery, state: FSMContext):
-    user = await get_user(callback.from_user.id)
-    start_time = user.get("round_start_time")
-
-    if not start_time or (
-        datetime.utcnow() - start_time > timedelta(hours=1)
-    ):
-        await fail_tournament_logic(
-            callback.from_user.id, state, callback.message
-        )
-        return
-
-    invited = user.get("tournament_invited", 0)
-    if invited >= 50:
-        await users_col.update_one(
-            {"user_id": callback.from_user.id},
-            {
-                "$inc": {"balance": 100},
-                "$set": {
-                    "active_tournament": False,
-                    "tournament_stage": 0,
-                    "tournament_invited": 0,
-                },
-            },
-        )
-        await state.clear()
-
-        text = (
-            "👑 **ПОБЕДА В ГРАНД-ФИНАЛЕ!** 👑\n\n"
-            "Ты первым набрал 50 приглашений!\n"
-            "🏆 На твой баланс зачислено **100 звёзд**!"
-        )
-        await callback.message.edit_text(
-            text, reply_markup=main_menu_kb(), parse_mode="Markdown"
-        )
-    else:
-        await callback.answer(
-            f"❌ Нужно 50 человек! У тебя: {invited}/50", show_alert=True
-        )
-
-
-@router.callback_query(F.data == "fail_tournament")
-async def process_fail_t_btn(callback: CallbackQuery, state: FSMContext):
-    await fail_tournament_logic(
-        callback.from_user.id, state, callback.message
+    field_to_inc = "fire_votes" if side == "fire" else "water_votes"
+    await battles_col.update_one(
+        {"_id": ObjectId(battle_id)},
+        {"$inc": {field_to_inc: 1}, "$push": {"voted_users": voter_id}},
     )
 
+    # Получаем обновленный батл
+    updated_b = await battles_col.find_one({"_id": ObjectId(battle_id)})
+    f_votes = updated_b["fire_votes"]
+    w_votes = updated_b["water_votes"]
 
-async def fail_tournament_logic(
-    user_id: int, state: FSMContext, message: Message
-):
-    await users_col.update_one(
-        {"user_id": user_id},
-        {
-            "$set": {
-                "active_tournament": False,
-                "tournament_stage": 0,
-                "tournament_invited": 0,
-            }
-        },
-    )
-    await state.clear()
-    text = "❌ **Турнир завершен или ты сдался.** Статус сброшен, теперь ты можешь зайти в турнир заново!"
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="◀️ В меню", callback_data="main_menu")]
+            [
+                InlineKeyboardButton(
+                    text=f"🔥 Огонь (@{updated_b['fire_name']}) — {f_votes}",
+                    callback_data=f"vote_{battle_id}_fire",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=f"💧 Вода (@{updated_b['water_name']}) — {w_votes}",
+                    callback_data=f"vote_{battle_id}_water",
+                )
+            ],
         ]
     )
-    await message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
+
+    try:
+        await bot.edit_message_reply_markup(
+            chat_id=CHANNEL_ID, message_id=updated_b["msg_id"], reply_markup=kb
+        )
+    except Exception:
+        pass
+
+    await callback.answer("✅ Твой голос учтен!")
+
+
+# ================= ЗАВЕРШЕНИЕ БАТЛА И ИТОГИ =================
+async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
+    await asyncio.sleep(delay)
+    from bson.objectid import ObjectId
+
+    battle = await battles_col.find_one({"_id": ObjectId(battle_id)})
+    if not battle or battle.get("status") != "active":
+        return
+
+    await battles_col.update_one(
+        {"_id": ObjectId(battle_id)}, {"$set": {"status": "finished"}}
+    )
+
+    stage = battle["stage"]
+    goal = STAGE_GOALS.get(stage, 5)
+    f_votes, w_votes = battle["fire_votes"], battle["water_votes"]
+    f_id, w_id = battle["fire_id"], battle["water_id"]
+
+    winner_id = None
+    loser_id = None
+
+    # Определение победителя по цели голосов
+    if f_votes >= goal and f_votes > w_votes:
+        winner_id, loser_id = f_id, w_id
+        w_name = battle["fire_name"]
+    elif w_votes >= goal and w_votes > f_votes:
+        winner_id, loser_id = w_id, f_id
+        w_name = battle["water_name"]
+    elif f_votes >= goal and f_votes == w_votes:
+        # Ничья при достижении цели - случайно
+        winner_id = random.choice([f_id, w_id])
+        loser_id = w_id if winner_id == f_id else f_id
+        w_name = (
+            battle["fire_name"]
+            if winner_id == f_id
+            else battle["water_name"]
+        )
+
+    # Итоги в канал
+    if winner_id:
+        end_text = f"🎉 **БАТЛ ЗАВЕРШЕН!**\n\n🏆 Победитель: @{w_name}\n📊 Счёт: 🔥 {f_votes} vs 💧 {w_votes}"
+    else:
+        end_text = f"❌ **БАТЛ ЗАВЕРШЕН БЕЗ ПОБЕДИТЕЛЯ!**\n\nУчастники не набрали порог в {goal} голосов."
+
+    try:
+        await bot.send_message(CHANNEL_ID, end_text)
+    except Exception:
+        pass
+
+    # Обработка игроков
+    if winner_id:
+        if stage < 3:
+            # Переход на следующий Stage
+            await users_col.update_one(
+                {"user_id": winner_id},
+                {"$inc": {"stage": 1}, "$set": {"status": "idle"}},
+            )
+            await bot.send_message(
+                winner_id,
+                f"🏆 **ПОБЕДА!** Ты набрал нужные голоса и прошел в **Раунд {stage + 1}**!\nНажимай 'Начать Блиц-Турнир' в меню, чтобы найти соперника!",
+            )
+        else:
+            # Награда за 3-й раунд (Гранд-Финал)
+            await users_col.update_one(
+                {"user_id": winner_id},
+                {
+                    "$inc": {"balance": 100},
+                    "$set": {"stage": 1, "status": "idle"},
+                },
+            )
+            await bot.send_message(
+                winner_id,
+                "👑 **ГРАНД-ФИНАЛ ВЫИГРАН!** 👑\n\nТебе зачислено **100 звёзд ⭐**!",
+            )
+
+        # Проигравший выбывает
+        await users_col.update_one(
+            {"user_id": loser_id},
+            {"$set": {"stage": 1, "status": "idle"}},
+        )
+        await bot.send_message(
+            loser_id,
+            "❌ К сожалению, ты проиграл в этом батле. Твой уровень сброшен. Попробуй заново!",
+        )
+    else:
+        # Оба выбывают
+        for uid in [f_id, w_id]:
+            await users_col.update_one(
+                {"user_id": uid}, {"$set": {"stage": 1, "status": "idle"}}
+            )
+            await bot.send_message(
+                uid,
+                f"❌ Порог в {goal} голосов не был достигнут. Вы оба выбываете из турнира.",
+            )
 
 
 # ================= ВЫВОД ЗВЁЗД ИЗ WEB APP =================
@@ -466,7 +445,7 @@ async def handle_web_app_data(message: types.Message):
                 ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=kb
             )
             await message.answer(
-                f"✅ Ваша заявка на вывод **{amount} ⭐** отправлена администратору!\nОжидайте выплату."
+                f"✅ Ваша заявка на вывод **{amount} ⭐** отправлена администратору!"
             )
     except Exception as e:
         print(f"Ошибка WebApp data: {e}")
@@ -515,7 +494,6 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
 
-    # Запускаем фоновый веб-сервер для Render
     asyncio.create_task(start_web_server())
 
     await bot.delete_webhook(drop_pending_updates=True)
