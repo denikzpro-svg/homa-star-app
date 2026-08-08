@@ -37,7 +37,6 @@ battles_col = db["battles"]
 queue_col = db["queue"]
 
 MSK_TZ = timezone(timedelta(hours=3))
-
 STAGE_GOALS = {1: 5, 2: 10, 3: 50}
 
 
@@ -92,7 +91,7 @@ async def cmd_start(message: Message):
     )
     user = await get_user(user_id, username)
 
-    # Очищаем застрявший поиск при перезапуске
+    # Очищаем поиск пользователя при перезапуске
     await queue_col.delete_many({"user_id": user_id})
 
     active_battle_id = user.get("active_battle_id")
@@ -133,6 +132,8 @@ async def cmd_start(message: Message):
 # ================= ПОИСК СОПЕРНИКА И БАТЛЫ =================
 @router.callback_query(F.data == "find_match")
 async def process_find_match(callback: CallbackQuery, bot: Bot):
+    await callback.answer()  # Мгновенно снимаем анимацию нажатия кнопки
+
     user_id = callback.from_user.id
     username = (
         callback.from_user.username
@@ -142,7 +143,6 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
     user = await get_user(user_id, username)
 
     if user.get("status") == "in_battle":
-        await callback.answer()
         return await callback.message.edit_text(
             "❌ Ты уже участвуешь в активном батле! Дождись итогов.",
             reply_markup=main_menu_kb(),
@@ -150,9 +150,8 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
     stage = user.get("stage", 1)
 
-    # Если уже в поиске — обновляем текст сообщения
+    # Если игрок уже в поиске — показываем экран ожидания
     if user.get("status") == "searching":
-        await callback.answer()
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -169,13 +168,13 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
             parse_mode="Markdown",
         )
 
-    # Ищем другого игрока равного Stage в очереди
+    # Ищем соперника
     opponent = await queue_col.find_one_and_delete(
         {"stage": stage, "user_id": {"$ne": user_id}}
     )
 
     if not opponent:
-        # Становимся в очередь
+        # Очередь пуста — становимся первым
         await queue_col.insert_one(
             {
                 "user_id": user_id,
@@ -199,7 +198,6 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 ]
             ]
         )
-        await callback.answer()
         return await callback.message.edit_text(
             f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
             f"Ты встал в очередь. Как только найдется соперник, батл сразу появится в канале {CHANNEL_ID}!",
@@ -207,8 +205,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
             parse_mode="Markdown",
         )
 
-    # Соперник найден! Запускаем батл
-    await callback.answer()
+    # ВТОРОЙ ИГРОК НАЙДЕН!
     p1_id, p1_name = user_id, username
     p2_id, p2_name = opponent["user_id"], opponent["username"]
 
@@ -288,16 +285,26 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
             f"🔗 [Перейти к голосованию в канале]({post_link})"
         )
 
-        # Редактируем сообщение для первого игрока (который ждал в очереди)
-        try:
-            await bot.edit_message_text(
-                chat_id=opponent["chat_id"],
-                message_id=opponent["msg_id"],
-                text=notify_text,
-                parse_mode="Markdown",
-                disable_web_page_preview=True,
-            )
-        except Exception:
+        # Безопасное обновление текста у Игрока 1
+        opp_chat = opponent.get("chat_id")
+        opp_msg = opponent.get("msg_id")
+        if opp_chat and opp_msg:
+            try:
+                await bot.edit_message_text(
+                    chat_id=opp_chat,
+                    message_id=opp_msg,
+                    text=notify_text,
+                    parse_mode="Markdown",
+                    disable_web_page_preview=True,
+                )
+            except Exception:
+                await bot.send_message(
+                    opponent["user_id"],
+                    notify_text,
+                    parse_mode="Markdown",
+                    disable_web_page_preview=True,
+                )
+        else:
             await bot.send_message(
                 opponent["user_id"],
                 notify_text,
@@ -305,7 +312,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 disable_web_page_preview=True,
             )
 
-        # Редактируем сообщение для второго игрока (который только что нажал)
+        # Обновление текста у Игрока 2
         await callback.message.edit_text(
             notify_text, parse_mode="Markdown", disable_web_page_preview=True
         )
@@ -318,6 +325,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == "cancel_search")
 async def process_cancel_search(callback: CallbackQuery):
+    await callback.answer()
     user_id = callback.from_user.id
     await queue_col.delete_many({"user_id": user_id})
     await users_col.update_one({"user_id": user_id}, {"$set": {"status": "idle"}})
@@ -558,6 +566,12 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
+
+    # Очищаем старую сломанную очередь при старте
+    try:
+        await queue_col.delete_many({})
+    except Exception:
+        pass
 
     asyncio.create_task(start_web_server())
 
