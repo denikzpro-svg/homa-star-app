@@ -6,6 +6,7 @@ import random
 from datetime import datetime, timedelta, timezone
 
 from aiogram import Bot, Dispatcher, F, Router, types
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
@@ -91,7 +92,7 @@ async def cmd_start(message: Message):
     )
     user = await get_user(user_id, username)
 
-    # Очищаем поиск пользователя при перезапуске
+    # Очищаем застрявший поиск пользователя
     await queue_col.delete_many({"user_id": user_id})
 
     active_battle_id = user.get("active_battle_id")
@@ -132,7 +133,10 @@ async def cmd_start(message: Message):
 # ================= ПОИСК СОПЕРНИКА И БАТЛЫ =================
 @router.callback_query(F.data == "find_match")
 async def process_find_match(callback: CallbackQuery, bot: Bot):
-    await callback.answer()  # Мгновенно снимаем анимацию нажатия кнопки
+    try:
+        await callback.answer()
+    except Exception:
+        pass
 
     user_id = callback.from_user.id
     username = (
@@ -143,14 +147,17 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
     user = await get_user(user_id, username)
 
     if user.get("status") == "in_battle":
-        return await callback.message.edit_text(
-            "❌ Ты уже участвуешь в активном батле! Дождись итогов.",
-            reply_markup=main_menu_kb(),
-        )
+        try:
+            return await callback.message.edit_text(
+                "❌ Ты уже участвуешь в активном батле! Дождись итогов.",
+                reply_markup=main_menu_kb(),
+            )
+        except TelegramBadRequest:
+            return
 
     stage = user.get("stage", 1)
 
-    # Если игрок уже в поиске — показываем экран ожидания
+    # Если уже в поиске — обновляем текст
     if user.get("status") == "searching":
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
@@ -161,20 +168,23 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 ]
             ]
         )
-        return await callback.message.edit_text(
-            f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
-            f"Как только соперник нажмет кнопку, батл автоматически опубликуется в {CHANNEL_ID}!",
-            reply_markup=kb,
-            parse_mode="Markdown",
-        )
+        try:
+            return await callback.message.edit_text(
+                f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
+                f"Как только соперник нажмет кнопку, батл автоматически опубликуется в {CHANNEL_ID}!",
+                reply_markup=kb,
+                parse_mode="Markdown",
+            )
+        except TelegramBadRequest:
+            return
 
-    # Ищем соперника
+    # Ищем соперника такого же уровня
     opponent = await queue_col.find_one_and_delete(
         {"stage": stage, "user_id": {"$ne": user_id}}
     )
 
     if not opponent:
-        # Очередь пуста — становимся первым
+        # Становимся первыми в очередь
         await queue_col.insert_one(
             {
                 "user_id": user_id,
@@ -198,14 +208,17 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 ]
             ]
         )
-        return await callback.message.edit_text(
-            f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
-            f"Ты встал в очередь. Как только найдется соперник, батл сразу появится в канале {CHANNEL_ID}!",
-            reply_markup=kb,
-            parse_mode="Markdown",
-        )
+        try:
+            return await callback.message.edit_text(
+                f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
+                f"Ты встал в очередь. Как только найдется соперник, батл сразу появится в канале {CHANNEL_ID}!",
+                reply_markup=kb,
+                parse_mode="Markdown",
+            )
+        except TelegramBadRequest:
+            return
 
-    # ВТОРОЙ ИГРОК НАЙДЕН!
+    # СОПЕРНИК НАЙДЕН!
     p1_id, p1_name = user_id, username
     p2_id, p2_name = opponent["user_id"], opponent["username"]
 
@@ -285,7 +298,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
             f"🔗 [Перейти к голосованию в канале]({post_link})"
         )
 
-        # Безопасное обновление текста у Игрока 1
+        # Обновляем первое сообщение у Игрока 1
         opp_chat = opponent.get("chat_id")
         opp_msg = opponent.get("msg_id")
         if opp_chat and opp_msg:
@@ -312,10 +325,13 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 disable_web_page_preview=True,
             )
 
-        # Обновление текста у Игрока 2
-        await callback.message.edit_text(
-            notify_text, parse_mode="Markdown", disable_web_page_preview=True
-        )
+        # Обновляем сообщение у Игрока 2
+        try:
+            await callback.message.edit_text(
+                notify_text, parse_mode="Markdown", disable_web_page_preview=True
+            )
+        except Exception:
+            pass
 
         asyncio.create_task(schedule_battle_end(bot, battle_id, 3600))
 
@@ -325,13 +341,20 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == "cancel_search")
 async def process_cancel_search(callback: CallbackQuery):
-    await callback.answer()
+    try:
+        await callback.answer()
+    except Exception:
+        pass
+
     user_id = callback.from_user.id
     await queue_col.delete_many({"user_id": user_id})
     await users_col.update_one({"user_id": user_id}, {"$set": {"status": "idle"}})
-    await callback.message.edit_text(
-        "❌ Поиск отменен.", reply_markup=main_menu_kb()
-    )
+    try:
+        await callback.message.edit_text(
+            "❌ Поиск отменен.", reply_markup=main_menu_kb()
+        )
+    except TelegramBadRequest:
+        pass
 
 
 # ================= ОБРАБОТКА ГОЛОСОВАНИЯ =================
@@ -567,7 +590,6 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
 
-    # Очищаем старую сломанную очередь при старте
     try:
         await queue_col.delete_many({})
     except Exception:
