@@ -1,4 +1,5 @@
 aiogram
 aiohttp
+motor
 pymongo
 dnspython
