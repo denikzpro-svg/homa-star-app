@@ -52,7 +52,7 @@ async def get_user(user_id: int, username: str = None):
             "balance": 0,
             "active_battle_id": None,
             "stage": 1,
-            "status": "idle",  # idle, searching, in_battle, waiting_next_stage
+            "status": "idle",  # idle, searching, in_battle
         }
         await users_col.insert_one(user)
     else:
@@ -82,7 +82,7 @@ def main_menu_kb():
     )
 
 
-# ================= START & MENU =================
+# ================= START & MENU (С АВТО-СБРОСОМ СТАТУСА) =================
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     user_id = message.from_user.id
@@ -91,10 +91,45 @@ async def cmd_start(message: Message):
         or message.from_user.first_name
         or f"id{user_id}"
     )
-    await get_user(user_id, username)
+    user = await get_user(user_id, username)
+
+    # 1. Если пользователь висел в очереди поиска — убираем его при перезапуске
+    await queue_col.delete_many({"user_id": user_id})
+
+    # 2. Проверяем активный батл
+    active_battle_id = user.get("active_battle_id")
+    if active_battle_id:
+        from bson.objectid import ObjectId
+
+        battle = await battles_col.find_one({"_id": ObjectId(active_battle_id)})
+
+        # Если батл уже завершился или не существует — сбрасываем статус
+        if not battle or battle.get("status") != "active":
+            await users_col.update_one(
+                {"user_id": user_id},
+                {"$set": {"status": "idle", "active_battle_id": None}},
+            )
+        else:
+            # Если батл действительно прямо сейчас идет в канале
+            msg_id = battle.get("msg_id")
+            post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg_id}"
+            await message.answer(
+                f"⚠️ **У тебя сейчас идет активный батл!**\n\n"
+                f"🔗 [Перейти к голосованию в канале]({post_link})\n\n"
+                f"Дождись его завершения (1 час), чтобы начать новый турнир.",
+                parse_mode="Markdown",
+                disable_web_page_preview=True,
+            )
+            return
+    else:
+        # Гарантированно ставим статус "свободен"
+        await users_col.update_one(
+            {"user_id": user_id}, {"$set": {"status": "idle"}}
+        )
 
     await message.answer(
-        "🔥 **Добро пожаловать в Звёздную Арену!**\n\nЗапускай приложение или вступай в Блиц-Турнир Стихий!",
+        "🔥 **Добро пожаловать в Звёздную Арену!**\n\n"
+        "Запускай приложение или вступай в Блиц-Турнир Стихий!",
         reply_markup=main_menu_kb(),
         parse_mode="Markdown",
     )
@@ -174,7 +209,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
         else ("ПОЛУФИНАЛ" if stage == 2 else "👑 ГРАНД-ФИНАЛ 👑")
     )
 
-    # Создаем пост в канале
+    # Пост в канал
     post_text = (
         f"⚔️ **БИТВА СТИХИЙ | {stage_title}**\n\n"
         f"🔥 **Огонь:** @{fire_name}\n"
@@ -184,7 +219,6 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
         f"Поддержите своего фаворита ниже 👇"
     )
 
-    # Временный ID для кнопок (пока пост не создан)
     battle_doc = {
         "stage": stage,
         "fire_id": fire_id,
@@ -234,12 +268,15 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
         # Уведомления в ЛС
         post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg.message_id}"
-        notify_text = f"⚔️ **Соперник найден!** Твой батл ({stage_title}) начался!\n\n🎯 Цель: **{goal} голосов**.\n🔗Ссылка на батл: {post_link}"
+        notify_text = (
+            f"⚔️ **Соперник найден!** Твой батл ({stage_title}) начался!\n\n"
+            f"🎯 Цель: **{goal} голосов**.\n🔗 Ссылка на батл: {post_link}"
+        )
 
         await bot.send_message(fire_id, notify_text)
         await bot.send_message(water_id, notify_text)
 
-        # Запускаем таймер на 1 час для проверки итогов
+        # Запускаем таймер на 1 час (3600 сек)
         asyncio.create_task(schedule_battle_end(bot, battle_id, 3600))
 
     except Exception as e:
@@ -282,7 +319,6 @@ async def process_vote(callback: CallbackQuery, bot: Bot):
         {"$inc": {field_to_inc: 1}, "$push": {"voted_users": voter_id}},
     )
 
-    # Получаем обновленный батл
     updated_b = await battles_col.find_one({"_id": ObjectId(battle_id)})
     f_votes = updated_b["fire_votes"]
     w_votes = updated_b["water_votes"]
@@ -335,7 +371,6 @@ async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
     winner_id = None
     loser_id = None
 
-    # Определение победителя по цели голосов
     if f_votes >= goal and f_votes > w_votes:
         winner_id, loser_id = f_id, w_id
         w_name = battle["fire_name"]
@@ -343,7 +378,6 @@ async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
         winner_id, loser_id = w_id, f_id
         w_name = battle["water_name"]
     elif f_votes >= goal and f_votes == w_votes:
-        # Ничья при достижении цели - случайно
         winner_id = random.choice([f_id, w_id])
         loser_id = w_id if winner_id == f_id else f_id
         w_name = (
@@ -352,7 +386,6 @@ async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
             else battle["water_name"]
         )
 
-    # Итоги в канал
     if winner_id:
         end_text = f"🎉 **БАТЛ ЗАВЕРШЕН!**\n\n🏆 Победитель: @{w_name}\n📊 Счёт: 🔥 {f_votes} vs 💧 {w_votes}"
     else:
@@ -363,25 +396,25 @@ async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
     except Exception:
         pass
 
-    # Обработка игроков
     if winner_id:
         if stage < 3:
-            # Переход на следующий Stage
             await users_col.update_one(
                 {"user_id": winner_id},
-                {"$inc": {"stage": 1}, "$set": {"status": "idle"}},
+                {
+                    "$inc": {"stage": 1},
+                    "$set": {"status": "idle", "active_battle_id": None},
+                },
             )
             await bot.send_message(
                 winner_id,
                 f"🏆 **ПОБЕДА!** Ты набрал нужные голоса и прошел в **Раунд {stage + 1}**!\nНажимай 'Начать Блиц-Турнир' в меню, чтобы найти соперника!",
             )
         else:
-            # Награда за 3-й раунд (Гранд-Финал)
             await users_col.update_one(
                 {"user_id": winner_id},
                 {
                     "$inc": {"balance": 100},
-                    "$set": {"stage": 1, "status": "idle"},
+                    "$set": {"stage": 1, "status": "idle", "active_battle_id": None},
                 },
             )
             await bot.send_message(
@@ -389,20 +422,19 @@ async def schedule_battle_end(bot: Bot, battle_id: str, delay: int):
                 "👑 **ГРАНД-ФИНАЛ ВЫИГРАН!** 👑\n\nТебе зачислено **100 звёзд ⭐**!",
             )
 
-        # Проигравший выбывает
         await users_col.update_one(
             {"user_id": loser_id},
-            {"$set": {"stage": 1, "status": "idle"}},
+            {"$set": {"stage": 1, "status": "idle", "active_battle_id": None}},
         )
         await bot.send_message(
             loser_id,
             "❌ К сожалению, ты проиграл в этом батле. Твой уровень сброшен. Попробуй заново!",
         )
     else:
-        # Оба выбывают
         for uid in [f_id, w_id]:
             await users_col.update_one(
-                {"user_id": uid}, {"$set": {"stage": 1, "status": "idle"}}
+                {"user_id": uid},
+                {"$set": {"stage": 1, "status": "idle", "active_battle_id": None}},
             )
             await bot.send_message(
                 uid,
