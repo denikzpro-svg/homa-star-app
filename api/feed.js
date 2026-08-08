@@ -1,25 +1,16 @@
 export default function handler(req, res) {
-  // Список фейковых участников и сумм (хранится ТОЛЬКО на сервере Vercel)
-  const names = [
-    "Alex_Pro", "Dmitry_K", "Максим", "Артем_99", 
-    "Sasha_G", "Виктория", "Nikita_Star", "Den_King"
-  ];
-  const actions = [
-    "выиграл в Блиц-Турнире", 
-    "получил за победу", 
-    "забрал из сундука", 
-    "вывел на кошелек"
+  const liveWins = [
+    "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
+    "👑 <b>@homa_lord</b> сорвал куш 200 ⭐",
+    "🔥 <b>@sasha_777</b> забрал +60 ⭐",
+    "⭐ <b>@elon_homyak</b> открыл Королевский кейс",
+    "💎 <b>@dark_1999</b> выбил +150 ⭐",
+    "⚡ <b>@bogdan_tG</b> выиграл +40 ⭐",
+    "🔥 <b>@den_king</b> затащил Блиц-Турнир",
+    "🏆 <b>@star_master</b> вывел 100 ⭐"
   ];
 
-  const randomName = names[Math.floor(Math.random() * names.length)];
-  const randomAction = actions[Math.floor(Math.random() * actions.length)];
-  const randomStars = Math.floor(Math.random() * 45) + 5; // от 5 до 50 звезд
+  const randomWin = liveWins[Math.floor(Math.random() * liveWins.length)];
 
-  // Отдаем клиенту только результат
-  res.status(200).json({
-    user: randomName,
-    action: randomAction,
-    stars: randomStars,
-    time: "Только что"
-  });
+  res.status(200).json({ text: randomWin });
 }
