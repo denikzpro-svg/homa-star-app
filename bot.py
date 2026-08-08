@@ -38,7 +38,6 @@ queue_col = db["queue"]
 
 MSK_TZ = timezone(timedelta(hours=3))
 
-# Минимальные цели по голосам для каждого раунда
 STAGE_GOALS = {1: 5, 2: 10, 3: 50}
 
 
@@ -52,7 +51,7 @@ async def get_user(user_id: int, username: str = None):
             "balance": 0,
             "active_battle_id": None,
             "stage": 1,
-            "status": "idle",  # idle, searching, in_battle
+            "status": "idle",
         }
         await users_col.insert_one(user)
     else:
@@ -82,7 +81,7 @@ def main_menu_kb():
     )
 
 
-# ================= START & MENU (С АВТО-СБРОСОМ СТАТУСА) =================
+# ================= START & MENU =================
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     user_id = message.from_user.id
@@ -93,36 +92,32 @@ async def cmd_start(message: Message):
     )
     user = await get_user(user_id, username)
 
-    # 1. Если пользователь висел в очереди поиска — убираем его при перезапуске
+    # Очищаем застрявший поиск при перезапуске
     await queue_col.delete_many({"user_id": user_id})
 
-    # 2. Проверяем активный батл
     active_battle_id = user.get("active_battle_id")
     if active_battle_id:
         from bson.objectid import ObjectId
 
         battle = await battles_col.find_one({"_id": ObjectId(active_battle_id)})
 
-        # Если батл уже завершился или не существует — сбрасываем статус
         if not battle or battle.get("status") != "active":
             await users_col.update_one(
                 {"user_id": user_id},
                 {"$set": {"status": "idle", "active_battle_id": None}},
             )
         else:
-            # Если батл действительно прямо сейчас идет в канале
             msg_id = battle.get("msg_id")
             post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg_id}"
             await message.answer(
                 f"⚠️ **У тебя сейчас идет активный батл!**\n\n"
                 f"🔗 [Перейти к голосованию в канале]({post_link})\n\n"
-                f"Дождись его завершения (1 час), чтобы начать новый турнир.",
+                f"Дождись его завершения, чтобы начать новый.",
                 parse_mode="Markdown",
                 disable_web_page_preview=True,
             )
             return
     else:
-        # Гарантированно ставим статус "свободен"
         await users_col.update_one(
             {"user_id": user_id}, {"$set": {"status": "idle"}}
         )
@@ -147,16 +142,34 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
     user = await get_user(user_id, username)
 
     if user.get("status") == "in_battle":
-        return await callback.answer(
-            "❌ Ты уже участвуешь в активном батле!", show_alert=True
+        await callback.answer()
+        return await callback.message.edit_text(
+            "❌ Ты уже участвуешь в активном батле! Дождись итогов.",
+            reply_markup=main_menu_kb(),
         )
-
-    if user.get("status") == "searching":
-        return await callback.answer("⏳ Ты уже в очереди поиска!", show_alert=True)
 
     stage = user.get("stage", 1)
 
-    # Ищем другого игрока такого же Stage в очереди
+    # Если уже в поиске — обновляем текст сообщения
+    if user.get("status") == "searching":
+        await callback.answer()
+        kb = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="❌ Отменить поиск", callback_data="cancel_search"
+                    )
+                ]
+            ]
+        )
+        return await callback.message.edit_text(
+            f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
+            f"Как только соперник нажмет кнопку, батл автоматически опубликуется в {CHANNEL_ID}!",
+            reply_markup=kb,
+            parse_mode="Markdown",
+        )
+
+    # Ищем другого игрока равного Stage в очереди
     opponent = await queue_col.find_one_and_delete(
         {"stage": stage, "user_id": {"$ne": user_id}}
     )
@@ -168,6 +181,8 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 "user_id": user_id,
                 "username": username,
                 "stage": stage,
+                "chat_id": callback.message.chat.id,
+                "msg_id": callback.message.message_id,
                 "created_at": datetime.utcnow(),
             }
         )
@@ -184,17 +199,19 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                 ]
             ]
         )
+        await callback.answer()
         return await callback.message.edit_text(
-            f"🔍 **Поиск соперника для Раунда {stage}...**\n\nКак только найдем равного игрока, батл появится в канале {CHANNEL_ID}!",
+            f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
+            f"Ты встал в очередь. Как только найдется соперник, батл сразу появится в канале {CHANNEL_ID}!",
             reply_markup=kb,
             parse_mode="Markdown",
         )
 
     # Соперник найден! Запускаем батл
+    await callback.answer()
     p1_id, p1_name = user_id, username
     p2_id, p2_name = opponent["user_id"], opponent["username"]
 
-    # Распределение стихий
     if random.choice([True, False]):
         fire_id, fire_name = p1_id, p1_name
         water_id, water_name = p2_id, p2_name
@@ -209,7 +226,6 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
         else ("ПОЛУФИНАЛ" if stage == 2 else "👑 ГРАНД-ФИНАЛ 👑")
     )
 
-    # Пост в канал
     post_text = (
         f"⚔️ **БИТВА СТИХИЙ | {stage_title}**\n\n"
         f"🔥 **Огонь:** @{fire_name}\n"
@@ -259,24 +275,41 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
             {"_id": res.inserted_id}, {"$set": {"msg_id": msg.message_id}}
         )
 
-        # Обновляем статусы участников
         for uid in [fire_id, water_id]:
             await users_col.update_one(
                 {"user_id": uid},
                 {"$set": {"status": "in_battle", "active_battle_id": battle_id}},
             )
 
-        # Уведомления в ЛС
         post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg.message_id}"
         notify_text = (
             f"⚔️ **Соперник найден!** Твой батл ({stage_title}) начался!\n\n"
-            f"🎯 Цель: **{goal} голосов**.\n🔗 Ссылка на батл: {post_link}"
+            f"🎯 Цель: **{goal} голосов**.\n"
+            f"🔗 [Перейти к голосованию в канале]({post_link})"
         )
 
-        await bot.send_message(fire_id, notify_text)
-        await bot.send_message(water_id, notify_text)
+        # Редактируем сообщение для первого игрока (который ждал в очереди)
+        try:
+            await bot.edit_message_text(
+                chat_id=opponent["chat_id"],
+                message_id=opponent["msg_id"],
+                text=notify_text,
+                parse_mode="Markdown",
+                disable_web_page_preview=True,
+            )
+        except Exception:
+            await bot.send_message(
+                opponent["user_id"],
+                notify_text,
+                parse_mode="Markdown",
+                disable_web_page_preview=True,
+            )
 
-        # Запускаем таймер на 1 час (3600 сек)
+        # Редактируем сообщение для второго игрока (который только что нажал)
+        await callback.message.edit_text(
+            notify_text, parse_mode="Markdown", disable_web_page_preview=True
+        )
+
         asyncio.create_task(schedule_battle_end(bot, battle_id, 3600))
 
     except Exception as e:
