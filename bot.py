@@ -74,7 +74,7 @@ def main_menu_kb():
             ],
             [
                 InlineKeyboardButton(
-                    text="⚔️ Начать Блиц-Турнир", callback_data="find_match"
+                    text="⚔️ Начать Блиц-Турнир", callback_data="start_blitz_tournament"
                 )
             ],
         ]
@@ -131,7 +131,7 @@ async def cmd_start(message: Message):
 
 
 # ================= ПОИСК СОПЕРНИКА И БАТЛЫ =================
-@router.callback_query(F.data == "find_match")
+@router.callback_query(F.data.in_({"start_blitz_tournament", "find_match"}))
 async def process_find_match(callback: CallbackQuery, bot: Bot):
     try:
         await callback.answer()
@@ -157,7 +157,7 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
     stage = user.get("stage", 1)
 
-    # Если уже в поиске — обновляем текст
+    # Если уже в поиске — показываем статус
     if user.get("status") == "searching":
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
@@ -170,15 +170,16 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
         )
         try:
             return await callback.message.edit_text(
-                f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
-                f"Как только соперник нажмет кнопку, батл автоматически опубликуется в {CHANNEL_ID}!",
+                f"⏳ **Вы зарегистрировались на Блиц-Турнир (Раунд {stage})!**\n\n"
+                f"Статус: `1/2 участников готовы` ⏳\n"
+                f"Дождитесь второго соперника...",
                 reply_markup=kb,
                 parse_mode="Markdown",
             )
         except TelegramBadRequest:
             return
 
-    # Ищем соперника такого же уровня
+    # Ищем другого игрока такого же Stage в очереди
     opponent = await queue_col.find_one_and_delete(
         {"stage": stage, "user_id": {"$ne": user_id}}
     )
@@ -210,15 +211,16 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
         )
         try:
             return await callback.message.edit_text(
-                f"⏳ **Ожидание второго игрока (Раунд {stage})...**\n\n"
-                f"Ты встал в очередь. Как только найдется соперник, батл сразу появится в канале {CHANNEL_ID}!",
+                f"⏳ **Вы зарегистрировались на Блиц-Турнир (Раунд {stage})!**\n\n"
+                f"Статус: `1/2 участников готовы` ⏳\n"
+                f"Дождитесь второго соперника...",
                 reply_markup=kb,
                 parse_mode="Markdown",
             )
         except TelegramBadRequest:
             return
 
-    # СОПЕРНИК НАЙДЕН!
+    # СОПЕРНИК НАЙДЕН (2/2)
     p1_id, p1_name = user_id, username
     p2_id, p2_name = opponent["user_id"], opponent["username"]
 
@@ -293,12 +295,13 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
 
         post_link = f"https://t.me/{CHANNEL_ID.replace('@', '')}/{msg.message_id}"
         notify_text = (
-            f"⚔️ **Соперник найден!** Твой батл ({stage_title}) начался!\n\n"
-            f"🎯 Цель: **{goal} голосов**.\n"
-            f"🔗 [Перейти к голосованию в канале]({post_link})"
+            f"✅ **Оба участника готовы (2/2)!**\n\n"
+            f"⚔️ Твой батл ({stage_title}) начался!\n"
+            f"🎯 Цель: **{goal} голосов**.\n\n"
+            f"🔗 [Перейти к батлу в канале]({post_link})"
         )
 
-        # Обновляем первое сообщение у Игрока 1
+        # Обновляем текст у Игрока А
         opp_chat = opponent.get("chat_id")
         opp_msg = opponent.get("msg_id")
         if opp_chat and opp_msg:
@@ -317,15 +320,8 @@ async def process_find_match(callback: CallbackQuery, bot: Bot):
                     parse_mode="Markdown",
                     disable_web_page_preview=True,
                 )
-        else:
-            await bot.send_message(
-                opponent["user_id"],
-                notify_text,
-                parse_mode="Markdown",
-                disable_web_page_preview=True,
-            )
 
-        # Обновляем сообщение у Игрока 2
+        # Обновляем текст у Игрока Б
         try:
             await callback.message.edit_text(
                 notify_text, parse_mode="Markdown", disable_web_page_preview=True
