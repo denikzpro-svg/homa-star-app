@@ -653,21 +653,21 @@
 
         setInterval(updateUI, 1000);
 
-        const liveWins = [
-            "⭐ <b>@crypto_king</b> выиграл +25 ⭐",
-            "👑 <b>@homa_lord</b> сорвал куш 200 ⭐",
-            "🔥 <b>@sasha_777</b> забрал +60 ⭐",
-            "⭐ <b>@elon_homyak</b> открыл Королевский кейс",
-            "💎 <b>@dark_1999</b> выбил +150 ⭐",
-            "⚡ <b>@bogdan_tG</b> выиграл +40 ⭐"
-        ];
-        function scheduleNextLiveWin() {
-            const randomDelay = (Math.floor(Math.random() * 61) + 30) * 1000;
-            setTimeout(() => {
-                const randomWin = liveWins[Math.floor(Math.random() * liveWins.length)];
-                document.getElementById('live-text').innerHTML = randomWin;
-                scheduleNextLiveWin();
-            }, randomDelay);
+        // --- ЗАЩИЩЕННАЯ ЛЕНТА (Запросы отправляются на Vercel Serverless API) ---
+        async function scheduleNextLiveWin() {
+            try {
+                const res = await fetch('/api/feed');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('live-text').innerHTML = data.text;
+                }
+            } catch (e) {
+                console.log('Загрузка обновления ленты...');
+            }
+
+            // Рандомный интервал от 20 до 50 секунд
+            const randomDelay = (Math.floor(Math.random() * 31) + 20) * 1000;
+            setTimeout(scheduleNextLiveWin, randomDelay);
         }
         scheduleNextLiveWin();
 
@@ -892,7 +892,7 @@
         }
 
         function subscribeChannel() {
-            const channelUrl = "https://t.me/ТВОЙ_КАНАЛ_ЗДЕСЬ"; 
+            const channelUrl = "https://t.me/hamster_arenas"; 
             if (tg.openTelegramLink) {
                 tg.openTelegramLink(channelUrl);
             } else {
