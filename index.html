@@ -35,7 +35,6 @@
             position: relative;
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -60,7 +59,6 @@
             border: 1px solid #232838;
         }
 
-        /* ЭКРАНЫ */
         .screen {
             display: none;
             flex-direction: column;
@@ -88,7 +86,6 @@
             align-self: flex-start;
         }
 
-        /* КАРТОЧКИ МЕНЮ */
         .menu-card {
             background: #151823;
             border: 1px solid #232838;
@@ -115,6 +112,12 @@
             border: 1px solid #00F3FF;
             background: linear-gradient(135deg, #151823 0%, #1a2235 100%);
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+        }
+
+        .menu-card.featured-tickets {
+            border: 1px solid #9D00FF;
+            background: linear-gradient(135deg, #151823 0%, #221233 100%);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.2);
         }
 
         .card-left {
@@ -171,7 +174,6 @@
             font-weight: 700;
         }
 
-        /* БЛОК ТАЙМЕРА НАД КОЛЕСОМ */
         .timer-banner {
             background: rgba(255, 204, 0, 0.1);
             border: 1px solid rgba(255, 204, 0, 0.3);
@@ -185,7 +187,6 @@
             display: none;
         }
 
-        /* ЭКРАН С КОЛЕСОМ */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -268,7 +269,35 @@
             cursor: not-allowed;
         }
 
-        /* Нижняя навигация */
+        /* КАРТОЧКА БИЛЕТОВ */
+        .ticket-banner {
+            background: linear-gradient(135deg, #221233 0%, #151823 100%);
+            border: 1px solid #9D00FF;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
+        }
+
+        .ticket-prize {
+            font-size: 28px;
+            font-weight: 900;
+            color: #FFCC00;
+            margin: 8px 0;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+
+        .ticket-stats {
+            display: flex;
+            justify-content: space-between;
+            background: #151823;
+            border: 1px solid #232838;
+            padding: 12px;
+            border-radius: 14px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -401,7 +430,7 @@
 </head>
 <body>
 
-    <!-- 1. СТОРИС-ОНБОРДИНГ (ТОЛЬКО ДЛЯ ПЕРВОГО ВХОДА) -->
+    <!-- 1. СТОРИС-ОНБОРДИНГ -->
     <div id="story-onboarding" class="story-overlay">
         <div class="story-progress-container">
             <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
@@ -446,7 +475,7 @@
         <!-- ЭКРАН 1: ГЛАВНОЕ МЕНЮ (HUB) -->
         <div id="screen-hub" class="screen active">
             
-            <!-- КАРТОЧКА 1: БЕСПЛАТНОЕ КОЛЕСО -->
+            <!-- 1. БЕСПЛАТНОЕ КОЛЕСО -->
             <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
                 <div class="card-left">
                     <div class="card-icon">🎁</div>
@@ -458,7 +487,7 @@
                 <button class="btn-card-action" style="color: #FFCC00; border-color: #FFCC00;">Крутить</button>
             </div>
 
-            <!-- КАРТОЧКА 2: КОЛЁСА (СПИСОК ИЗ 5 ВИДОВ) -->
+            <!-- 2. КОЛЁСА (5 ВИДОВ) -->
             <div class="menu-card featured-wheels" onclick="openScreen('screen-wheel-list')">
                 <div class="card-left">
                     <div class="card-icon">🎡</div>
@@ -470,7 +499,19 @@
                 <button class="btn-card-action">Выбрать</button>
             </div>
 
-            <!-- КАРТОЧКА 3: ИНВЕНТАРЬ -->
+            <!-- 3. РОЗЫГРЫШ БИЛЕТОВ (НОВОЕ!) -->
+            <div class="menu-card featured-tickets" onclick="openScreen('screen-tickets')">
+                <div class="card-left">
+                    <div class="card-icon">🎟️</div>
+                    <div class="card-info">
+                        <h3>Розыгрыш 1000 Stars <span class="card-badge vip">JACKPOT</span></h3>
+                        <p>Купи билет — выиграй суперприз</p>
+                    </div>
+                </div>
+                <button class="btn-card-action" style="color: #9D00FF; border-color: #9D00FF;">Участвовать</button>
+            </div>
+
+            <!-- 4. ИНВЕНТАРЬ -->
             <div class="menu-card" onclick="openScreen('screen-inventory')">
                 <div class="card-left">
                     <div class="card-icon">🎒</div>
@@ -489,7 +530,6 @@
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
 
-            <!-- 1. Обычное -->
             <div class="menu-card" onclick="openPlayWheel('Обычное колесо', '20 ⭐')">
                 <div class="card-left">
                     <div class="card-icon">⚙️</div>
@@ -501,7 +541,6 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <!-- 2. Серебряное -->
             <div class="menu-card" onclick="openPlayWheel('Серебряное колесо', '50 ⭐')">
                 <div class="card-left">
                     <div class="card-icon">🥈</div>
@@ -513,7 +552,6 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <!-- 3. Золотое -->
             <div class="menu-card" onclick="openPlayWheel('Золотое колесо', '100 ⭐')">
                 <div class="card-left">
                     <div class="card-icon">🥇</div>
@@ -525,7 +563,6 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <!-- 4. Алмазное -->
             <div class="menu-card" onclick="openPlayWheel('Алмазное колесо', '250 ⭐')">
                 <div class="card-left">
                     <div class="card-icon">💎</div>
@@ -537,7 +574,6 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <!-- 5. VIP -->
             <div class="menu-card" onclick="openPlayWheel('VIP Колесо', '500 ⭐')">
                 <div class="card-left">
                     <div class="card-icon">👑</div>
@@ -556,7 +592,6 @@
 
             <h2 id="wheel-title" style="text-align: center; font-size: 18px; margin-bottom: 6px;">Колесо</h2>
 
-            <!-- ТАЙМЕР НАД КОЛЕСОМ (для бесплатного колеса) -->
             <div id="timer-banner" class="timer-banner">
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
@@ -573,7 +608,25 @@
             <button id="btn-spin-action" class="btn-spin">КРУТИТЬ</button>
         </div>
 
-        <!-- ЭКРАН 4: ИНВЕНТАРЬ -->
+        <!-- ЭКРАН 4: РОЗЫГРЫШ БИЛЕТОВ -->
+        <div id="screen-tickets" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            
+            <div class="ticket-banner">
+                <div style="font-size: 13px; color: #A0AAB8;">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div class="ticket-prize">🏆 1000 STARS</div>
+                <div style="font-size: 12px; color: #00F3FF;">⏱ Итоги через: 18ч 42мин</div>
+            </div>
+
+            <div class="ticket-stats">
+                <div>Твои билеты: <b id="user-tickets-count" style="color: #FFCC00;">0 шт.</b></div>
+                <div>Шанс на победу: <b id="user-win-chance" style="color: #00F3FF;">0%</b></div>
+            </div>
+
+            <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
+        </div>
+
+        <!-- ЭКРАН 5: ИНВЕНТАРЬ -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Твой Инвентарь</h2>
@@ -588,16 +641,17 @@
             </div>
         </div>
 
-        <!-- Нижняя навигация -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
+            <button class="nav-item" onclick="openScreen('screen-tickets')">🎟️</button>
             <button class="nav-item" onclick="openScreen('screen-inventory')">🎒</button>
         </nav>
     </div>
 
     <script>
         let timerInterval = null;
+        let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
 
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -605,18 +659,30 @@
             });
             const target = document.getElementById(screenId);
             if (target) target.classList.add('active');
+            updateTicketUI();
         }
 
-        // 1. Открытие БЕСПЛАТНОГО колеса (первая карточка)
+        // Покупка билета
+        function buyTicket() {
+            userTickets++;
+            localStorage.setItem('homastar_tickets', userTickets.toString());
+            updateTicketUI();
+            alert(`🎉 Ты успешно купил 1 билет! Всего билетов: ${userTickets}`);
+        }
+
+        function updateTicketUI() {
+            document.getElementById('user-tickets-count').innerText = `${userTickets} шт.`;
+            const chance = userTickets * 4.5; // Пример расчета шанса
+            document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
+        }
+
         function openFreeWheelScreen() {
             document.getElementById('wheel-title').innerText = '🎁 Бесплатное Колесо';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
-            
             checkFreeSpinState();
             openScreen('screen-game-wheel');
         }
 
-        // Проверка состояния бесплатного кручения
         function checkFreeSpinState() {
             clearInterval(timerInterval);
             const lastSpin = localStorage.getItem('homastar_last_free_spin');
@@ -629,7 +695,6 @@
                 const twentyFourHours = 24 * 60 * 60 * 1000;
 
                 if (timePassed < twentyFourHours) {
-                    // Пользователь УЖЕ покрутил: показываем таймер НАД колесом
                     timerBanner.style.display = 'block';
                     btn.classList.add('disabled');
                     btn.innerText = 'УЖЕ ИСПОЛЬЗОВАНО';
@@ -648,7 +713,6 @@
                 }
             }
 
-            // Доступно для прокрута
             timerBanner.style.display = 'none';
             btn.classList.remove('disabled');
             btn.innerText = 'КРУТИТЬ БЕСПЛАТНО';
@@ -659,20 +723,17 @@
             const hours = Math.floor(msLeft / (1000 * 60 * 60)).toString().padStart(2, '0');
             const minutes = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
             const seconds = Math.floor((msLeft % (1000 * 60)) / 1000).toString().padStart(2, '0');
-
             document.getElementById('timer-countdown').innerText = `${hours}:${minutes}:${seconds}`;
         }
 
         function spinFreeWheel() {
             const btn = document.getElementById('btn-spin-action');
             if (btn.classList.contains('disabled')) return;
-
             localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
             alert('🎉 Ты прокрутил Бесплатное колесо!');
             checkFreeSpinState();
         }
 
-        // 2. Открытие платное колес (из второй карточки)
         function openPlayWheel(title, price) {
             document.getElementById('wheel-title').innerText = title;
             document.getElementById('timer-banner').style.display = 'none';
@@ -686,7 +747,7 @@
             openScreen('screen-game-wheel');
         }
 
-        // Слайд-шоу логика
+        // Слайд-шоу
         let currentSlide = 1;
         const totalSlides = 3;
         const slideDuration = 4000;
