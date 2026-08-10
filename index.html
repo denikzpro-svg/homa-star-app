@@ -13,24 +13,14 @@
             --text-color: #F8FAFC;
             --text-sub: #8E9BAE;
             --accent-blue: #00F3FF;
-            --accent-blue-glow: rgba(0, 243, 255, 0.3);
+            --accent-blue-glow: rgba(0, 243, 255, 0.4);
             --accent-gold: #FFD700;
             --accent-gold-glow: rgba(255, 215, 0, 0.35);
             --accent-purple: #A855F7;
-            --accent-purple-glow: rgba(168, 85, 247, 0.3);
         }
 
-        body.theme-night {
-            --bg-color: #0A0B10;
-            --card-bg: rgba(20, 23, 34, 0.75);
-            --card-border: rgba(255, 255, 255, 0.08);
-        }
-
-        body.theme-oled {
-            --bg-color: #000000;
-            --card-bg: rgba(12, 12, 16, 0.9);
-            --card-border: rgba(255, 255, 255, 0.05);
-        }
+        body.theme-night { --bg-color: #0A0B10; }
+        body.theme-oled { --bg-color: #000000; }
 
         * {
             margin: 0;
@@ -43,16 +33,13 @@
 
         body {
             background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.09) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.06) 0%, transparent 40%);
+            background-image: radial-gradient(circle at 50% 30%, rgba(0, 243, 255, 0.08) 0%, transparent 60%);
             color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .app-container {
@@ -66,7 +53,6 @@
             position: relative;
         }
 
-        /* Хедер */
         .header {
             display: flex;
             justify-content: space-between;
@@ -115,7 +101,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-bal-action.pay {
@@ -125,13 +110,10 @@
             box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
-        .btn-bal-action:active { transform: scale(0.9); }
-
-        /* Экраны */
         .screen {
             display: none;
             flex-direction: column;
-            gap: 20px; /* Увеличенный отступ между карточками */
+            gap: 20px;
             flex: 1;
             overflow-y: auto;
             padding: 10px 0;
@@ -152,12 +134,9 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            margin-bottom: 4px;
             align-self: flex-start;
-            backdrop-filter: blur(8px);
         }
 
-        /* Карточки Меню */
         .menu-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -168,9 +147,7 @@
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
         }
 
         .menu-card:active { transform: scale(0.97); }
@@ -178,19 +155,16 @@
         .menu-card.featured-free {
             border: 1px solid rgba(255, 215, 0, 0.4);
             background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 215, 0, 0.08) 100%);
-            box-shadow: 0 4px 25px rgba(255, 215, 0, 0.12);
         }
 
         .menu-card.featured-wheels {
             border: 1px solid rgba(0, 243, 255, 0.35);
             background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 243, 255, 0.08) 100%);
-            box-shadow: 0 4px 25px rgba(0, 243, 255, 0.12);
         }
 
         .menu-card.featured-tickets {
             border: 1px solid rgba(168, 85, 247, 0.4);
             background: linear-gradient(135deg, var(--card-bg) 0%, rgba(168, 85, 247, 0.08) 100%);
-            box-shadow: 0 4px 25px rgba(168, 85, 247, 0.15);
         }
 
         .card-left { display: flex; align-items: center; gap: 14px; }
@@ -205,10 +179,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
-        .card-info h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.3px; }
+        .card-info h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
         .card-info p { font-size: 12px; color: var(--text-sub); }
 
         .card-badge {
@@ -219,13 +192,12 @@
             padding: 2px 7px;
             border-radius: 8px;
             margin-left: 6px;
-            letter-spacing: 0.5px;
         }
 
         .card-badge.free { background: var(--accent-gold); }
         .card-badge.silver { background: #E2E8F0; }
         .card-badge.gold { background: #FFD700; }
-        .card-badge.diamond { background: #B9F2FF; box-shadow: 0 0 10px rgba(185, 242, 255, 0.5); }
+        .card-badge.diamond { background: #B9F2FF; }
 
         .btn-card-action {
             background: rgba(255, 255, 255, 0.06);
@@ -235,10 +207,9 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: 800;
-            backdrop-filter: blur(6px);
         }
 
-        /* Дизайн Колеса */
+        /* --- НОВЫЙ ДИЗАЙН КОЛЕСА КАК НА СКРИНШОТЕ --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -246,59 +217,122 @@
             justify-content: center;
             position: relative;
             margin: auto 0;
-            padding: 10px 0;
+            padding: 20px 0;
         }
 
+        /* Неоновый указатель сверху */
         .arrow-pointer {
-            color: var(--accent-gold);
-            font-size: 32px;
-            margin-bottom: -18px;
-            z-index: 10;
-            filter: drop-shadow(0 0 12px var(--accent-gold));
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 22px solid var(--accent-blue);
+            z-index: 20;
+            margin-bottom: -10px;
+            filter: drop-shadow(0 0 10px var(--accent-blue));
+            position: relative;
         }
 
+        .arrow-pointer::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 13px solid #FFF;
+        }
+
+        /* Обод с гирляндой лампочек */
         .wheel-outer-rim {
-            width: 260px;
-            height: 260px;
+            width: 290px;
+            height: 290px;
             border-radius: 50%;
-            background: radial-gradient(circle, #1E2230 0%, #0D0E15 100%);
-            border: 7px solid #1E2436;
+            background: #101422;
+            border: 10px solid #1A2135;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
-        .wheel-spinner {
-            width: 224px;
-            height: 224px;
+        /* Лампочки по контуру */
+        .wheel-bulbs-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            background: conic-gradient(
-                #00F3FF 0deg 72deg, 
-                #9D00FF 72deg 144deg, 
-                #FF6B00 144deg 216deg, 
-                #FFD700 216deg 288deg, 
-                #FF0055 288deg 360deg
-            );
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
-            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
 
+        .bulb {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin: -3.5px;
+        }
+
+        /* Крутящийся диск с секторами */
+        .wheel-spinner {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+            border: 3px solid #232D48;
+        }
+
+        /* Сектор колеса */
+        .slice {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 50%;
+            transform-origin: 0% 100%;
+            overflow: hidden;
+        }
+
+        .slice-content {
+            position: absolute;
+            left: -100%;
+            width: 200%;
+            height: 200%;
+            border-radius: 50%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 18px;
+            font-size: 11px;
+            font-weight: 900;
+            color: #FFF;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* Центральный замок-звезда */
         .center-hub {
-            width: 56px;
-            height: 56px;
-            background: radial-gradient(circle, #1A1D2A 0%, #0A0B10 100%);
+            position: absolute;
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(circle, #2A1F4D 0%, #110B27 100%);
             border-radius: 50%;
             border: 3px solid var(--accent-gold);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 22px;
-            box-shadow: 0 0 20px var(--accent-gold-glow);
+            font-size: 24px;
+            z-index: 15;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.8);
         }
 
         .btn-spin {
@@ -310,20 +344,13 @@
             color: #FFFFFF;
             font-weight: 900;
             font-size: 16px;
-            letter-spacing: 0.5px;
             box-shadow: 0 8px 25px var(--accent-blue-glow);
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-spin:active { transform: scale(0.98); }
-
-        .btn-spin.disabled {
-            background: var(--card-border);
-            color: var(--text-sub);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
+        .btn-spin.disabled { background: var(--card-border); color: var(--text-sub); box-shadow: none; cursor: not-allowed; }
 
         .timer-banner {
             background: rgba(255, 215, 0, 0.08);
@@ -335,11 +362,9 @@
             font-size: 13px;
             font-weight: 800;
             margin-bottom: 10px;
-            backdrop-filter: blur(8px);
             display: none;
         }
 
-        /* Инвентарь */
         .inventory-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -361,7 +386,6 @@
             font-weight: 800;
             padding: 4px 10px;
             border-radius: 10px;
-            letter-spacing: 0.5px;
         }
 
         .hold-badge.ready {
@@ -392,7 +416,6 @@
             cursor: pointer;
         }
 
-        /* Рефералы */
         .ref-box {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -426,14 +449,11 @@
             font-size: 12px;
             border: none;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
-        .btn-ref:active { transform: scale(0.97); }
         .btn-copy { background: rgba(255, 255, 255, 0.08); color: var(--text-color); border: 1px solid var(--card-border); }
-        .btn-share { background: linear-gradient(135deg, #0066FF, #00F3FF); color: #FFF; box-shadow: 0 4px 15px var(--accent-blue-glow); }
+        .btn-share { background: linear-gradient(135deg, #0066FF, #00F3FF); color: #FFF; }
 
-        /* Настройки */
         .setting-row {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -478,7 +498,6 @@
             border-radius: 13px;
             position: relative;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .toggle-switch.active { background: var(--accent-blue); }
@@ -491,13 +510,11 @@
             position: absolute;
             top: 3px;
             left: 3px;
-            transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: left 0.2s;
         }
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
-        /* Модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -523,91 +540,26 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(40px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
 
         .win-modal-card {
             text-align: center;
             border: 1px solid rgba(255, 215, 0, 0.4);
             background: linear-gradient(180deg, #161A26 0%, rgba(255, 215, 0, 0.05) 100%);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
         }
 
-        .win-icon {
-            font-size: 64px;
-            margin: 6px 0;
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
-        }
+        .win-icon { font-size: 64px; margin: 6px 0; }
+        .win-amount { font-size: 36px; font-weight: 900; color: var(--accent-gold); margin-bottom: 2px; }
+        .win-subtext { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; }
 
-        .win-amount {
-            font-size: 36px;
-            font-weight: 900;
-            color: var(--accent-gold);
-            text-shadow: 0 0 15px var(--accent-gold-glow);
-            margin-bottom: 2px;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .btn-close-modal { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-sub); width: 32px; height: 32px; border-radius: 50%; font-size: 14px; cursor: pointer; }
 
-        .win-subtext {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin-bottom: 10px;
-        }
+        .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; text-align: center; cursor: pointer; }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .input-stars { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); color: var(--accent-gold); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; outline: none; text-align: center; }
 
-        .btn-close-modal {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            color: var(--text-sub);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .package-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .package-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            padding: 14px;
-            border-radius: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .package-card:hover { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.05); }
-
-        .input-stars {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--card-border);
-            color: var(--accent-gold);
-            padding: 14px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 800;
-            outline: none;
-            text-align: center;
-        }
-
-        /* Навигация снизу */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -616,22 +568,11 @@
             border: 1px solid var(--card-border);
             padding: 12px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .nav-item {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            opacity: 0.4;
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 4px;
-        }
-
+        .nav-item { background: transparent; border: none; font-size: 20px; opacity: 0.4; cursor: pointer; }
         .nav-item.active { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px var(--accent-blue)); }
 
-        /* Обучение Stories */
         .story-overlay {
             position: fixed;
             top: 0;
@@ -648,54 +589,19 @@
 
         .story-progress-container { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
         .progress-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue-glow); }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent-blue); }
 
         .story-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .story-slide { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
         .story-slide.active { display: flex; }
-        .story-icon { font-size: 80px; filter: drop-shadow(0 0 25px var(--accent-blue-glow)); }
+        .story-icon { font-size: 80px; }
         .story-slide h2 { font-size: 26px; font-weight: 900; color: #FFF; }
         .story-slide p { font-size: 15px; color: var(--text-sub); line-height: 1.5; max-width: 300px; }
 
-        .badge-price {
-            background: rgba(255, 215, 0, 0.12);
-            color: var(--accent-gold);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 800;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 15px var(--accent-gold-glow);
-        }
+        .badge-price { background: rgba(255, 215, 0, 0.12); color: var(--accent-gold); padding: 8px 18px; border-radius: 20px; font-size: 14px; font-weight: 800; border: 1px solid rgba(255, 215, 0, 0.3); }
 
-        .btn-story-next {
-            width: 100%;
-            background: linear-gradient(135deg, #0066FF, #00F3FF);
-            border: none;
-            color: #FFFFFF;
-            padding: 18px;
-            border-radius: 18px;
-            font-weight: 900;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px var(--accent-blue-glow);
-        }
-
-        .btn-story-claim {
-            width: 100%;
-            background: linear-gradient(135deg, #FFD700, #FF9900);
-            border: none;
-            color: #000000;
-            padding: 18px;
-            border-radius: 18px;
-            font-weight: 900;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px var(--accent-gold-glow);
-        }
-
-        .gift-bounce { animation: bounce 1.2s infinite ease-in-out; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
+        .btn-story-next { width: 100%; background: linear-gradient(135deg, #0066FF, #00F3FF); border: none; color: #FFFFFF; padding: 18px; border-radius: 18px; font-weight: 900; font-size: 16px; cursor: pointer; }
+        .btn-story-claim { width: 100%; background: linear-gradient(135deg, #FFD700, #FF9900); border: none; color: #000000; padding: 18px; border-radius: 18px; font-weight: 900; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body class="theme-night">
@@ -721,7 +627,7 @@
             </div>
 
             <div class="story-slide" id="slide-3">
-                <div class="story-icon gift-bounce">🎁</div>
+                <div class="story-icon">🎁</div>
                 <div class="badge-price">Стартовый бонус: 50 ⭐</div>
                 <h2>Твой подарок за старт!</h2>
                 <p>Мы дарим тебе 50 Stars! Бонус уже отправлен в твой инвентарь на заморозку 21 день.</p>
@@ -828,6 +734,7 @@
             </div>
         </div>
 
+        <!-- ЭКРАН ИГРЫ С ОБНОВЛЕННЫМ КОЛЕСОМ -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -838,11 +745,11 @@
             </div>
 
             <div class="wheel-section">
-                <div class="arrow-pointer">▼</div>
+                <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
-                    <div class="wheel-spinner" id="wheel-spinner">
-                        <div class="center-hub">⭐</div>
-                    </div>
+                    <div class="wheel-bulbs-container" id="bulbs-container"></div>
+                    <div class="wheel-spinner" id="wheel-spinner"></div>
+                    <div class="center-hub">⭐</div>
                 </div>
             </div>
 
@@ -852,18 +759,18 @@
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
-            <div class="ticket-banner">
-                <div style="font-size: 12px; color: var(--text-sub); letter-spacing: 1px;">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
-                <div class="ticket-prize">🏆 1000 STARS</div>
+            <div class="ticket-banner" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, var(--card-bg) 100%); border: 1px solid var(--accent-purple); border-radius: 20px; padding: 20px; text-align: center;">
+                <div style="font-size: 12px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div style="font-size: 28px; font-weight: 900; color: var(--accent-gold); margin: 8px 0;">🏆 1000 STARS</div>
                 <div style="font-size: 12px; color: var(--accent-blue);">⏱ Итоги через: 18ч 42мин</div>
             </div>
 
-            <div class="ticket-stats">
+            <div class="ticket-stats" style="display: flex; justify-content: space-between; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; border-radius: 14px;">
                 <div>Твои билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0 шт.</b></div>
                 <div>Шанс на победу: <b id="user-win-chance" style="color: var(--accent-blue);">0%</b></div>
             </div>
 
-            <button class="btn-spin" style="background: linear-gradient(135deg, #A855F7, #00F3FF); box-shadow: 0 8px 25px var(--accent-purple-glow);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #A855F7, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
         <div id="screen-friends" class="screen">
@@ -881,11 +788,6 @@
                     <button class="btn-ref btn-copy" onclick="copyRefLink()">📋 Копировать</button>
                     <button class="btn-ref btn-share" onclick="shareRefLink()">✈️ Поделиться</button>
                 </div>
-            </div>
-
-            <div class="ticket-stats">
-                <div>Приглашено: <b style="color: var(--accent-blue);">3 чел.</b></div>
-                <div>Заработано: <b style="color: var(--accent-gold);">+6 ⭐</b></div>
             </div>
         </div>
 
@@ -942,27 +844,13 @@
             </div>
             
             <div class="package-grid">
-                <div class="package-card" onclick="selectDepositPackage(50)">
-                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">50 ⭐</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Старт</div>
-                </div>
-                <div class="package-card" onclick="selectDepositPackage(100)">
-                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">100 ⭐</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Медиум</div>
-                </div>
-                <div class="package-card" onclick="selectDepositPackage(250)">
-                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">250 ⭐</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Про</div>
-                </div>
-                <div class="package-card" onclick="selectDepositPackage(500)">
-                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">500 ⭐</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">Пакет VIP</div>
-                </div>
+                <div class="package-card" onclick="selectDepositPackage(50)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div>
+                <div class="package-card" onclick="selectDepositPackage(100)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div>
+                <div class="package-card" onclick="selectDepositPackage(250)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">250 ⭐</div></div>
+                <div class="package-card" onclick="selectDepositPackage(500)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">500 ⭐</div></div>
             </div>
 
-            <div style="font-size: 12px; color: var(--text-sub); text-align: center;">Или введи свою сумму:</div>
             <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Количество ⭐">
-
             <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
         </div>
     </div>
@@ -973,14 +861,9 @@
                 <h3 style="font-size: 16px;">📤 Вывод Stars</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button>
             </div>
-
-            <div style="font-size: 13px; color: var(--text-sub);">
-                Доступный баланс: <b id="withdraw-available-bal" style="color: var(--accent-gold);">0 ⭐</b>
-            </div>
-
+            <div style="font-size: 13px; color: var(--text-sub);">Доступный баланс: <b id="withdraw-available-bal" style="color: var(--accent-gold);">0 ⭐</b></div>
             <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма вывода ⭐">
-
-            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000; box-shadow: 0 8px 25px var(--accent-gold-glow);" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000;" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
         </div>
     </div>
 
@@ -990,7 +873,7 @@
             <h2 style="font-size: 22px; font-weight: 900; color: #FFF;">ПОЗДРАВЛЯЕМ!</h2>
             <div class="win-amount" id="win-modal-amount">+50 ⭐</div>
             <div class="win-subtext" id="win-modal-subtext">Зачислено прямо на ваш баланс!</div>
-            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000; box-shadow: 0 8px 25px var(--accent-gold-glow);" onclick="closeModal('modal-win')">🎁 ЗАБРАТЬ</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000;" onclick="closeModal('modal-win')">🎁 ЗАБРАТЬ</button>
         </div>
     </div>
 
@@ -1001,7 +884,6 @@
         let currentWheelRotation = 0;
         let activeWheelType = 'free';
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
-
         let userSpinCounts = JSON.parse(localStorage.getItem('homastar_spin_counts') || '{}');
 
         let settings = {
@@ -1011,32 +893,14 @@
         };
 
         const WHEEL_CONFIGS = {
-            free: {
-                title: '🎁 Бесплатное Колесо',
-                price: 0,
-                prizes: [0.5, 0.8, 1, 5, 10, 20, 50, 100]
-            },
-            common: {
-                title: '⚙️ Обычное Колесо',
-                price: 20,
-                prizes: [10, 20, 30, 50, 100]
-            },
-            silver: {
-                title: '🥈 Серебряное Колесо',
-                price: 50,
-                prizes: [20, 50, 70, 100, 150, 300]
-            },
-            gold: {
-                title: '🥇 Золотое Колесо',
-                price: 100,
-                prizes: [30, 50, 100, 140, 250, 500]
-            },
-            diamond: {
-                title: '💎 Алмазное Колесо',
-                price: 250,
-                prizes: [80, 150, 250, 300, 600, 1500]
-            }
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [0.5, 0.8, 1, 5, 10, 20, 50, 100] },
+            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [10, 20, 30, 50, 100] },
+            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [20, 50, 70, 100, 150, 300] },
+            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [30, 50, 100, 140, 250, 500] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [80, 150, 250, 300, 600, 1500] }
         };
+
+        const SECTOR_COLORS = ['#00F3FF', '#9D00FF', '#FF6B00', '#FFD700', '#FF0055', '#00FF66', '#3399FF', '#E056FD'];
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
@@ -1052,9 +916,7 @@
             saveInventory();
         }
 
-        function saveInventory() {
-            localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems));
-        }
+        function saveInventory() { localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems)); }
 
         function updateBalanceDisplay() {
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
@@ -1066,7 +928,6 @@
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
             if (target) target.classList.add('active');
-            
             if (screenId === 'screen-inventory') renderInventory();
             updateTicketUI();
         }
@@ -1080,17 +941,11 @@
             openModal('modal-win');
         }
 
-        function selectDepositPackage(amount) {
-            document.getElementById('custom-deposit-input').value = amount;
-        }
+        function selectDepositPackage(amount) { document.getElementById('custom-deposit-input').value = amount; }
 
         function executeDeposit() {
             const val = parseFloat(document.getElementById('custom-deposit-input').value);
-            if (!val || val <= 0) {
-                alert('Введи корректную сумму Stars!');
-                return;
-            }
-
+            if (!val || val <= 0) return alert('Введи сумму Stars!');
             userBalance += val;
             updateBalanceDisplay();
             closeModal('modal-deposit');
@@ -1099,15 +954,8 @@
 
         function executeWithdraw() {
             const val = parseFloat(document.getElementById('withdraw-amount-input').value);
-            if (!val || val <= 0) {
-                alert('Введи сумму вывода!');
-                return;
-            }
-            if (val > userBalance) {
-                alert('Недостаточно разблокированного баланса!');
-                return;
-            }
-
+            if (!val || val <= 0) return alert('Введи сумму вывода!');
+            if (val > userBalance) return alert('Недостаточно баланса!');
             userBalance -= val;
             updateBalanceDisplay();
             closeModal('modal-withdraw');
@@ -1117,7 +965,6 @@
         function renderInventory() {
             const container = document.getElementById('inventory-list');
             container.innerHTML = '';
-
             const twentyOneDays = 21 * 24 * 60 * 60 * 1000;
             const now = new Date().getTime();
 
@@ -1130,7 +977,6 @@
                 const timePassed = now - item.receivedAt;
                 const timeLeft = twentyOneDays - timePassed;
                 const isReady = timeLeft <= 0;
-
                 const card = document.createElement('div');
                 card.className = 'inventory-card';
 
@@ -1139,33 +985,24 @@
                         <div class="inventory-header">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="font-size:24px;">${item.icon || '🎁'}</span>
-                                <div>
-                                    <h4 style="font-size:14px;">${item.title}</h4>
-                                    <div class="hold-timer-text" style="color:var(--accent-blue);">✅ Готово к выводу!</div>
-                                </div>
+                                <div><h4 style="font-size:14px;">${item.title}</h4><div class="hold-timer-text" style="color:var(--accent-blue);">✅ Готово к выводу!</div></div>
                             </div>
                             <span class="hold-badge ready">РАЗБЛОКИРОВАНО</span>
                         </div>
-                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}', ${item.value})">ВЫВЕСТИ НА БАЛАНС (${item.value} ⭐)</button>
-                    `;
+                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}', ${item.value})">ВЫВЕСТИ НА БАЛАНС (${item.value} ⭐)</button>`;
                 } else {
                     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-
                     card.innerHTML = `
                         <div class="inventory-header">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="font-size:24px;">${item.icon || '🎁'}</span>
-                                <div>
-                                    <h4 style="font-size:14px;">${item.title}</h4>
-                                    <div class="hold-timer-text">⏱ До вывода: ${days}д ${hours}ч ${minutes}мин</div>
-                                </div>
+                                <div><h4 style="font-size:14px;">${item.title}</h4><div class="hold-timer-text">⏱ До вывода: ${days}д ${hours}ч ${minutes}мин</div></div>
                             </div>
                             <span class="hold-badge">🔒 ХОЛД 21 ДЕНЬ</span>
                         </div>
-                        <button class="btn-withdraw" disabled>🔒 ЗАБЛОКИРОВАНО</button>
-                    `;
+                        <button class="btn-withdraw" disabled>🔒 ЗАБЛОКИРОВАНО</button>`;
                 }
                 container.appendChild(card);
             });
@@ -1184,7 +1021,6 @@
             document.body.className = `theme-${themeName}`;
             settings.theme = themeName;
             localStorage.setItem('homastar_theme', themeName);
-
             document.querySelectorAll('.btn-theme').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById(`btn-theme-${themeName}`);
             if (btn) btn.classList.add('active');
@@ -1193,10 +1029,8 @@
         function toggleSetting(type) {
             settings[type] = !settings[type];
             localStorage.setItem(`homastar_${type}`, settings[type]);
-            
             const toggle = document.getElementById(`toggle-${type}`);
-            if (settings[type]) toggle.classList.add('active');
-            else toggle.classList.remove('active');
+            if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active');
         }
 
         function copyRefLink() {
@@ -1213,17 +1047,13 @@
         }
 
         function buyTicket() {
-            if (userBalance < 20) {
-                alert('Недостаточно Stars на балансе!');
-                openModal('modal-deposit');
-                return;
-            }
+            if (userBalance < 20) return openModal('modal-deposit');
             userBalance -= 20;
             userTickets++;
             updateBalanceDisplay();
             localStorage.setItem('homastar_tickets', userTickets.toString());
             updateTicketUI();
-            showWinPopup('🎟️ 1 Билет', 'Успешно куплен! Всего билетов: ' + userTickets);
+            showWinPopup('🎟️ 1 Билет', 'Успешно куплен!');
         }
 
         function updateTicketUI() {
@@ -1232,60 +1062,85 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
+        /* --- ГЕНЕРАЦИЯ ДИСКА И ЛАМПОЧЕК --- */
+        function renderWheelDisc(type) {
+            const spinner = document.getElementById('wheel-spinner');
+            spinner.innerHTML = '';
+            const prizes = WHEEL_CONFIGS[type].prizes;
+            const numSlices = prizes.length;
+            const sliceAngle = 360 / numSlices;
+
+            prizes.forEach((prize, idx) => {
+                const slice = document.createElement('div');
+                slice.className = 'slice';
+                slice.style.transform = `rotate(${idx * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
+
+                const content = document.createElement('div');
+                content.className = 'slice-content';
+                content.style.transform = `skewY(-${90 - sliceAngle}deg) rotate(${sliceAngle / 2}deg)`;
+                content.style.background = SECTOR_COLORS[idx % SECTOR_COLORS.length];
+                content.innerText = `+${prize} ⭐`;
+
+                slice.appendChild(content);
+                spinner.appendChild(slice);
+            });
+
+            // Лампочки гирлянды
+            const bulbsContainer = document.getElementById('bulbs-container');
+            bulbsContainer.innerHTML = '';
+            const numBulbs = 20;
+            for (let i = 0; i < numBulbs; i++) {
+                const bulb = document.createElement('div');
+                bulb.className = 'bulb';
+                const angle = (i * 360 / numBulbs) * (Math.PI / 180);
+                const r = 138; 
+                const x = r * Math.cos(angle);
+                const y = r * Math.sin(angle);
+                bulb.style.transform = `translate(${x}px, ${y}px)`;
+                bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
+                bulb.style.boxShadow = i % 2 === 0 ? '0 0 6px #00F3FF' : '0 0 6px #FFD700';
+                bulbsContainer.appendChild(bulb);
+            }
+        }
+
         function calculatePrizeIndex(type) {
             const count = userSpinCounts[type] || 0;
             userSpinCounts[type] = count + 1;
             localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts));
-
             const rand = Math.random() * 100;
 
             if (type === 'free') {
-                if (count === 0) return 2; // Первый прокрут - 1 ⭐
-                if (rand < 55) return 0;   // 0.5 ⭐
-                if (rand < 90) return 1;   // 0.8 ⭐
-                if (rand < 98) return 2;   // 1 ⭐
-                if (rand < 99.5) return 3; // 5 ⭐
-                if (rand < 99.9) return 4; // 10 ⭐
-                return 5;                  // 20 ⭐
+                if (count === 0) return 2;
+                if (rand < 55) return 0;
+                if (rand < 90) return 1;
+                if (rand < 98) return 2;
+                return 3;
             }
 
             if (type === 'common') {
-                if (count === 0) return 3; // 1-й спин = 50 ⭐
-                if (rand < 45) return 0;   // 10 ⭐
-                if (rand < 80) return 1;   // 20 ⭐
-                if (rand < 92) return 2;   // 30 ⭐
-                if (rand < 99) return 3;   // 50 ⭐
-                return 4;                  // 100 ⭐
+                if (count === 0) return 3;
+                if (rand < 45) return 0;
+                if (rand < 80) return 1;
+                return 2;
             }
 
             if (type === 'silver') {
-                if (count === 0) return 1; // 1-й спин = 50 ⭐ (в ноль)
-                if (count === 1) return 2; // 2-й спин = 70 ⭐ (+20)
-                if (rand < 42) return 0;   // 20 ⭐
-                if (rand < 80) return 1;   // 50 ⭐
-                if (rand < 92) return 2;   // 70 ⭐
-                if (rand < 98) return 3;   // 100 ⭐
-                return 4;                  // 150 ⭐
+                if (count === 0) return 1;
+                if (count === 1) return 2;
+                if (rand < 42) return 0;
+                return 1;
             }
 
             if (type === 'gold') {
-                if (count === 0) return 2; // 1-й спин = 100 ⭐ (в ноль)
-                if (count === 1) return 3; // 2-й спин = 140 ⭐ (+40)
-                if (rand < 43) return 0;   // 30 ⭐
-                if (rand < 78) return 1;   // 50 ⭐
-                if (rand < 92) return 2;   // 100 ⭐
-                if (rand < 98) return 3;   // 140 ⭐
-                return 4;                  // 250 ⭐
+                if (count === 0) return 2;
+                if (count === 1) return 3;
+                return 0;
             }
 
             if (type === 'diamond') {
-                if (count === 0) return 2; // 1-й спин = 250 ⭐ (в ноль)
-                if (count === 1) return 3; // 2-й спин = 300 ⭐ (+50)
-                if (rand < 38) return 0;   // 80 ⭐
-                if (rand < 68) return 1;   // 150 ⭐
-                if (rand < 88) return 2;   // 250 ⭐
-                if (rand < 96) return 3;   // 300 ⭐
-                return 4;                  // 600 ⭐
+                if (count === 0) return 2;
+                if (count === 1) return 3;
+                return 0;
             }
 
             return 0;
@@ -1295,6 +1150,7 @@
             activeWheelType = 'free';
             document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title;
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
+            renderWheelDisc('free');
             checkFreeSpinState();
             openScreen('screen-game-wheel');
         }
@@ -1305,6 +1161,8 @@
             document.getElementById('wheel-title').innerText = config.title;
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
+
+            renderWheelDisc(type);
 
             const btn = document.getElementById('btn-spin-action');
             btn.classList.remove('disabled');
@@ -1330,16 +1188,6 @@
                     btn.classList.add('disabled');
                     btn.innerText = 'УЖЕ ИСПОЛЬЗОВАНО';
                     btn.onclick = null;
-
-                    updateTimerCountdown(twentyFourHours - timePassed);
-                    timerInterval = setInterval(() => {
-                        const updatedTimePassed = new Date().getTime() - parseInt(lastSpin);
-                        if (updatedTimePassed >= twentyFourHours) {
-                            checkFreeSpinState();
-                        } else {
-                            updateTimerCountdown(twentyFourHours - updatedTimePassed);
-                        }
-                    }, 1000);
                     return;
                 }
             }
@@ -1350,22 +1198,11 @@
             btn.onclick = () => startSpin('free');
         }
 
-        function updateTimerCountdown(msLeft) {
-            const hours = Math.floor(msLeft / (1000 * 60 * 60)).toString().padStart(2, '0');
-            const minutes = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-            const seconds = Math.floor((msLeft % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            document.getElementById('timer-countdown').innerText = `${hours}:${minutes}:${seconds}`;
-        }
-
         function startSpin(type) {
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[type];
 
-            if (type !== 'free' && userBalance < config.price) {
-                alert(`Недостаточно Stars! Прокрут стоит ${config.price} ⭐`);
-                openModal('modal-deposit');
-                return;
-            }
+            if (type !== 'free' && userBalance < config.price) return openModal('modal-deposit');
 
             if (type !== 'free') {
                 userBalance -= config.price;
@@ -1391,7 +1228,6 @@
 
             setTimeout(() => {
                 isSpinning = false;
-                
                 userBalance += prizeValue;
                 updateBalanceDisplay();
 
@@ -1407,30 +1243,9 @@
 
         let currentSlide = 1;
         const totalSlides = 3;
-        const slideDuration = 4000;
-        let progressInterval = null;
-        let currentProgress = 0;
-
-        function startTimer() {
-            clearInterval(progressInterval);
-            currentProgress = 0;
-            const fill = document.getElementById(`fill-${currentSlide}`);
-            
-            progressInterval = setInterval(() => {
-                currentProgress += 2;
-                if (fill) fill.style.width = currentProgress + '%';
-                if (currentProgress >= 100) {
-                    clearInterval(progressInterval);
-                    if (currentSlide < totalSlides) goToNextSlide();
-                }
-            }, slideDuration / 50);
-        }
 
         function goToNextSlide() {
-            const currentFill = document.getElementById(`fill-${currentSlide}`);
-            if (currentFill) currentFill.style.width = '100%';
             document.getElementById(`slide-${currentSlide}`).classList.remove('active');
-
             currentSlide++;
             if (currentSlide <= totalSlides) {
                 document.getElementById(`slide-${currentSlide}`).classList.add('active');
@@ -1438,12 +1253,10 @@
                     document.getElementById('btn-next').style.display = 'none';
                     document.getElementById('btn-claim').style.display = 'block';
                 }
-                startTimer();
             }
         }
 
         function claimGift() {
-            clearInterval(progressInterval);
             localStorage.setItem('homastar_onboarding_completed', 'true');
             document.getElementById('story-onboarding').style.display = 'none';
         }
@@ -1455,8 +1268,6 @@
             const isCompleted = localStorage.getItem('homastar_onboarding_completed');
             if (isCompleted === 'true') {
                 document.getElementById('story-onboarding').style.display = 'none';
-            } else {
-                startTimer();
             }
 
             if (window.Telegram && window.Telegram.WebApp) {
