@@ -1004,13 +1004,12 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ЧЕТКАЯ ОТРИСОВКА СЕКТОРОВ И ТОЧНАЯ ПРИВЯЗКА ПРИЗОВ --- */
+        /* --- ПРОКАЧАННАЯ ОФОРМЛЕННАЯ ОТРИСОВКА СЕКТОРОВ И ИКОНОК --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
-            // Сбрасываем вращение при открытии экрана
             currentWheelRotation = 0;
             canvas.style.transform = 'rotate(0deg)';
 
@@ -1021,7 +1020,7 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Внешняя золотая рама (3D обод)
+            // 1. Внешний 3D-обод с золотым градиентом
             const rimGrad = ctx.createRadialGradient(radius, radius, radius - 25, radius, radius, radius);
             rimGrad.addColorStop(0, '#2C2115');
             rimGrad.addColorStop(0.5, '#D4AF37');
@@ -1033,14 +1032,13 @@
             ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
             ctx.fill();
 
-            // Внутренняя выемка обода
             const innerRimRadius = radius - 22;
             ctx.beginPath();
-            ctx.fillStyle = '#111422';
+            ctx.fillStyle = '#0D101D';
             ctx.arc(radius, radius, innerRimRadius, 0, 2 * Math.PI);
             ctx.fill();
 
-            // 2. Отрисовка объёмных глянцевых секторов
+            // 2. Насыщенные градиенты секторов
             const discRadius = innerRimRadius - 12;
             const SECTOR_GRADIENTS = [
                 ['#00C6FF', '#0072FF'],
@@ -1053,11 +1051,19 @@
                 ['#FF0844', '#FFB199']
             ];
 
+            function getPrizeIcon(val) {
+                if (val >= 300) return '🏆';
+                if (val >= 100) return '💎';
+                if (val >= 50) return '👑';
+                if (val >= 20) return '💰';
+                return '⭐';
+            }
+
             for (let i = 0; i < numSlices; i++) {
                 const angle = i * arc - Math.PI / 2;
                 const colors = SECTOR_GRADIENTS[i % SECTOR_GRADIENTS.length];
 
-                const segGrad = ctx.createRadialGradient(radius, radius, 30, radius, radius, discRadius);
+                const segGrad = ctx.createRadialGradient(radius, radius, 40, radius, radius, discRadius);
                 segGrad.addColorStop(0, colors[0]);
                 segGrad.addColorStop(1, colors[1]);
 
@@ -1068,29 +1074,47 @@
                 ctx.lineTo(radius, radius);
                 ctx.fill();
 
+                // Внутренний золотой контур сектора
+                ctx.beginPath();
                 ctx.strokeStyle = '#FFE599';
                 ctx.lineWidth = 3;
+                ctx.arc(radius, radius, discRadius - 4, angle + 0.03, angle + arc - 0.03);
                 ctx.stroke();
 
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.moveTo(radius, radius);
+                ctx.lineTo(radius + discRadius * Math.cos(angle), radius + discRadius * Math.sin(angle));
+                ctx.stroke();
+
+                // Иконка и сумма выигрыша
                 ctx.save();
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + arc / 2);
 
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = '900 22px -apple-system, sans-serif';
-                ctx.textAlign = 'right';
+                const icon = getPrizeIcon(prizes[i]);
+                ctx.font = '28px sans-serif';
+                ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                ctx.shadowBlur = 4;
+                ctx.fillText(icon, discRadius - 45, 0);
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '900 20px -apple-system, sans-serif';
+                ctx.textAlign = 'right';
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetX = 2;
                 ctx.shadowOffsetY = 2;
+                ctx.fillText(`+${prizes[i]} ⭐`, discRadius - 80, 0);
 
-                ctx.fillText(`+${prizes[i]} ⭐`, discRadius - 18, 0);
                 ctx.restore();
             }
 
-            // 3. Центральная объёмная золотая кнопка
-            const hubRadius = 42;
+            // 3. Центральная золотая кнопка
+            const hubRadius = 44;
             const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
             hubGrad.addColorStop(0, '#FFE899');
             hubGrad.addColorStop(0.6, '#D4AF37');
@@ -1102,16 +1126,16 @@
             ctx.fill();
 
             ctx.strokeStyle = '#FFFFFF';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.stroke();
 
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = '26px sans-serif';
+            ctx.font = '28px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('⭐', radius, radius);
 
-            // 4. Неоновые лампочки позолоченного обода
+            // 4. Неоновые лампочки
             const bulbsContainer = document.getElementById('bulbs-container');
             if (bulbsContainer) {
                 bulbsContainer.innerHTML = '';
@@ -1226,7 +1250,6 @@
             btn.onclick = () => startSpin('free');
         }
 
-        /* --- АЛГОРИТМ 100% ТОЧНОЙ ОСТАНОВКИ СТРЕЛКИ НА СЕКТОРЕ --- */
         function startSpin(type) {
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[type];
@@ -1249,14 +1272,13 @@
             const numSlices = config.prizes.length;
             const sectorDegree = 360 / numSlices;
 
-            // Вычисляем точный угол остановки в центре выбранного сектора
             const targetAngle = 360 - (prizeIndex + 0.5) * sectorDegree;
             
             const currentModulo = currentWheelRotation % 360;
             let distanceToTarget = targetAngle - currentModulo;
             if (distanceToTarget <= 0) distanceToTarget += 360;
 
-            const extraRounds = 6 * 360; // 6 полных кругов
+            const extraRounds = 6 * 360;
             const totalRotationIncrement = distanceToTarget + extraRounds;
             currentWheelRotation += totalRotationIncrement;
 
