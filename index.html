@@ -255,7 +255,7 @@
             font-weight: 800;
         }
 
-        /* --- НАДЕЖНОЕ CANVAS КОЛЕСО --- */
+        /* --- CANVAS КОЛЕСО --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -684,7 +684,6 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
-            <!-- ИДЕАЛЬНОЕ CANVAS КОЛЕСО -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
@@ -993,7 +992,6 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ОТРИСОВКА КОЛЕСА НА CANVAS --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
