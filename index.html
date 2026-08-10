@@ -157,7 +157,7 @@
             box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
-        /* --- ВСТРОЕННАЯ БЕГУЩАЯ LIVE-ЛЕНТА --- */
+        /* --- ВСТРОЕННАЯ БЕГУЩАЯ LIVE-ЛЕНТА (СУПЕР ПЛАВНАЯ И МЕДЛЕННАЯ) --- */
         .live-bar-embedded {
             width: 100%;
             background: rgba(10, 12, 18, 0.9);
@@ -206,10 +206,10 @@
 
         .live-marquee-content {
             display: flex;
-            gap: 12px;
-            /* Плавная непрерывная анимация сдвига */
-            animation: scrollMarquee 35s linear infinite;
-            padding-left: 12px;
+            gap: 20px; /* Увеличили отступы между плашками, чтобы они не лепились друг к другу */
+            /* Делаем СУПЕР медленно! 300 секунд на один полный оборот (5 минут) */
+            animation: scrollMarquee 300s linear infinite;
+            padding-left: 20px;
         }
 
         @keyframes scrollMarquee {
@@ -654,7 +654,7 @@
             </div>
         </header>
 
-        <!-- ВСТРОЕННАЯ LIVE-ЛЕНТА С НЕПРЕРЫВНОЙ БЕГУЩЕЙ СТРОКОЙ -->
+        <!-- ВСТРОЕННАЯ LIVE-ЛЕНТА С СУПЕР ПЛАВНОЙ БЕГУЩЕЙ СТРОКОЙ -->
         <div class="live-bar-embedded">
             <div class="live-label-area">
                 <div class="live-text-vertical">LIVE</div>
@@ -1207,7 +1207,6 @@
             ctx.fill();
 
             const discRadius = innerRimRadius - 10;
-            
             const EXACT_COLORS = [
                 '#0099FF', '#FF3344', '#7A42F4', '#FF6600', 
                 '#22BB55', '#FF3344', '#0099FF', '#7A42F4', 
