@@ -157,7 +157,7 @@
             box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
-        /* --- ВСТРОЕННАЯ АККУРАТНАЯ LIVE-ЛЕНТА --- */
+        /* --- ВСТРОЕННАЯ БЕГУЩАЯ LIVE-ЛЕНТА --- */
         .live-bar-embedded {
             width: 100%;
             background: rgba(10, 12, 18, 0.9);
@@ -177,6 +177,8 @@
             gap: 8px;
             padding-right: 8px;
             border-right: 1px solid var(--card-border);
+            position: relative;
+            z-index: 2;
         }
 
         .live-text-vertical {
@@ -197,6 +199,22 @@
             display: flex;
             align-items: center;
             overflow: hidden;
+            /* Эффект растворения по краям */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        }
+
+        .live-marquee-content {
+            display: flex;
+            gap: 12px;
+            /* Плавная непрерывная анимация сдвига */
+            animation: scrollMarquee 35s linear infinite;
+            padding-left: 12px;
+        }
+
+        @keyframes scrollMarquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         .live-pill {
@@ -208,8 +226,8 @@
             font-weight: 900;
             font-size: 15px;
             color: #FFFFFF;
-            transition: all 0.5s ease;
             box-shadow: inset 0 -2px 6px rgba(0,0,0,0.3);
+            white-space: nowrap;
         }
 
         .pill-red { background: linear-gradient(135deg, #FF3344, #B71C1C); }
@@ -636,15 +654,15 @@
             </div>
         </header>
 
-        <!-- ВСТРОЕННАЯ LIVE-ЛЕНТА (Ничего не перекрывает, стартует с 70) -->
+        <!-- ВСТРОЕННАЯ LIVE-ЛЕНТА С НЕПРЕРЫВНОЙ БЕГУЩЕЙ СТРОКОЙ -->
         <div class="live-bar-embedded">
             <div class="live-label-area">
                 <div class="live-text-vertical">LIVE</div>
                 <div class="live-avatar">👾</div>
             </div>
             <div class="live-pill-area">
-                <div id="embedded-live-pill" class="live-pill pill-purple">
-                    ⭐ <span id="embedded-live-amount">70</span>
+                <div class="live-marquee-content" id="marquee-content">
+                    <!-- Заполняется через JS -->
                 </div>
             </div>
         </div>
@@ -673,7 +691,6 @@
                 <button class="btn-card-action">Выбрать</button>
             </div>
 
-            <!-- БИЛЕТЫ ВСТРОЕНЫ СЮДА -->
             <div class="menu-card featured-tickets" onclick="openScreen('screen-tickets')">
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
@@ -686,7 +703,6 @@
             </div>
         </div>
 
-        <!-- ЭКРАН БИЛЕТОВ (ВНУТРИ ИГР) -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в игры</button>
             <div class="ticket-banner" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, var(--card-bg) 100%); border: 1px solid var(--accent-purple); border-radius: 20px; padding: 20px; text-align: center;">
@@ -764,7 +780,6 @@
             </div>
         </div>
 
-        <!-- СПИСОК ПЛАТНЫХ КОЛЕС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в игры</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
@@ -814,7 +829,6 @@
             </div>
         </div>
 
-        <!-- ЭКРАН ИГРЫ (РУЛЕТКА CANVAS) -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -887,7 +901,7 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ С ПОДПИСЯМИ (5 РАЗДЕЛОВ) -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ С ПОДПИСЯМИ -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">
                 <span>🎮</span>
@@ -1016,7 +1030,6 @@
             if (target) target.classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            
             let navTargetId = screenId;
             if (screenId === 'screen-game-wheel' || screenId === 'screen-wheel-list' || screenId === 'screen-tickets') {
                 navTargetId = 'screen-hub'; 
@@ -1445,52 +1458,38 @@
             }, 5000);
         }
 
-        /* --- ПЛАВНАЯ СМЕНА ВСТРОЕННОЙ LIVE-ЛЕНТЫ С РЕАЛИСТИЧНЫМИ СУММАМИ --- */
-        let lastJackpotTime = Date.now();
-
-        function updateEmbeddedLive() {
-            const pill = document.getElementById('embedded-live-pill');
-            const amountEl = document.getElementById('embedded-live-amount');
-
-            if (!pill || !amountEl) return;
-
+        /* --- ГЕНЕРАЦИЯ ПОЛНОЦЕННОЙ БЕГУЩЕЙ СТРОКИ С РЕАЛИСТИЧНЫМИ ВЫПЛАТАМИ --- */
+        function initLiveTicker() {
+            const marquee = document.getElementById('marquee-content');
+            if (!marquee) return;
+            
             const colors = ['pill-red', 'pill-purple', 'pill-blue', 'pill-green', 'pill-orange'];
             const normalAmounts = ['50', '70', '100', '150', '200', '350', '500'];
-
-            pill.style.opacity = '0';
-            pill.style.transform = 'scale(0.9)';
-
-            setTimeout(() => {
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                let amountToShow = '';
-
-                // Проверяем, прошло ли 10 минут с момента последнего Джекпота (1000)
-                if (Date.now() - lastJackpotTime >= 10 * 60 * 1000) {
-                    amountToShow = '1 000';
-                    lastJackpotTime = Date.now();
-                } else {
-                    amountToShow = normalAmounts[Math.floor(Math.random() * normalAmounts.length)];
+            
+            let html = '';
+            
+            // Генерируем 20 плашек в ленту (с реалистичными суммами)
+            for(let i = 0; i < 20; i++) {
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                let amt = normalAmounts[Math.floor(Math.random() * normalAmounts.length)];
+                
+                // Изредка вкидываем крупный куш, чтобы разжечь интерес
+                if(i === 7 || i === 16) {
+                    amt = '1 000';
+                    color = 'pill-purple';
                 }
-
-                pill.className = 'live-pill ' + randomColor;
-                amountEl.innerText = amountToShow;
-
-                pill.style.opacity = '1';
-                pill.style.transform = 'scale(1)';
-            }, 500);
-
-            // Следующее появление рандомно от 60 сек до 180 сек
-            const nextInterval = Math.floor(Math.random() * (180000 - 60000 + 1)) + 60000;
-            setTimeout(updateEmbeddedLive, nextInterval);
+                
+                html += `<div class="live-pill ${color}">⭐ <span>${amt}</span></div>`;
+            }
+            
+            // Дублируем HTML-код внутри контейнера, чтобы анимация скроллинга была бесконечной и без разрывов
+            marquee.innerHTML = html + html;
         }
 
         window.onload = function() {
             updateBalanceDisplay();
             setTheme(settings.theme);
-
-            // Запускаем автоматическую редкую смену встроенной плашки
-            const firstInterval = Math.floor(Math.random() * (180000 - 60000 + 1)) + 60000;
-            setTimeout(updateEmbeddedLive, firstInterval);
+            initLiveTicker();
 
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
