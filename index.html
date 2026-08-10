@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Homastar</title>
+    <title>Homastar Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0B0C10;
-            --card-bg: #151823;
-            --card-border: #232838;
-            --text-color: #FFFFFF;
-            --text-sub: #A0AAB8;
+            --bg-color: #0F1015;
+            --card-bg: #161822;
+            --card-border: #232738;
+            --text-color: #F1F5F9;
+            --text-sub: #94A3B8;
             --accent-blue: #00F3FF;
             --accent-gold: #FFCC00;
             --accent-purple: #9D00FF;
         }
 
-        /* ТЕМЫ */
         body.theme-night {
-            --bg-color: #000000;
-            --card-bg: #0D0E12;
-            --card-border: #1A1C24;
+            --bg-color: #0F1015;
+            --card-bg: #161822;
+            --card-border: #232738;
         }
 
-        body.theme-day {
-            --bg-color: #F5F7FA;
-            --card-bg: #FFFFFF;
-            --card-border: #E2E8F0;
-            --text-color: #1A202C;
-            --text-sub: #718096;
+        body.theme-oled {
+            --bg-color: #000000;
+            --card-bg: #0A0A0C;
+            --card-border: #1A1A20;
         }
 
         * {
@@ -62,7 +59,6 @@
             position: relative;
         }
 
-        /* ШАПКА БАЛАНСА */
         .header {
             display: flex;
             justify-content: space-between;
@@ -110,7 +106,6 @@
             color: #FFF;
         }
 
-        /* ЭКРАНЫ */
         .screen {
             display: none;
             flex-direction: column;
@@ -136,7 +131,6 @@
             align-self: flex-start;
         }
 
-        /* КАРТОЧКИ МЕНЮ */
         .menu-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -211,7 +205,6 @@
             font-weight: 700;
         }
 
-        /* ТАЙМЕР НАД КОЛЕСОМ */
         .timer-banner {
             background: rgba(255, 204, 0, 0.1);
             border: 1px solid rgba(255, 204, 0, 0.3);
@@ -267,6 +260,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
         }
 
         .center-hub {
@@ -302,7 +296,6 @@
             cursor: not-allowed;
         }
 
-        /* БИЛЕТЫ */
         .ticket-banner {
             background: linear-gradient(135deg, rgba(157, 0, 255, 0.15) 0%, var(--card-bg) 100%);
             border: 1px solid var(--accent-purple);
@@ -330,7 +323,6 @@
             font-size: 13px;
         }
 
-        /* ИНВЕНТАРЬ И ХОЛДЫ */
         .inventory-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -380,7 +372,6 @@
             cursor: pointer;
         }
 
-        /* РЕФЕРАЛКА */
         .ref-box {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -417,7 +408,6 @@
         .btn-copy { background: var(--card-border); color: var(--text-color); }
         .btn-share { background: linear-gradient(90deg, #0066FF, #00F3FF); color: #FFF; }
 
-        /* НАСТРОЙКИ */
         .setting-row {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -441,7 +431,7 @@
             background: transparent;
             border: none;
             color: var(--text-sub);
-            padding: 6px 10px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-size: 11px;
             font-weight: 700;
@@ -478,7 +468,6 @@
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
-        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -567,14 +556,13 @@
 
         .nav-item.active { opacity: 1; }
 
-        /* СТОРИС */
         .story-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #0B0C10;
+            background: #0F1015;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -591,7 +579,7 @@
         .story-slide.active { display: flex; }
         .story-icon { font-size: 80px; filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4)); }
         .story-slide h2 { font-size: 26px; font-weight: 800; color: #FFF; }
-        .story-slide p { font-size: 15px; color: #A0AAB8; line-height: 1.5; max-width: 300px; }
+        .story-slide p { font-size: 15px; color: #94A3B8; line-height: 1.5; max-width: 300px; }
 
         .badge-price {
             background: rgba(255, 204, 0, 0.15);
@@ -631,9 +619,8 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
     </style>
 </head>
-<body class="theme-standard">
+<body class="theme-night">
 
-    <!-- 1. СТОРИС-ОНБОРДИНГ (ПОКАЗЫВАЕТСЯ 1 РАЗ) -->
     <div id="story-onboarding" class="story-overlay">
         <div class="story-progress-container">
             <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
@@ -668,9 +655,7 @@
         </div>
     </div>
 
-    <!-- 2. ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
     <div class="app-container">
-        <!-- ШАПКА С БАЛАНСОМ -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
@@ -680,10 +665,7 @@
             </div>
         </header>
 
-        <!-- ЭКРАН 1: ГЛАВНОЕ МЕНЮ (HUB) - СТРОГО 3 КАРТОЧКИ -->
         <div id="screen-hub" class="screen active">
-            
-            <!-- 1. БЕСПЛАТНОЕ КОЛЕСО -->
             <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
                 <div class="card-left">
                     <div class="card-icon">🎁</div>
@@ -695,7 +677,6 @@
                 <button class="btn-card-action" style="color: var(--accent-gold); border-color: var(--accent-gold);">Крутить</button>
             </div>
 
-            <!-- 2. КОЛЁСА (5 ВИДОВ) -->
             <div class="menu-card featured-wheels" onclick="openScreen('screen-wheel-list')">
                 <div class="card-left">
                     <div class="card-icon">🎡</div>
@@ -707,7 +688,6 @@
                 <button class="btn-card-action">Выбрать</button>
             </div>
 
-            <!-- 3. РОЗЫГРЫШ БИЛЕТОВ -->
             <div class="menu-card featured-tickets" onclick="openScreen('screen-tickets')">
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
@@ -718,15 +698,13 @@
                 </div>
                 <button class="btn-card-action" style="color: var(--accent-purple); border-color: var(--accent-purple);">Участвовать</button>
             </div>
-
         </div>
 
-        <!-- ЭКРАН 2: ВЫБОР ИЗ 5 ВИДОВ КОЛЕС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
 
-            <div class="menu-card" onclick="openPlayWheel('Обычное колесо', '20 ⭐')">
+            <div class="menu-card" onclick="openPlayWheel('common')">
                 <div class="card-left">
                     <div class="card-icon">⚙️</div>
                     <div class="card-info">
@@ -737,7 +715,7 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <div class="menu-card" onclick="openPlayWheel('Серебряное колесо', '50 ⭐')">
+            <div class="menu-card" onclick="openPlayWheel('silver')">
                 <div class="card-left">
                     <div class="card-icon">🥈</div>
                     <div class="card-info">
@@ -748,7 +726,7 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <div class="menu-card" onclick="openPlayWheel('Золотое колесо', '100 ⭐')">
+            <div class="menu-card" onclick="openPlayWheel('gold')">
                 <div class="card-left">
                     <div class="card-icon">🥇</div>
                     <div class="card-info">
@@ -759,7 +737,7 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <div class="menu-card" onclick="openPlayWheel('Алмазное колесо', '250 ⭐')">
+            <div class="menu-card" onclick="openPlayWheel('diamond')">
                 <div class="card-left">
                     <div class="card-icon">💎</div>
                     <div class="card-info">
@@ -770,19 +748,18 @@
                 <button class="btn-card-action">Играть</button>
             </div>
 
-            <div class="menu-card" onclick="openPlayWheel('VIP Колесо', '500 ⭐')">
+            <div class="menu-card" onclick="openPlayWheel('vip')">
                 <div class="card-left">
                     <div class="card-icon">👑</div>
                     <div class="card-info">
                         <h3>VIP Колесо <span class="card-badge vip">VIP</span></h3>
-                        <p>Эпические награды и супер-шансы</p>
+                        <p>Цена: 500 Stars / прокрут</p>
                     </div>
                 </div>
                 <button class="btn-card-action">Играть</button>
             </div>
         </div>
 
-        <!-- ЭКРАН 3: ИГРОВОЙ ЭКРАН С КОЛЕСОМ -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -795,7 +772,7 @@
             <div class="wheel-section">
                 <div class="arrow-pointer">▼</div>
                 <div class="wheel-outer-rim">
-                    <div class="wheel-spinner">
+                    <div class="wheel-spinner" id="wheel-spinner">
                         <div class="center-hub">⭐</div>
                     </div>
                 </div>
@@ -804,7 +781,6 @@
             <button id="btn-spin-action" class="btn-spin">КРУТИТЬ</button>
         </div>
 
-        <!-- ЭКРАН 4: РОЗЫГРЫШ БИЛЕТОВ -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
@@ -822,7 +798,6 @@
             <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
-        <!-- ЭКРАН 5: ДРУЗЬЯ (РЕФЕРАЛКА) -->
         <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
@@ -846,7 +821,6 @@
             </div>
         </div>
 
-        <!-- ЭКРАН 6: ИНВЕНТАРЬ (ХОЛД 21 ДЕНЬ) -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">🎒 Твой Инвентарь</h2>
@@ -855,7 +829,6 @@
             <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
-        <!-- ЭКРАН 7: НАСТРОЙКИ (ТЕМЫ И ЗВУКИ) -->
         <div id="screen-settings" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
@@ -863,9 +836,8 @@
             <div class="setting-row">
                 <div style="font-size: 14px; font-weight: 700;">Тема оформления</div>
                 <div class="theme-select-btns">
-                    <button id="btn-theme-standard" class="btn-theme active" onclick="setTheme('standard')">Стандарт</button>
-                    <button id="btn-theme-night" class="btn-theme" onclick="setTheme('night')">Ночь</button>
-                    <button id="btn-theme-day" class="btn-theme" onclick="setTheme('day')">День</button>
+                    <button id="btn-theme-night" class="btn-theme active" onclick="setTheme('night')">Тёмная</button>
+                    <button id="btn-theme-oled" class="btn-theme" onclick="setTheme('oled')">OLED Black</button>
                 </div>
             </div>
 
@@ -884,7 +856,6 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ НАВИГАЦИЯ (6 ВКЛАДОК) -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
@@ -895,7 +866,6 @@
         </nav>
     </div>
 
-    <!-- 3. МОДАЛЬНОЕ ОКНО ПОПОЛНЕНИЯ (DEPOSIT) -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -929,7 +899,6 @@
         </div>
     </div>
 
-    <!-- 4. МОДАЛЬНОЕ ОКНО ВЫВОДА (WITHDRAW) -->
     <div id="modal-withdraw" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -948,32 +917,75 @@
     </div>
 
     <script>
-        let userBalance = parseInt(localStorage.getItem('homastar_main_balance') || '0');
+        let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '0');
         let timerInterval = null;
+        let isSpinning = false;
+        let currentWheelRotation = 0;
+        let activeWheelType = 'free';
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
 
+        let userSpinCounts = JSON.parse(localStorage.getItem('homastar_spin_counts') || '{}');
+
         let settings = {
-            theme: localStorage.getItem('homastar_theme') || 'standard',
+            theme: localStorage.getItem('homastar_theme') || 'night',
             music: localStorage.getItem('homastar_music') !== 'false',
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
-        let inventoryItems = [
-            {
-                id: 'gift_bear',
-                title: 'Плюшевый Мишка (15 ⭐)',
-                icon: '🧸',
-                receivedAt: parseInt(localStorage.getItem('homastar_bear_time') || new Date().getTime().toString())
+        const WHEEL_CONFIGS = {
+            free: {
+                title: '🎁 Бесплатное Колесо',
+                price: 0,
+                prizes: [0.5, 0.8, 1, 5, 10, 20, 50, 100]
+            },
+            common: {
+                title: '⚙️ Обычное Колесо',
+                price: 20,
+                prizes: [5, 10, 20, 50, 100, 200]
+            },
+            silver: {
+                title: '🥈 Серебряное Колесо',
+                price: 50,
+                prizes: [10, 20, 50, 100, 300]
+            },
+            gold: {
+                title: '🥇 Золотое Колесо',
+                price: 100,
+                prizes: [20, 50, 100, 200, 500]
+            },
+            diamond: {
+                title: '💎 Алмазное Колесо',
+                price: 250,
+                prizes: [50, 100, 250, 500, 1000, 1500]
+            },
+            vip: {
+                title: '👑 VIP Колесо',
+                price: 500,
+                prizes: [100, 250, 500, 1000, 2000, 3000]
             }
-        ];
+        };
+
+        let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
         if (!localStorage.getItem('homastar_bear_time')) {
             localStorage.setItem('homastar_bear_time', new Date().getTime().toString());
+            inventoryItems.push({
+                id: 'gift_bear_' + new Date().getTime(),
+                title: 'Плюшевый Мишка (15 ⭐)',
+                icon: '🧸',
+                value: 15,
+                receivedAt: new Date().getTime()
+            });
+            saveInventory();
+        }
+
+        function saveInventory() {
+            localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems));
         }
 
         function updateBalanceDisplay() {
-            document.getElementById('user-balance-text').innerText = `${userBalance} ⭐`;
-            document.getElementById('withdraw-available-bal').innerText = `${userBalance} ⭐`;
+            document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
+            document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             localStorage.setItem('homastar_main_balance', userBalance.toString());
         }
 
@@ -989,13 +1001,12 @@
         function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
-        // ПОПОЛНЕНИЕ
         function selectDepositPackage(amount) {
             document.getElementById('custom-deposit-input').value = amount;
         }
 
         function executeDeposit() {
-            const val = parseInt(document.getElementById('custom-deposit-input').value);
+            const val = parseFloat(document.getElementById('custom-deposit-input').value);
             if (!val || val <= 0) {
                 alert('Введи корректную сумму Stars!');
                 return;
@@ -1007,9 +1018,8 @@
             alert(`🎉 Пополнение прошло успешно! +${val} ⭐ зачислено на баланс.`);
         }
 
-        // ВЫВОД
         function executeWithdraw() {
-            const val = parseInt(document.getElementById('withdraw-amount-input').value);
+            const val = parseFloat(document.getElementById('withdraw-amount-input').value);
             if (!val || val <= 0) {
                 alert('Введи сумму вывода!');
                 return;
@@ -1025,13 +1035,17 @@
             alert('🎉 Отлично! Ваша заявка принята. В течение 24 часов ваши звёзды будут отправлены на ваш аккаунт!');
         }
 
-        // РЕНДЕР ИНВЕНТАРЯ С ТАЙМЕРАМИ 21 ДЕНЬ
         function renderInventory() {
             const container = document.getElementById('inventory-list');
             container.innerHTML = '';
 
             const twentyOneDays = 21 * 24 * 60 * 60 * 1000;
             const now = new Date().getTime();
+
+            if (inventoryItems.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:20px;">Инвентарь пуст</div>';
+                return;
+            }
 
             inventoryItems.forEach(item => {
                 const timePassed = now - item.receivedAt;
@@ -1045,7 +1059,7 @@
                     card.innerHTML = `
                         <div class="inventory-header">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <span style="font-size:24px;">${item.icon}</span>
+                                <span style="font-size:24px;">${item.icon || '🎁'}</span>
                                 <div>
                                     <h4 style="font-size:14px;">${item.title}</h4>
                                     <div class="hold-timer-text" style="color:var(--accent-blue);">✅ Готово к выводу!</div>
@@ -1053,7 +1067,7 @@
                             </div>
                             <span class="hold-badge ready">РАЗБЛОКИРОВАНО</span>
                         </div>
-                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}', 15)">ВЫВЕСТИ НА БАЛАНС</button>
+                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}', ${item.value})">ВЫВЕСТИ НА БАЛАНС (${item.value} ⭐)</button>
                     `;
                 } else {
                     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -1063,7 +1077,7 @@
                     card.innerHTML = `
                         <div class="inventory-header">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <span style="font-size:24px;">${item.icon}</span>
+                                <span style="font-size:24px;">${item.icon || '🎁'}</span>
                                 <div>
                                     <h4 style="font-size:14px;">${item.title}</h4>
                                     <div class="hold-timer-text">⏱ До вывода: ${days}д ${hours}ч ${minutes}мин</div>
@@ -1082,18 +1096,19 @@
             userBalance += starsValue;
             updateBalanceDisplay();
             inventoryItems = inventoryItems.filter(i => i.id !== itemId);
+            saveInventory();
             renderInventory();
             alert(`🎉 ${starsValue} ⭐ успешно переведено из инвентаря на основной баланс!`);
         }
 
-        // НАСТРОЙКИ И ТЕМЫ
         function setTheme(themeName) {
             document.body.className = `theme-${themeName}`;
             settings.theme = themeName;
             localStorage.setItem('homastar_theme', themeName);
 
             document.querySelectorAll('.btn-theme').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-theme-${themeName}`).classList.add('active');
+            const btn = document.getElementById(`btn-theme-${themeName}`);
+            if (btn) btn.classList.add('active');
         }
 
         function toggleSetting(type) {
@@ -1105,7 +1120,6 @@
             else toggle.classList.remove('active');
         }
 
-        // РЕФЕРАЛКА
         function copyRefLink() {
             const input = document.getElementById('ref-link-input');
             input.select();
@@ -1119,7 +1133,6 @@
             window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
         }
 
-        // БИЛЕТЫ
         function buyTicket() {
             if (userBalance < 20) {
                 alert('Недостаточно Stars на балансе для покупки билета!');
@@ -1140,11 +1153,92 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        // КОЛЕСО
+        // РАСЧЕТ И АЛГОРИТМ ВЫПАДЕНИЯ ПРИЗОВ
+        function calculatePrizeIndex(type) {
+            const count = userSpinCounts[type] || 0;
+            userSpinCounts[type] = count + 1;
+            localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts));
+
+            const rand = Math.random() * 100;
+
+            if (type === 'free') {
+                if (count === 0) return 2; // Первый прокрут - 1 ⭐
+                if (rand < 55) return 0;   // 0.5 ⭐
+                if (rand < 90) return 1;   // 0.8 ⭐
+                if (rand < 98) return 2;   // 1 ⭐
+                if (rand < 99.5) return 3; // 5 ⭐
+                if (rand < 99.9) return 4; // 10 ⭐
+                return 5;                  // 20 ⭐
+            }
+
+            if (type === 'common') {
+                if (count === 0 && Math.random() < 0.8) return 2; // 20 ⭐ новичку
+                if (rand < 45) return 0; // 5 ⭐
+                if (rand < 75) return 1; // 10 ⭐
+                if (rand < 92) return 2; // 20 ⭐
+                if (rand < 98) return 3; // 50 ⭐
+                return 4;                // 100 ⭐
+            }
+
+            if (type === 'silver') {
+                if (count === 0 && Math.random() < 0.7) return 2; // 50 ⭐ новичку
+                if (rand < 42) return 0; // 10 ⭐
+                if (rand < 74) return 1; // 20 ⭐
+                if (rand < 92) return 2; // 50 ⭐
+                if (rand < 99) return 3; // 100 ⭐
+                return 4;                // 300 ⭐
+            }
+
+            if (type === 'gold') {
+                if (count === 0 && Math.random() < 0.65) return 2; // 100 ⭐ новичку
+                if (rand < 43) return 0; // 20 ⭐
+                if (rand < 76) return 1; // 50 ⭐
+                if (rand < 92) return 2; // 100 ⭐
+                if (rand < 99) return 3; // 200 ⭐
+                return 4;                // 500 ⭐
+            }
+
+            if (type === 'diamond') {
+                if (count === 0 && Math.random() < 0.75) return 2; // 250 ⭐ новичку
+                if (rand < 35) return 0; // 50 ⭐
+                if (rand < 63) return 1; // 100 ⭐
+                if (rand < 83) return 2; // 250 ⭐
+                if (rand < 95) return 3; // 500 ⭐
+                return 4;                // 1000 ⭐
+            }
+
+            if (type === 'vip') {
+                if (count === 0 && Math.random() < 0.7) return 2; // 500 ⭐ новичку
+                if (rand < 34) return 0; // 100 ⭐
+                if (rand < 62) return 1; // 250 ⭐
+                if (rand < 83) return 2; // 500 ⭐
+                if (rand < 95) return 3; // 1000 ⭐
+                return 4;                // 2000 ⭐
+            }
+
+            return 0;
+        }
+
         function openFreeWheelScreen() {
-            document.getElementById('wheel-title').innerText = '🎁 Бесплатное Колесо';
+            activeWheelType = 'free';
+            document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title;
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
             checkFreeSpinState();
+            openScreen('screen-game-wheel');
+        }
+
+        function openPlayWheel(type) {
+            activeWheelType = type;
+            const config = WHEEL_CONFIGS[type];
+            document.getElementById('wheel-title').innerText = config.title;
+            document.getElementById('timer-banner').style.display = 'none';
+            document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
+
+            const btn = document.getElementById('btn-spin-action');
+            btn.classList.remove('disabled');
+            btn.innerText = `КРУТИТЬ ЗА ${config.price} ⭐`;
+            btn.onclick = () => startSpin(type);
+
             openScreen('screen-game-wheel');
         }
 
@@ -1181,7 +1275,7 @@
             timerBanner.style.display = 'none';
             btn.classList.remove('disabled');
             btn.innerText = 'КРУТИТЬ БЕСПЛАТНО';
-            btn.onclick = spinFreeWheel;
+            btn.onclick = () => startSpin('free');
         }
 
         function updateTimerCountdown(msLeft) {
@@ -1191,28 +1285,61 @@
             document.getElementById('timer-countdown').innerText = `${hours}:${minutes}:${seconds}`;
         }
 
-        function spinFreeWheel() {
+        function startSpin(type) {
+            if (isSpinning) return;
+            const config = WHEEL_CONFIGS[type];
+
+            if (type !== 'free' && userBalance < config.price) {
+                alert(`Недостаточно Stars! Прокрут стоит ${config.price} ⭐`);
+                openModal('modal-deposit');
+                return;
+            }
+
+            if (type !== 'free') {
+                userBalance -= config.price;
+                updateBalanceDisplay();
+            } else {
+                localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
+            }
+
+            isSpinning = true;
             const btn = document.getElementById('btn-spin-action');
-            if (btn.classList.contains('disabled')) return;
-            localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
-            alert('🎉 Ты прокрутил Бесплатное колесо!');
-            checkFreeSpinState();
+            btn.classList.add('disabled');
+
+            const prizeIndex = calculatePrizeIndex(type);
+            const prizeValue = config.prizes[prizeIndex];
+            const sectorDegree = 360 / config.prizes.length;
+
+            const extraRounds = 5 * 360;
+            const targetDegree = extraRounds + (prizeIndex * sectorDegree) + (sectorDegree / 2);
+            currentWheelRotation += targetDegree;
+
+            const spinner = document.getElementById('wheel-spinner');
+            spinner.style.transform = `rotate(${currentWheelRotation}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                
+                if (type === 'free') {
+                    inventoryItems.push({
+                        id: 'free_prize_' + new Date().getTime(),
+                        title: `Выигрыш в колесе (${prizeValue} ⭐)`,
+                        icon: '🎁',
+                        value: prizeValue,
+                        receivedAt: new Date().getTime()
+                    });
+                    saveInventory();
+                    alert(`🎉 Поздравляем! Вы выиграли ${prizeValue} ⭐! Выигрыш отправлен в Инвентарь на заморозку 21 день.`);
+                    checkFreeSpinState();
+                } else {
+                    userBalance += prizeValue;
+                    updateBalanceDisplay();
+                    alert(`🎉 Поздравляем! Вы выиграли ${prizeValue} ⭐! Зачислено на ваш баланс.`);
+                    btn.classList.remove('disabled');
+                }
+            }, 4000);
         }
 
-        function openPlayWheel(title, price) {
-            document.getElementById('wheel-title').innerText = title;
-            document.getElementById('timer-banner').style.display = 'none';
-            document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
-
-            const btn = document.getElementById('btn-spin-action');
-            btn.classList.remove('disabled');
-            btn.innerText = `SPIN FOR ${price}`;
-            btn.onclick = () => alert(`Крутим ${title} за ${price}`);
-
-            openScreen('screen-game-wheel');
-        }
-
-        // СЛАЙД-ШОУ
         let currentSlide = 1;
         const totalSlides = 3;
         const slideDuration = 4000;
