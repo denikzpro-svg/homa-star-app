@@ -68,9 +68,7 @@
             padding: 10px 0;
         }
 
-        .screen.active {
-            display: flex;
-        }
+        .screen.active { display: flex; }
 
         .btn-back {
             background: transparent;
@@ -98,9 +96,7 @@
             transition: transform 0.1s ease;
         }
 
-        .menu-card:active {
-            transform: scale(0.98);
-        }
+        .menu-card:active { transform: scale(0.98); }
 
         .menu-card.featured-free {
             border: 1px solid #FFCC00;
@@ -137,16 +133,8 @@
             align-items: center;
         }
 
-        .card-info h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .card-info p {
-            font-size: 12px;
-            color: #A0AAB8;
-        }
+        .card-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .card-info p { font-size: 12px; color: #A0AAB8; }
 
         .card-badge {
             background: #00F3FF;
@@ -222,14 +210,9 @@
             height: 200px;
             border-radius: 50%;
             background: conic-gradient(
-                #00F3FF 0deg 45deg, 
-                #9D00FF 45deg 90deg, 
-                #FF6B00 90deg 135deg, 
-                #FFCC00 135deg 180deg,
-                #FF0055 180deg 225deg,
-                #00F3FF 225deg 270deg,
-                #9D00FF 270deg 315deg,
-                #FFCC00 315deg 360deg
+                #00F3FF 0deg 45deg, #9D00FF 45deg 90deg, #FF6B00 90deg 135deg, 
+                #FFCC00 135deg 180deg, #FF0055 180deg 225deg, #00F3FF 225deg 270deg, 
+                #9D00FF 270deg 315deg, #FFCC00 315deg 360deg
             );
             display: flex;
             justify-content: center;
@@ -269,7 +252,6 @@
             cursor: not-allowed;
         }
 
-        /* КАРТОЧКА БИЛЕТОВ */
         .ticket-banner {
             background: linear-gradient(135deg, #221233 0%, #151823 100%);
             border: 1px solid #9D00FF;
@@ -298,6 +280,107 @@
             font-size: 13px;
         }
 
+        /* ИНВЕНТАРЬ И ХОЛД ЭЛЕМЕНТЫ */
+        .inventory-card {
+            background: #151823;
+            border: 1px solid #232838;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .inventory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hold-badge {
+            background: rgba(255, 107, 0, 0.15);
+            color: #FF6B00;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .hold-badge.ready {
+            background: rgba(0, 243, 255, 0.15);
+            color: #00F3FF;
+            border-color: rgba(0, 243, 255, 0.3);
+        }
+
+        .hold-timer-text {
+            font-size: 12px;
+            color: #A0AAB8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-withdraw {
+            width: 100%;
+            background: #232838;
+            border: 1px solid #32394e;
+            color: #718096;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: not-allowed;
+        }
+
+        .btn-withdraw.active {
+            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            color: #FFF;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        /* РЕФЕРАЛКА */
+        .ref-box {
+            background: #151823;
+            border: 1px solid #232838;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ref-link-input {
+            width: 100%;
+            background: #0B0C10;
+            border: 1px solid #232838;
+            color: #00F3FF;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .ref-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-ref {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-copy { background: #232838; color: #FFF; border: 1px solid #32394e; }
+        .btn-share { background: linear-gradient(90deg, #0066FF, #00F3FF); color: #FFF; }
+
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -314,9 +397,7 @@
             cursor: pointer;
         }
 
-        .nav-item.active {
-            opacity: 1;
-        }
+        .nav-item.active { opacity: 1; }
 
         /* СТОРИС */
         .story-overlay {
@@ -348,11 +429,7 @@
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #00F3FF;
-        }
+        .progress-fill { height: 100%; width: 0%; background: #00F3FF; }
 
         .story-content {
             flex: 1;
@@ -364,23 +441,9 @@
             padding: 20px;
         }
 
-        .story-slide {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .story-slide.active {
-            display: flex;
-        }
-
-        .story-icon {
-            font-size: 80px;
-            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
-        }
-
+        .story-slide { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+        .story-slide.active { display: flex; }
+        .story-icon { font-size: 80px; filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4)); }
         .story-slide h2 { font-size: 26px; font-weight: 800; }
         .story-slide p { font-size: 15px; color: #A0AAB8; line-height: 1.5; max-width: 300px; }
 
@@ -418,19 +481,13 @@
             cursor: pointer;
         }
 
-        .gift-bounce {
-            animation: bounce 1.2s infinite ease-in-out;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-15px) scale(1.05); }
-        }
+        .gift-bounce { animation: bounce 1.2s infinite ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
     </style>
 </head>
 <body>
 
-    <!-- 1. СТОРИС-ОНБОРДИНГ -->
+    <!-- 1. СТОРИС-ОНБОРДИНГ (ПОКАЗЫВАЕТСЯ 1 РАЗ) -->
     <div id="story-onboarding" class="story-overlay">
         <div class="story-progress-container">
             <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
@@ -455,7 +512,7 @@
                 <div class="story-icon gift-bounce">🧸</div>
                 <div class="badge-price">Стоимость: 15 ⭐</div>
                 <h2>Твой подарок за старт!</h2>
-                <p>Мы дарим тебе предмет «Мишка» (15 ⭐). Он уже готов отправиться в твой инвентарь!</p>
+                <p>Мы дарим тебе предмет «Мишка» (15 ⭐). Он уже отправлен в твой инвентарь на заморозку!</p>
             </div>
         </div>
 
@@ -499,7 +556,7 @@
                 <button class="btn-card-action">Выбрать</button>
             </div>
 
-            <!-- 3. РОЗЫГРЫШ БИЛЕТОВ (НОВОЕ!) -->
+            <!-- 3. РОЗЫГРЫШ БИЛЕТОВ -->
             <div class="menu-card featured-tickets" onclick="openScreen('screen-tickets')">
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
@@ -511,13 +568,25 @@
                 <button class="btn-card-action" style="color: #9D00FF; border-color: #9D00FF;">Участвовать</button>
             </div>
 
-            <!-- 4. ИНВЕНТАРЬ -->
+            <!-- 4. ДРУЗЬЯ (РЕФЕРАЛКА) -->
+            <div class="menu-card" onclick="openScreen('screen-friends')">
+                <div class="card-left">
+                    <div class="card-icon">👥</div>
+                    <div class="card-info">
+                        <h3>Пригласить друзей <span class="card-badge free">+2 ⭐</span></h3>
+                        <p>+2 ⭐ за друга + 5% от депо</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Позвать</button>
+            </div>
+
+            <!-- 5. ИНВЕНТАРЬ -->
             <div class="menu-card" onclick="openScreen('screen-inventory')">
                 <div class="card-left">
                     <div class="card-icon">🎒</div>
                     <div class="card-info">
-                        <h3>Инвентарь <span class="card-badge free">1</span></h3>
-                        <p>Твой Мишка и предметы</p>
+                        <h3>Инвентарь <span class="card-badge" id="hub-inv-badge">1</span></h3>
+                        <p>Твой Мишка и заморозки</p>
                     </div>
                 </div>
                 <button class="btn-card-action">Открыть</button>
@@ -626,43 +695,161 @@
             <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
-        <!-- ЭКРАН 5: ИНВЕНТАРЬ -->
-        <div id="screen-inventory" class="screen">
+        <!-- ЭКРАН 5: ДРУЗЬЯ (РЕФЕРАЛКА) -->
+        <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
-            <h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Твой Инвентарь</h2>
-            <div class="menu-card">
-                <div class="card-left">
-                    <div class="card-icon">🧸</div>
-                    <div class="card-info">
-                        <h3>Плюшевый Мишка</h3>
-                        <p>Стоимость: 15 ⭐</p>
-                    </div>
+            
+            <h2 style="font-size: 18px;">👥 Зарабатывай на друзьях</h2>
+            <p style="font-size: 13px; color: #A0AAB8; line-height: 1.4;">
+                Получай <b style="color: #FFCC00;">+2 ⭐</b> за каждого приглашённого друга и <b style="color: #00F3FF;">5%</b> от всех его пополнений навсегда! <i>(Все бонусы падают в инвентарь на 21 день).</i>
+            </p>
+
+            <div class="ref-box">
+                <div style="font-size: 12px; color: #A0AAB8;">Твоя пригласительная ссылка:</div>
+                <input type="text" id="ref-link-input" class="ref-link-input" value="https://t.me/HomastarBot?start=ref_12345" readonly>
+                <div class="ref-buttons">
+                    <button class="btn-ref btn-copy" onclick="copyRefLink()">📋 Копировать</button>
+                    <button class="btn-ref btn-share" onclick="shareRefLink()">✈️ Поделиться</button>
                 </div>
+            </div>
+
+            <div class="ticket-stats">
+                <div>Приглашено: <b style="color: #00F3FF;">3 чел.</b></div>
+                <div>Заработано: <b style="color: #FFCC00;">+6 ⭐</b></div>
             </div>
         </div>
 
+        <!-- ЭКРАН 6: ИНВЕНТАРЬ С ЛОГИКОЙ ХОЛДА 21 ДЕНЬ -->
+        <div id="screen-inventory" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <h2 style="font-size: 18px; margin-bottom: 4px;">🎒 Твой Инвентарь</h2>
+            <p style="font-size: 12px; color: #A0AAB8; margin-bottom: 10px;">Все начисленные подарки и бонусы находятся в заморозке 21 день.</p>
+
+            <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Карточки предзагрузятся через JS -->
+            </div>
+        </div>
+
+        <!-- НИЖНЯЯ НАВИГАЦИЯ -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
             <button class="nav-item" onclick="openScreen('screen-tickets')">🎟️</button>
+            <button class="nav-item" onclick="openScreen('screen-friends')">👥</button>
             <button class="nav-item" onclick="openScreen('screen-inventory')">🎒</button>
         </nav>
     </div>
 
     <script>
         let timerInterval = null;
+        let holdInterval = null;
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
 
+        // Данные инвентаря с датами получения
+        let inventoryItems = [
+            {
+                id: 'gift_bear',
+                title: 'Плюшевый Мишка (15 ⭐)',
+                icon: '🧸',
+                receivedAt: parseInt(localStorage.getItem('homastar_bear_time') || new Date().getTime().toString())
+            },
+            {
+                id: 'ref_bonus_1',
+                title: 'Бонус за друга (+2 ⭐)',
+                icon: '👤',
+                receivedAt: new Date().getTime() - (2 * 24 * 60 * 60 * 1000) // Пример: получен 2 дня назад
+            }
+        ];
+
+        if (!localStorage.getItem('homastar_bear_time')) {
+            localStorage.setItem('homastar_bear_time', new Date().getTime().toString());
+        }
+
         function openScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
             if (target) target.classList.add('active');
+            
+            if (screenId === 'screen-inventory') {
+                renderInventory();
+            }
             updateTicketUI();
         }
 
-        // Покупка билета
+        // РЕНДЕР ИНВЕНТАРЯ С ТАЙМЕРАМИ 21 ДЕНЬ
+        function renderInventory() {
+            const container = document.getElementById('inventory-list');
+            container.innerHTML = '';
+
+            const twentyOneDays = 21 * 24 * 60 * 60 * 1000;
+            const now = new Date().getTime();
+
+            inventoryItems.forEach(item => {
+                const timePassed = now - item.receivedAt;
+                const timeLeft = twentyOneDays - timePassed;
+                const isReady = timeLeft <= 0;
+
+                const card = document.createElement('div');
+                card.className = 'inventory-card';
+
+                if (isReady) {
+                    card.innerHTML = `
+                        <div class="inventory-header">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:24px;">${item.icon}</span>
+                                <div>
+                                    <h4 style="font-size:14px;">${item.title}</h4>
+                                    <div class="hold-timer-text" style="color:#00F3FF;">✅ Готово к выводу!</div>
+                                </div>
+                            </div>
+                            <span class="hold-badge ready">РАЗБЛОКИРОВАНО</span>
+                        </div>
+                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}')">ВЫВЕСТИ НА БАЛАНС</button>
+                    `;
+                } else {
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                    card.innerHTML = `
+                        <div class="inventory-header">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:24px;">${item.icon}</span>
+                                <div>
+                                    <h4 style="font-size:14px;">${item.title}</h4>
+                                    <div class="hold-timer-text">⏱ До вывода: ${days}д ${hours}ч ${minutes}мин</div>
+                                </div>
+                            </div>
+                            <span class="hold-badge">🔒 ХОЛД 21 ДЕНЬ</span>
+                        </div>
+                        <button class="btn-withdraw" disabled>🔒 ЗАБЛОКИРОВАНО</button>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function withdrawItem(itemId) {
+            alert('🎉 Награда успешно выведена на твой основной баланс!');
+            inventoryItems = inventoryItems.filter(i => i.id !== itemId);
+            renderInventory();
+        }
+
+        // РЕФЕРАЛКА КНОПКИ
+        function copyRefLink() {
+            const input = document.getElementById('ref-link-input');
+            input.select();
+            document.execCommand('copy');
+            alert('📋 Ссылка скопирована!');
+        }
+
+        function shareRefLink() {
+            const url = encodeURIComponent(document.getElementById('ref-link-input').value);
+            const text = encodeURIComponent('Крути колесо и выбивай Telegram Stars в Homastar!');
+            window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+        }
+
+        // БИЛЕТЫ
         function buyTicket() {
             userTickets++;
             localStorage.setItem('homastar_tickets', userTickets.toString());
@@ -672,10 +859,11 @@
 
         function updateTicketUI() {
             document.getElementById('user-tickets-count').innerText = `${userTickets} шт.`;
-            const chance = userTickets * 4.5; // Пример расчета шанса
+            const chance = userTickets * 4.5;
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
+        // КОЛЕСО ЛОГИКА
         function openFreeWheelScreen() {
             document.getElementById('wheel-title').innerText = '🎁 Бесплатное Колесо';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
@@ -747,7 +935,7 @@
             openScreen('screen-game-wheel');
         }
 
-        // Слайд-шоу
+        // СЛАЙД-ШОУ
         let currentSlide = 1;
         const totalSlides = 3;
         const slideDuration = 4000;
