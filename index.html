@@ -256,7 +256,7 @@
             font-weight: 800;
         }
 
-        /* --- 3D КОЛЕСО И СВЕТЯЩАЯСЯ ГИРЛЯНДА --- */
+        /* --- ЧИСТАЯ PNG-АНИМАЦИЯ ГОТОВОГО 3D КОЛЕСА --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -267,65 +267,21 @@
             padding: 10px 0;
         }
 
-        .arrow-pointer {
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 24px solid var(--accent-blue);
-            z-index: 20;
-            margin-bottom: -12px;
-            filter: drop-shadow(0 0 12px var(--accent-blue));
-            position: relative;
-        }
-
-        .arrow-pointer::after {
-            content: '';
-            position: absolute;
-            top: -22px;
-            left: -9px;
-            width: 0;
-            height: 0;
-            border-left: 9px solid transparent;
-            border-right: 9px solid transparent;
-            border-top: 14px solid #FFF;
-        }
-
-        .wheel-outer-rim {
-            width: 300px;
-            height: 300px;
+        .wheel-container-asset {
+            width: 310px;
+            height: 310px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
         }
 
-        .wheel-bulbs-container {
-            position: absolute;
+        .wheel-image-asset {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .bulb {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            margin: -4px;
-        }
-
-        #wheel-canvas {
-            width: 300px;
-            height: 300px;
+            object-fit: contain;
             transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
-            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
+            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.3));
         }
 
         .btn-spin {
@@ -553,7 +509,6 @@
 
         .input-stars { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); color: var(--accent-gold); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; outline: none; text-align: center; }
 
-        /* --- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ --- */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -756,10 +711,9 @@
             </div>
 
             <div class="wheel-section">
-                <div class="arrow-pointer"></div>
-                <div class="wheel-outer-rim">
-                    <div class="wheel-bulbs-container" id="bulbs-container"></div>
-                    <canvas id="wheel-canvas" width="600" height="600"></canvas>
+                <div class="wheel-container-asset">
+                    <!-- ИСПОЛЬЗУЕМ ВАШУ КРАСИВУЮ PNG КАРТИНКУ КОЛЕСА -->
+                    <img id="wheel-img-asset" class="wheel-image-asset" src="wheel.png" alt="Wheel of Fortune">
                 </div>
             </div>
 
@@ -902,12 +856,13 @@
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
+        // ТВОЕ КОЛЕСО ИМЕЕТ 10 СЕКТОРОВ
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [0.5, 0.8, 1, 5, 10, 20, 50, 100] },
-            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [10, 20, 30, 50, 100] },
-            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [20, 50, 70, 100, 150, 300] },
-            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [30, 50, 100, 140, 250, 500] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [80, 150, 250, 300, 600, 1500] }
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
+            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
+            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
+            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] }
         };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
@@ -1079,203 +1034,11 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- СОЧНАЯ И ЯРКАЯ НЕОНОВАЯ ОТРИСОВКА КОЛЕСА --- */
-        function renderWheelDisc(type) {
-            const canvas = document.getElementById('wheel-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            currentWheelRotation = 0;
-            canvas.style.transform = 'rotate(0deg)';
-
-            const prizes = WHEEL_CONFIGS[type].prizes;
-            const numSlices = prizes.length;
-            const arc = (2 * Math.PI) / numSlices;
-            const radius = canvas.width / 2;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. Блестящая золотая рама
-            const rimGrad = ctx.createRadialGradient(radius, radius, radius - 25, radius, radius, radius);
-            rimGrad.addColorStop(0, '#3A2800');
-            rimGrad.addColorStop(0.5, '#FFD700');
-            rimGrad.addColorStop(0.85, '#FFF5B0');
-            rimGrad.addColorStop(1, '#8B6500');
-
-            ctx.beginPath();
-            ctx.fillStyle = rimGrad;
-            ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
-            ctx.fill();
-
-            const innerRimRadius = radius - 22;
-            ctx.beginPath();
-            ctx.fillStyle = '#0D101D';
-            ctx.arc(radius, radius, innerRimRadius, 0, 2 * Math.PI);
-            ctx.fill();
-
-            // 2. Яркие, сочные неоновые градиенты
-            const discRadius = innerRimRadius - 12;
-            const BRIGHT_NEON_GRADIENTS = [
-                ['#00C6FF', '#0072FF'], // Насыщенный синий
-                ['#FF416C', '#FF4B2B'], // Ярко-красный
-                ['#F857A6', '#FF5858'], // Сочный малиновый
-                ['#FF9900', '#FF5500'], // Огненно-оранжевый
-                ['#A855F7', '#6366F1'], // Фиолетовый неон
-                ['#11998E', '#38EF7D'], // Ярко-изумрудный
-                ['#00F2FE', '#4FACFE'], // Кислотно-голубой
-                ['#FF0844', '#FFB199']  // Коралл
-            ];
-
-            function getPrizeIcon(val) {
-                if (val >= 300) return '🏆';
-                if (val >= 100) return '💎';
-                if (val >= 50) return '👑';
-                if (val >= 20) return '💰';
-                return '⭐';
-            }
-
-            for (let i = 0; i < numSlices; i++) {
-                const angle = i * arc - Math.PI / 2;
-                const colors = BRIGHT_NEON_GRADIENTS[i % BRIGHT_NEON_GRADIENTS.length];
-
-                const segGrad = ctx.createRadialGradient(radius, radius, 40, radius, radius, discRadius);
-                segGrad.addColorStop(0, colors[0]);
-                segGrad.addColorStop(1, colors[1]);
-
-                ctx.beginPath();
-                ctx.fillStyle = segGrad;
-                ctx.moveTo(radius, radius);
-                ctx.arc(radius, radius, discRadius, angle, angle + arc);
-                ctx.lineTo(radius, radius);
-                ctx.fill();
-
-                // Золотой контур секторов
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 235, 150, 0.7)';
-                ctx.lineWidth = 2.5;
-                ctx.arc(radius, radius, discRadius - 4, angle + 0.03, angle + arc - 0.03);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-                ctx.lineWidth = 2;
-                ctx.moveTo(radius, radius);
-                ctx.lineTo(radius + discRadius * Math.cos(angle), radius + discRadius * Math.sin(angle));
-                ctx.stroke();
-
-                // Иконка и сумма
-                ctx.save();
-                ctx.translate(radius, radius);
-                ctx.rotate(angle + arc / 2);
-
-                const icon = getPrizeIcon(prizes[i]);
-                ctx.font = '28px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-                ctx.shadowBlur = 4;
-                ctx.fillText(icon, discRadius - 45, 0);
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = '900 21px -apple-system, sans-serif';
-                ctx.textAlign = 'right';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                ctx.shadowBlur = 6;
-                ctx.fillText(`+${prizes[i]} ⭐`, discRadius - 80, 0);
-
-                ctx.restore();
-            }
-
-            // 3. Золотая кнопка в центре
-            const hubRadius = 44;
-            const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
-            hubGrad.addColorStop(0, '#FFF5B0');
-            hubGrad.addColorStop(0.6, '#FFD700');
-            hubGrad.addColorStop(1, '#8B6500');
-
-            ctx.beginPath();
-            ctx.fillStyle = hubGrad;
-            ctx.arc(radius, radius, hubRadius, 0, 2 * Math.PI);
-            ctx.fill();
-
-            ctx.strokeStyle = '#FFFFFF';
-            ctx.lineWidth = 2.5;
-            ctx.stroke();
-
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = '28px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('⭐', radius, radius);
-
-            // 4. Яркие неоновые лампочки
-            const bulbsContainer = document.getElementById('bulbs-container');
-            if (bulbsContainer) {
-                bulbsContainer.innerHTML = '';
-                const numBulbs = 18;
-                for (let i = 0; i < numBulbs; i++) {
-                    const bulb = document.createElement('div');
-                    bulb.className = 'bulb';
-                    const angle = (i * 360 / numBulbs) * (Math.PI / 180);
-                    const r = 138;
-                    const x = r * Math.cos(angle);
-                    const y = r * Math.sin(angle);
-                    bulb.style.transform = `translate(${x}px, ${y}px)`;
-                    bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
-                    bulb.style.boxShadow = i % 2 === 0 ? '0 0 10px #00F3FF' : '0 0 10px #FFD700';
-                    bulbsContainer.appendChild(bulb);
-                }
-            }
-        }
-
-        function calculatePrizeIndex(type) {
-            const count = userSpinCounts[type] || 0;
-            userSpinCounts[type] = count + 1;
-            localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts));
-            const rand = Math.random() * 100;
-
-            if (type === 'free') {
-                if (count === 0) return 2;
-                if (rand < 55) return 0;
-                if (rand < 90) return 1;
-                if (rand < 98) return 2;
-                return 3;
-            }
-
-            if (type === 'common') {
-                if (count === 0) return 3;
-                if (rand < 45) return 0;
-                if (rand < 80) return 1;
-                return 2;
-            }
-
-            if (type === 'silver') {
-                if (count === 0) return 1;
-                if (count === 1) return 2;
-                if (rand < 42) return 0;
-                return 1;
-            }
-
-            if (type === 'gold') {
-                if (count === 0) return 2;
-                if (count === 1) return 3;
-                return 0;
-            }
-
-            if (type === 'diamond') {
-                if (count === 0) return 2;
-                if (count === 1) return 3;
-                return 0;
-            }
-
-            return 0;
-        }
-
         function openFreeWheelScreen() {
             activeWheelType = 'free';
             document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title;
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
-            renderWheelDisc('free');
+            resetWheelRotation();
             checkFreeSpinState();
             openScreen('screen-game-wheel');
         }
@@ -1285,12 +1048,11 @@
             const config = WHEEL_CONFIGS[type];
             document.getElementById('wheel-title').innerText = config.title;
             
-            // Отключаем таймер для всех платных колёс
             clearInterval(timerInterval);
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
 
-            renderWheelDisc(type);
+            resetWheelRotation();
 
             const btn = document.getElementById('btn-spin-action');
             btn.classList.remove('disabled');
@@ -1300,7 +1062,12 @@
             openScreen('screen-game-wheel');
         }
 
-        /* --- СТРОГИЙ ТАЙМЕР 24 ЧАСА ТОЛЬКО ДЛЯ БЕСПЛАТНОГО КОЛЕСА --- */
+        function resetWheelRotation() {
+            currentWheelRotation = 0;
+            const img = document.getElementById('wheel-img-asset');
+            if (img) img.style.transform = 'rotate(0deg)';
+        }
+
         function checkFreeSpinState() {
             clearInterval(timerInterval);
             const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0');
@@ -1346,6 +1113,50 @@
             }
         }
 
+        function calculatePrizeIndex(type) {
+            const count = userSpinCounts[type] || 0;
+            userSpinCounts[type] = count + 1;
+            localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts));
+            const rand = Math.random() * 100;
+
+            if (type === 'free') {
+                if (count === 0) return 4; // 10 ⭐
+                if (rand < 50) return 3;   // 0 ⭐
+                if (rand < 85) return 4;   // 10 ⭐
+                if (rand < 97) return 2;   // 20 ⭐
+                return 1;                  // 100 ⭐
+            }
+
+            if (type === 'common') {
+                if (count === 0) return 8; // 50 ⭐
+                if (rand < 45) return 3;   // 0 ⭐
+                if (rand < 80) return 4;   // 10 ⭐
+                return 2;                  // 20 ⭐
+            }
+
+            if (type === 'silver') {
+                if (count === 0) return 8; // 50 ⭐
+                if (count === 1) return 1; // 100 ⭐
+                if (rand < 40) return 4;   // 10 ⭐
+                return 2;                  // 20 ⭐
+            }
+
+            if (type === 'gold') {
+                if (count === 0) return 1; // 100 ⭐
+                if (count === 1) return 0; // 500 ⭐
+                return 2;                  // 20 ⭐
+            }
+
+            if (type === 'diamond') {
+                if (count === 0) return 1; // 100 ⭐
+                if (count === 1) return 0; // 500 ⭐
+                return 2;                  // 20 ⭐
+            }
+
+            return 3;
+        }
+
+        /* --- ВРАЩЕНИЕ ВАШЕГО ГОТОВОГО PNG-КОЛЕСА С ТОЧНЫМ ПОПАДАНИЕМ --- */
         function startSpin(type) {
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[type];
@@ -1365,10 +1176,11 @@
 
             const prizeIndex = calculatePrizeIndex(type);
             const prizeValue = config.prizes[prizeIndex];
-            const numSlices = config.prizes.length;
+            const numSlices = 10;
             const sectorDegree = 360 / numSlices;
 
-            const targetAngle = 360 - (prizeIndex + 0.5) * sectorDegree;
+            // Расчет угла для вашего PNG колеса
+            const targetAngle = 360 - (prizeIndex * sectorDegree);
             
             const currentModulo = currentWheelRotation % 360;
             let distanceToTarget = targetAngle - currentModulo;
@@ -1378,19 +1190,22 @@
             const totalRotationIncrement = distanceToTarget + extraRounds;
             currentWheelRotation += totalRotationIncrement;
 
-            const canvas = document.getElementById('wheel-canvas');
-            canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+            const img = document.getElementById('wheel-img-asset');
+            img.style.transform = `rotate(${currentWheelRotation}deg)`;
 
             setTimeout(() => {
                 isSpinning = false;
                 userBalance += prizeValue;
                 updateBalanceDisplay();
 
+                const prizeText = prizeValue > 0 ? `+${prizeValue} ⭐` : 'ПОВТОРИТЕ ПОПЫТКУ';
+                const subText = prizeValue > 0 ? 'Зачислено на ваш баланс!' : 'В этот раз не повезло, попробуйте еще раз!';
+
                 if (type === 'free') {
-                    showWinPopup(`+${prizeValue} ⭐`, 'Зачислено прямо на ваш баланс!');
+                    showWinPopup(prizeText, subText);
                     checkFreeSpinState();
                 } else {
-                    showWinPopup(`+${prizeValue} ⭐`, 'Зачислено на ваш баланс!');
+                    showWinPopup(prizeText, subText);
                     btn.classList.remove('disabled');
                 }
             }, 5000);
@@ -1420,7 +1235,7 @@
             updateBalanceDisplay();
             setTheme(settings.theme);
 
-            const isCompleted = localStorage.setItem('homastar_onboarding_completed');
+            const isCompleted = localStorage.getItem('homastar_onboarding_completed');
             if (isCompleted === 'true') {
                 document.getElementById('story-onboarding').style.display = 'none';
             }
