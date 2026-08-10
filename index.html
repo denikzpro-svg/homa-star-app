@@ -42,6 +42,7 @@
             position: relative;
         }
 
+        /* --- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН --- */
         .bg-animated-nebula {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -255,7 +256,7 @@
             font-weight: 800;
         }
 
-        /* --- КОЛЕСО --- */
+        /* --- ИДЕАЛЬНОЕ СУПЕР-КОЛЕСО НА CANVAS --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -271,9 +272,9 @@
             height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
-            border-top: 24px solid var(--accent-blue);
+            border-top: 26px solid var(--accent-blue);
             z-index: 20;
-            margin-bottom: -12px;
+            margin-bottom: -14px;
             filter: drop-shadow(0 0 12px var(--accent-blue));
             position: relative;
         }
@@ -281,31 +282,48 @@
         .arrow-pointer::after {
             content: '';
             position: absolute;
-            top: -22px;
+            top: -24px;
             left: -9px;
             width: 0;
             height: 0;
             border-left: 9px solid transparent;
             border-right: 9px solid transparent;
-            border-top: 14px solid #FFF;
+            border-top: 15px solid #FFF;
         }
 
-        .wheel-container-asset {
-            width: 320px;
-            height: 320px;
+        .wheel-outer-rim {
+            width: 310px;
+            height: 310px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
         }
 
-        .wheel-image-asset {
+        .wheel-bulbs-container {
+            position: absolute;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            border-radius: 50%;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .bulb {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            margin: -4px;
+        }
+
+        #wheel-canvas {
+            width: 310px;
+            height: 310px;
             transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
-            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
-            display: block;
+            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.3));
         }
 
         .btn-spin {
@@ -481,8 +499,7 @@
             background: #FFF;
             border-radius: 50%;
             position: absolute;
-            top: 3px;
-            left: 3px;
+            top: 3px; left: 3px;
             transition: left 0.2s;
         }
 
@@ -672,11 +689,12 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
-            <!-- ИСПОЛЬЗУЕМ КОРРЕКТНЫЙ ПРОКСИ-СЕРВЕР ДЛЯ ОБХОДА CORS -->
+            <!-- ИДЕАЛЬНОЕ КОЛЕСО НА CANVAS (БЕЗ ЗАВИСИМОСТИ ОТ ВНЕШНИХ PNG И КАРТИНОК) -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
-                <div class="wheel-container-asset">
-                    <img id="wheel-img-asset" class="wheel-image-asset" src="https://images.weserv.nl/?url=i.postimg.cc/fbqm0b1n/wheel.png" alt="Wheel of Fortune">
+                <div class="wheel-outer-rim">
+                    <div class="wheel-bulbs-container" id="bulbs-container"></div>
+                    <canvas id="wheel-canvas" width="600" height="600"></canvas>
                 </div>
             </div>
 
@@ -818,16 +836,16 @@
         };
 
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
-            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
-            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
-            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] }
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
+            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
+            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
+            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] }
         };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
-        function saveInventory() { localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems)); }
+        function saveInventory() { localStorage.getItem('homastar_inventory', JSON.stringify(inventoryItems)); localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems)); }
 
         function updateBalanceDisplay() {
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
@@ -841,10 +859,8 @@
             if (target) target.classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            
             let navTargetId = screenId;
             if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list';
-            
             const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
             if (activeNavBtn) activeNavBtn.classList.add('active');
 
@@ -982,12 +998,148 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
+        /* --- ОТРИСОВКА ПРЕМИАЛЬНОГО КОЛЕСА НА CANVAS --- */
+        function renderWheelDisc(type) {
+            const canvas = document.getElementById('wheel-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            currentWheelRotation = 0;
+            canvas.style.transform = 'rotate(0deg)';
+
+            const config = WHEEL_CONFIGS[type];
+            const prizes = config.prizes;
+            const icons = config.icons;
+            const numSlices = prizes.length;
+            const arc = (2 * Math.PI) / numSlices;
+            const radius = canvas.width / 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Внешняя золотая рама
+            const rimGrad = ctx.createRadialGradient(radius, radius, radius - 28, radius, radius, radius);
+            rimGrad.addColorStop(0, '#3A2800');
+            rimGrad.addColorStop(0.5, '#FFD700');
+            rimGrad.addColorStop(0.85, '#FFF5B0');
+            rimGrad.addColorStop(1, '#8B6500');
+
+            ctx.beginPath();
+            ctx.fillStyle = rimGrad;
+            ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            const innerRimRadius = radius - 24;
+            ctx.beginPath();
+            ctx.fillStyle = '#080A12';
+            ctx.arc(radius, radius, innerRimRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // 2. Яркие сектора
+            const discRadius = innerRimRadius - 10;
+            const SECTOR_COLORS = [
+                ['#00C6FF', '#0072FF'],
+                ['#FF416C', '#FF4B2B'],
+                ['#A855F7', '#6366F1'],
+                ['#FF9900', '#FF5500'],
+                ['#11998E', '#38EF7D'],
+                ['#F857A6', '#FF5858'],
+                ['#00F2FE', '#4FACFE'],
+                ['#7B1FA2', '#E040FB'],
+                ['#FFD700', '#FF8C00'],
+                ['#00E676', '#00B0FF']
+            ];
+
+            for (let i = 0; i < numSlices; i++) {
+                const angle = i * arc - Math.PI / 2;
+                const colors = SECTOR_COLORS[i % SECTOR_COLORS.length];
+
+                const segGrad = ctx.createRadialGradient(radius, radius, 30, radius, radius, discRadius);
+                segGrad.addColorStop(0, colors[0]);
+                segGrad.addColorStop(1, colors[1]);
+
+                ctx.beginPath();
+                ctx.fillStyle = segGrad;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, discRadius, angle, angle + arc);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+
+                // Золотой контур
+                ctx.strokeStyle = 'rgba(255, 235, 150, 0.6)';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Иконка и текст
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arc / 2);
+
+                // Иконка приз
+                ctx.font = '26px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(icons[i], discRadius - 55, 0);
+
+                // Сумма выигрыша
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '900 19px -apple-system, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(prizes[i] > 0 ? `+${prizes[i]}` : 'TRY', discRadius - 90, 0);
+
+                ctx.restore();
+            }
+
+            // 3. Центральная золотая медаль
+            const hubRadius = 45;
+            const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
+            hubGrad.addColorStop(0, '#FFF5B0');
+            hubGrad.addColorStop(0.6, '#FFD700');
+            hubGrad.addColorStop(1, '#8B6500');
+
+            ctx.beginPath();
+            ctx.fillStyle = hubGrad;
+            ctx.arc(radius, radius, hubRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '28px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⭐', radius, radius);
+
+            // 4. Неоновые лампочки по периметру
+            const bulbsContainer = document.getElementById('bulbs-container');
+            if (bulbsContainer) {
+                bulbsContainer.innerHTML = '';
+                const numBulbs = 20;
+                for (let i = 0; i < numBulbs; i++) {
+                    const bulb = document.createElement('div');
+                    bulb.className = 'bulb';
+                    const angle = (i * 360 / numBulbs) * (Math.PI / 180);
+                    const r = 142;
+                    const x = r * Math.cos(angle);
+                    const y = r * Math.sin(angle);
+                    bulb.style.transform = `translate(${x}px, ${y}px)`;
+                    bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
+                    bulb.style.boxShadow = i % 2 === 0 ? '0 0 8px #00F3FF' : '0 0 8px #FFD700';
+                    bulbsContainer.appendChild(bulb);
+                }
+            }
+        }
+
         function openFreeWheelScreen() {
             activeWheelType = 'free';
             document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title;
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
-            
-            resetWheelRotation();
+            renderWheelDisc('free');
             checkFreeSpinState();
             openScreen('screen-game-wheel');
         }
@@ -1001,7 +1153,7 @@
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
 
-            resetWheelRotation();
+            renderWheelDisc(type);
 
             const btn = document.getElementById('btn-spin-action');
             btn.classList.remove('disabled');
@@ -1009,12 +1161,6 @@
             btn.onclick = () => startSpin(type);
 
             openScreen('screen-game-wheel');
-        }
-
-        function resetWheelRotation() {
-            currentWheelRotation = 0;
-            const img = document.getElementById('wheel-img-asset');
-            if (img) img.style.transform = 'rotate(0deg)';
         }
 
         function checkFreeSpinState() {
@@ -1127,7 +1273,7 @@
             
             const numSlices = 10;
             const sectorDegree = 360 / numSlices;
-            const targetAngle = 360 - (prizeIndex * sectorDegree);
+            const targetAngle = 360 - (prizeIndex + 0.5) * sectorDegree;
             
             const currentModulo = currentWheelRotation % 360;
             let distanceToTarget = targetAngle - currentModulo;
@@ -1136,8 +1282,8 @@
             const extraRounds = 6 * 360;
             currentWheelRotation += distanceToTarget + extraRounds;
 
-            const img = document.getElementById('wheel-img-asset');
-            img.style.transform = `rotate(${currentWheelRotation}deg)`;
+            const canvas = document.getElementById('wheel-canvas');
+            canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
 
             setTimeout(() => {
                 isSpinning = false;
