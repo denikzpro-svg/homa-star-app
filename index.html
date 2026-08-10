@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Добавил рандомный параметр, чтобы сбить кэш Telegram -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Homastar Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -105,8 +104,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 0;
-            z-index: 10;
+            padding: 4px 0 8px 0;
         }
 
         .logo {
@@ -159,35 +157,26 @@
             box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
-        /* --- РЕАЛИСТИЧНЫЙ LIVE ПОП-АП (Всплывает сверху) --- */
-        .live-popup-container {
-            position: absolute;
-            top: 60px; /* Появляется под балансом */
-            left: 50%;
-            transform: translateX(-50%) translateY(-150%);
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 999;
+        /* --- ВСТРОЕННАЯ АККУРАТНАЯ LIVE-ЛЕНТА --- */
+        .live-bar-embedded {
+            width: 100%;
+            background: rgba(10, 12, 18, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 6px 12px;
             display: flex;
             align-items: center;
-            background: #0D0D0D;
-            border-radius: 20px;
-            padding: 6px 12px;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            pointer-events: none; /* Чтобы не мешал кликать */
-        }
-
-        .live-popup-container.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+            gap: 10px;
+            margin-bottom: 8px;
+            height: 52px;
         }
 
         .live-label-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            padding-right: 8px;
+            border-right: 1px solid var(--card-border);
         }
 
         .live-text-vertical {
@@ -195,32 +184,39 @@
             transform: rotate(180deg);
             color: #FFFFFF;
             font-weight: 900;
-            font-size: 14px;
-            letter-spacing: 2px;
+            font-size: 11px;
+            letter-spacing: 1px;
         }
 
         .live-avatar {
-            font-size: 32px;
-            filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.4));
+            font-size: 24px;
+        }
+
+        .live-pill-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
         }
 
         .live-pill {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            border-radius: 30px;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
             font-weight: 900;
-            font-size: 22px;
+            font-size: 15px;
             color: #FFFFFF;
-            box-shadow: inset 0 -3px 10px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+            box-shadow: inset 0 -2px 6px rgba(0,0,0,0.3);
         }
 
-        .pill-red { background: linear-gradient(135deg, #D32F2F, #B71C1C); }
-        .pill-purple { background: linear-gradient(135deg, #6C38CC, #4A1A99); }
-        .pill-blue { background: linear-gradient(135deg, #1976D2, #0D47A1); }
-        .pill-green { background: linear-gradient(135deg, #388E3C, #1B5E20); }
-        .pill-orange { background: linear-gradient(135deg, #F57C00, #E65100); }
+        .pill-red { background: linear-gradient(135deg, #FF3344, #B71C1C); }
+        .pill-purple { background: linear-gradient(135deg, #7A42F4, #4A1A99); }
+        .pill-blue { background: linear-gradient(135deg, #0099FF, #0D47A1); }
+        .pill-green { background: linear-gradient(135deg, #22BB55, #1B5E20); }
+        .pill-orange { background: linear-gradient(135deg, #FF6600, #E65100); }
 
         .screen {
             display: none;
@@ -229,8 +225,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 4px 0;
-            position: relative;
-            z-index: 5;
         }
 
         .screen::-webkit-scrollbar { display: none; }
@@ -632,17 +626,6 @@
         <div class="particle p5">⭐</div>
     </div>
 
-    <!-- РЕАЛИСТИЧНЫЙ LIVE ПОП-АП (Всплывает раз в 1-3 минуты) -->
-    <div id="live-notification" class="live-popup-container">
-        <div class="live-label-area">
-            <div class="live-text-vertical">LIVE</div>
-            <div class="live-avatar">👾</div>
-        </div>
-        <div id="live-pill" class="live-pill pill-red">
-            ⭐ <span id="live-pill-amount">0</span>
-        </div>
-    </div>
-
     <div class="app-container">
         <header class="header">
             <div class="logo">HOMASTAR</div>
@@ -652,6 +635,19 @@
                 <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
             </div>
         </header>
+
+        <!-- ВСТРОЕННАЯ LIVE-ЛЕНТА (Ничего не перекрывает) -->
+        <div class="live-bar-embedded">
+            <div class="live-label-area">
+                <div class="live-text-vertical">LIVE</div>
+                <div class="live-avatar">👾</div>
+            </div>
+            <div class="live-pill-area">
+                <div id="embedded-live-pill" class="live-pill pill-red">
+                    ⭐ <span id="embedded-live-amount">6 000</span>
+                </div>
+            </div>
+        </div>
 
         <!-- 1. ИГРЫ (ОСНОВНОЙ ЭКРАН) -->
         <div id="screen-hub" class="screen active">
@@ -677,7 +673,6 @@
                 <button class="btn-card-action">Выбрать</button>
             </div>
 
-            <!-- БИЛЕТЫ ВСТРОЕНЫ СЮДА -->
             <div class="menu-card featured-tickets" onclick="openScreen('screen-tickets')">
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
@@ -1448,41 +1443,42 @@
             }, 5000);
         }
 
-        /* --- ЛОГИКА ВСПЛЫВАЮЩЕЙ LIVE-ЛЕНТЫ (Раз в 1-3 минуты) --- */
-        function triggerLiveNotification() {
-            const wrapper = document.getElementById('live-notification');
-            const pill = document.getElementById('live-pill');
-            const amountEl = document.getElementById('live-pill-amount');
+        /* --- ПЛАВНАЯ СМЕНА ВСТРОЕННОЙ LIVE-ЛЕНТЫ (Раз в 1-3 минуты) --- */
+        function updateEmbeddedLive() {
+            const pill = document.getElementById('embedded-live-pill');
+            const amountEl = document.getElementById('embedded-live-amount');
 
-            if (!wrapper || !pill || !amountEl) return;
+            if (!pill || !amountEl) return;
 
             const colors = ['pill-red', 'pill-purple', 'pill-blue', 'pill-green', 'pill-orange'];
-            const amounts = ['50', '100', '150', '200', '250', '300', '500']; 
+            const amounts = ['50', '100', '150', '200', '290', '500', '1 500', '6 000'];
 
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
+            pill.style.opacity = '0';
+            pill.style.transform = 'scale(0.9)';
 
-            pill.className = 'live-pill ' + randomColor;
-            amountEl.innerText = randomAmount;
-
-            wrapper.classList.add('show');
-
-            // Убираем ленту через 5 секунд
             setTimeout(() => {
-                wrapper.classList.remove('show');
-            }, 5000);
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
 
-            // Следующее появление рандомно от 60 000 мс (1 мин) до 180 000 мс (3 мин)
+                pill.className = 'live-pill ' + randomColor;
+                amountEl.innerText = randomAmount;
+
+                pill.style.opacity = '1';
+                pill.style.transform = 'scale(1)';
+            }, 500);
+
+            // Рандомный интервал от 60 сек до 180 сек
             const nextInterval = Math.floor(Math.random() * (180000 - 60000 + 1)) + 60000;
-            setTimeout(triggerLiveNotification, nextInterval);
+            setTimeout(updateEmbeddedLive, nextInterval);
         }
 
         window.onload = function() {
             updateBalanceDisplay();
             setTheme(settings.theme);
-            
-            // Первая выплата-уведомление покажется ровно через 5 секунд после входа (для теста)
-            setTimeout(triggerLiveNotification, 5000);
+
+            // Запускаем автоматическую редкую смену встроенной плашки
+            const firstInterval = Math.floor(Math.random() * (180000 - 60000 + 1)) + 60000;
+            setTimeout(updateEmbeddedLive, firstInterval);
 
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
