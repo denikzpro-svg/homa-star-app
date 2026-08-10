@@ -256,7 +256,7 @@
             font-weight: 800;
         }
 
-        /* --- ВАША ГОТОВАЯ КАРТИНКА КОЛЕСА --- */
+        /* --- ВАШЕ КОЛЕСО С POSTIMAGES --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -563,7 +563,6 @@
 </head>
 <body class="theme-night">
 
-    <!-- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН -->
     <div class="bg-animated-nebula"></div>
     <div class="floating-particles-container">
         <div class="particle p1">⭐</div>
@@ -583,7 +582,6 @@
             </div>
         </header>
 
-        <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="screen-hub" class="screen active">
             <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
                 <div class="card-left">
@@ -619,7 +617,6 @@
             </div>
         </div>
 
-        <!-- СПИСОК ПЛАТНЫХ КОЛЕС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
@@ -669,7 +666,6 @@
             </div>
         </div>
 
-        <!-- ЭКРАН САМОЙ ИГРЫ (РУЛЕТКА) -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -679,11 +675,11 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
-            <!-- БЛОК С ВАШИМ PNG КОЛЕСОМ -->
+            <!-- ПРЯМАЯ ССЫЛКА НА ВАШЕ КОЛЕСО С POSTIMAGES -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-container-asset">
-                    <img id="wheel-img-asset" class="wheel-image-asset" src="wheel.png" alt="Wheel of Fortune" onerror="console.error('Не могу найти wheel.png! Проверь настройки Vercel Root Directory.')">
+                    <img id="wheel-img-asset" class="wheel-image-asset" src="https://i.postimg.cc/fbqm0b1n/wheel.png" alt="Wheel of Fortune">
                 </div>
             </div>
 
@@ -760,7 +756,6 @@
             </div>
         </div>
 
-        <!-- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button id="nav-screen-wheel-list" class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
@@ -771,7 +766,6 @@
         </nav>
     </div>
 
-    <!-- МОДАЛКИ (ВЫВОД / ПОПОЛНЕНИЕ / ПОБЕДА) -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -826,7 +820,6 @@
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
-        // ПРИЗЫ ТОЧНО СОВПАДАЮТ С ВАШИМ PNG (10 СЕКТОРОВ)
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
             common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
@@ -845,7 +838,6 @@
             localStorage.setItem('homastar_main_balance', userBalance.toString());
         }
 
-        // ЛОГИКА НАВИГАЦИИ (ПОДСВЕТКА НИЖНЕЙ ПАНЕЛИ)
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
@@ -854,7 +846,7 @@
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             
             let navTargetId = screenId;
-            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list'; // Для экрана рулетки подсвечиваем джойстик
+            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list';
             
             const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
             if (activeNavBtn) activeNavBtn.classList.add('active');
@@ -897,7 +889,7 @@
             const container = document.getElementById('inventory-list');
             container.innerHTML = '';
             const twentyOneDays = 21 * 24 * 60 * 60 * 1000;
-            const now = Date.now(); // Системное время
+            const now = Date.now();
 
             if (inventoryItems.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:20px;">Инвентарь пуст</div>';
@@ -1008,7 +1000,6 @@
             const config = WHEEL_CONFIGS[type];
             document.getElementById('wheel-title').innerText = config.title;
             
-            // ПЛАТНЫЕ КОЛЕСА БЕЗ ТАЙМЕРА
             clearInterval(timerInterval);
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
@@ -1029,7 +1020,6 @@
             if (img) img.style.transform = 'rotate(0deg)';
         }
 
-        // ЖЕЛЕЗНЫЙ ТАЙМЕР ПО UTC (В МИЛЛИСЕКУНДАХ СЕРВЕРА/ТЕЛЕФОНА)
         function checkFreeSpinState() {
             clearInterval(timerInterval);
             const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0');
@@ -1040,7 +1030,7 @@
             const twentyFourHoursMs = 24 * 60 * 60 * 1000;
 
             function updateTimerLogic() {
-                const now = Date.now(); // Системное время (абсолютное)
+                const now = Date.now();
                 const timePassed = now - lastSpinTimestamp;
                 const timeLeft = twentyFourHoursMs - timePassed;
 
@@ -1082,38 +1072,37 @@
             const rand = Math.random() * 100;
 
             if (type === 'free') {
-                if (count === 0) return 4; // 10 ⭐
-                if (rand < 50) return 3;   // 0 ⭐
-                if (rand < 85) return 4;   // 10 ⭐
-                if (rand < 97) return 2;   // 20 ⭐
-                return 1;                  // 100 ⭐
+                if (count === 0) return 4;
+                if (rand < 50) return 3;
+                if (rand < 85) return 4;
+                if (rand < 97) return 2;
+                return 1;
             }
 
-            // Платные колеса
             if (type === 'common') {
-                if (count === 0) return 8; // 50 ⭐
-                if (rand < 45) return 3;   // 0 ⭐
-                if (rand < 80) return 4;   // 10 ⭐
-                return 2;                  // 20 ⭐
+                if (count === 0) return 8;
+                if (rand < 45) return 3;
+                if (rand < 80) return 4;
+                return 2;
             }
 
             if (type === 'silver') {
-                if (count === 0) return 8; // 50 ⭐
-                if (count === 1) return 1; // 100 ⭐
-                if (rand < 40) return 4;   // 10 ⭐
-                return 2;                  // 20 ⭐
+                if (count === 0) return 8;
+                if (count === 1) return 1;
+                if (rand < 40) return 4;
+                return 2;
             }
 
             if (type === 'gold') {
-                if (count === 0) return 1; // 100 ⭐
-                if (count === 1) return 0; // 500 ⭐
-                return 2;                  // 20 ⭐
+                if (count === 0) return 1;
+                if (count === 1) return 0;
+                return 2;
             }
 
             if (type === 'diamond') {
-                if (count === 0) return 1; // 100 ⭐
-                if (count === 1) return 0; // 500 ⭐
-                return 2;                  // 20 ⭐
+                if (count === 0) return 1;
+                if (count === 1) return 0;
+                return 2;
             }
 
             return 3;
@@ -1139,18 +1128,14 @@
             const prizeIndex = calculatePrizeIndex(type);
             const prizeValue = config.prizes[prizeIndex];
             
-            // 10 СЕКТОРОВ В ВАШЕМ PNG
             const numSlices = 10;
             const sectorDegree = 360 / numSlices;
-
-            // Расчет точного угла: стрелка указывает ровно по центру сектора
             const targetAngle = 360 - (prizeIndex * sectorDegree);
             
             const currentModulo = currentWheelRotation % 360;
             let distanceToTarget = targetAngle - currentModulo;
             if (distanceToTarget <= 0) distanceToTarget += 360;
 
-            // 6 полных красивых оборотов + доводка до сектора
             const extraRounds = 6 * 360;
             currentWheelRotation += distanceToTarget + extraRounds;
 
