@@ -209,7 +209,7 @@
             font-weight: 800;
         }
 
-        /* --- 3D КОЛЕСО И НЕОНОВЫЕ ЛАМПОЧКИ --- */
+        /* --- 3D КОЛЕСО С ПЛАВНОЙ АНИМАЦИЕЙ --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -274,10 +274,11 @@
             margin: -4px;
         }
 
+        /* Настройка супераккуратного разгона и плавного торможения */
         #wheel-canvas {
             width: 300px;
             height: 300px;
-            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+            transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
             filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
         }
 
@@ -1230,6 +1231,7 @@
             btn.onclick = () => startSpin('free');
         }
 
+        /* --- ЗАПУСК РЕАЛИСТИЧНОЙ И ПЛАВНОЙ АНИМАЦИИ --- */
         function startSpin(type) {
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[type];
@@ -1251,13 +1253,15 @@
             const prizeValue = config.prizes[prizeIndex];
             const sectorDegree = 360 / 10;
 
-            const extraRounds = 5 * 360;
+            // 6 полных оборотов + точная остановка под стрелкой
+            const extraRounds = 6 * 360;
             const targetDegree = extraRounds + (360 - (prizeIndex * sectorDegree));
             currentWheelRotation += targetDegree;
 
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
 
+            // Ждем завершения 5-секундной плавной анимации
             setTimeout(() => {
                 isSpinning = false;
                 userBalance += prizeValue;
@@ -1270,7 +1274,7 @@
                     showWinPopup(`+${prizeValue} ⭐`, 'Зачислено на ваш баланс!');
                     btn.classList.remove('disabled');
                 }
-            }, 4000);
+            }, 5000);
         }
 
         let currentSlide = 1;
