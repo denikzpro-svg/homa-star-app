@@ -11,6 +11,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
         }
 
         body {
@@ -77,7 +78,6 @@
             border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
-            cursor: pointer;
         }
 
         .tab-btn.active {
@@ -144,7 +144,6 @@
             justify-content: center;
             align-items: center;
             font-size: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
         /* Кнопка Spin */
@@ -158,7 +157,6 @@
             font-weight: 800;
             font-size: 16px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-            cursor: pointer;
         }
 
         /* Нижняя навигация */
@@ -175,148 +173,198 @@
             border: none;
             font-size: 18px;
             opacity: 0.5;
-            cursor: pointer;
         }
 
         .nav-item.active {
             opacity: 1;
         }
 
-        /* === МОДАЛКА ОНБОРДИНГА === */
-        .modal-overlay {
+        /* ==========================================
+           ПОЛНОЭКРАННЫЙ СТОРИС-ОНБОРДИНГ (ONBOARDING)
+           ========================================== */
+        .story-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(11, 12, 16, 0.95);
+            background: #0B0C10;
+            z-index: 9999;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 20px 40px 20px;
+        }
+
+        /* Полоски прогресса (Stories Bars) */
+        .story-progress-container {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #00F3FF;
+            transition: width 0.1s linear;
+        }
+
+        .progress-bar.completed .progress-fill {
+            width: 100%;
+        }
+
+        /* Контент слайдов */
+        .story-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            text-align: center;
             padding: 20px;
         }
 
-        .modal-card {
-            background: #151823;
-            border: 1px solid #232838;
-            border-radius: 24px;
-            padding: 24px;
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
-        }
-
-        .slide {
+        .story-slide {
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
+            width: 100%;
         }
 
-        .slide.active {
+        .story-slide.active {
             display: flex;
         }
 
-        .slide-icon {
-            font-size: 56px;
-            margin-bottom: 8px;
+        .story-icon {
+            font-size: 80px;
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
         }
 
-        .slide h2 {
-            font-size: 20px;
-            font-weight: 700;
+        .story-slide h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFFFFF;
         }
 
-        .slide p {
-            font-size: 14px;
+        .story-slide p {
+            font-size: 15px;
             color: #A0AAB8;
-            line-height: 1.4;
+            line-height: 1.5;
+            max-width: 300px;
         }
 
         .badge-price {
             background: rgba(255, 204, 0, 0.15);
             color: #FFCC00;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 700;
-            border: 1px solid rgba(255, 204, 0, 0.3);
+            border: 1px solid rgba(255, 204, 0, 0.4);
         }
 
-        .btn-next {
+        /* Кнопки переключения */
+        .story-actions {
             width: 100%;
-            background: #232838;
-            border: 1px solid #00F3FF;
-            color: #00F3FF;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 700;
-            margin-top: 8px;
-            cursor: pointer;
         }
 
-        .btn-claim {
+        .btn-story-next {
+            width: 100%;
+            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            border: none;
+            color: #FFFFFF;
+            padding: 18px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-story-claim {
             width: 100%;
             background: linear-gradient(90deg, #FFCC00, #FF9900);
             border: none;
             color: #000000;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 18px;
+            border-radius: 16px;
             font-weight: 800;
-            margin-top: 8px;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+            font-size: 16px;
             cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
 
-        .gift-anim {
-            animation: bounce 1.5s infinite;
+        .gift-bounce {
+            animation: bounce 1.2s infinite ease-in-out;
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
         }
     </style>
 </head>
 <body>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРИВЕТСТВИЯ -->
-    <div id="onboarding-modal" class="modal-overlay">
-        <div class="modal-card">
+    <!-- ПОЛНОЭКРАННЫЙ ОНБОРДИНГ В СТИЛЕ СТОРИС -->
+    <div id="story-onboarding" class="story-overlay">
+        
+        <!-- Ползунки / Прогресс-бары сверху -->
+        <div class="story-progress-container">
+            <div class="progress-bar" id="bar-1"><div class="progress-fill" id="fill-1"></div></div>
+            <div class="progress-bar" id="bar-2"><div class="progress-fill" id="fill-2"></div></div>
+            <div class="progress-bar" id="bar-3"><div class="progress-fill" id="fill-3"></div></div>
+        </div>
+
+        <!-- Контент 3 слайдов -->
+        <div class="story-content">
             
-            <!-- Слайд 1: Welcome -->
-            <div class="slide active" id="slide-1">
-                <div class="slide-icon">🎡</div>
+            <!-- Слайд 1 -->
+            <div class="story-slide active" id="slide-1">
+                <div class="story-icon">🎡</div>
                 <h2>Добро пожаловать в Homastar!</h2>
                 <p>Крути колесо фортуны, выигрывай Telegram Stars и участвуй в ежедневных розыгрышах!</p>
-                <button class="btn-next" onclick="nextSlide(2)">Далее →</button>
             </div>
 
-            <!-- Слайд 2: Инвентарь -->
-            <div class="slide" id="slide-2">
-                <div class="slide-icon">🎒</div>
+            <!-- Слайд 2 -->
+            <div class="story-slide" id="slide-2">
+                <div class="story-icon">🎒</div>
                 <h2>Собирай предметы и выбивай Stars</h2>
                 <p>Выигрывай редкие предметы, сохраняй их в своём Инвентаре или обменивай прямо на Telegram Stars!</p>
-                <button class="btn-next" onclick="nextSlide(3)">Далее →</button>
             </div>
 
-            <!-- Слайд 3: Подарок -->
-            <div class="slide" id="slide-3">
-                <div class="slide-icon gift-anim">🧸</div>
+            <!-- Слайд 3 -->
+            <div class="story-slide" id="slide-3">
+                <div class="story-icon gift-bounce">🧸</div>
                 <div class="badge-price">Стоимость: 15 ⭐</div>
                 <h2>Твой подарок за старт!</h2>
                 <p>Мы дарим тебе предмет «Мишка» (15 ⭐). Он уже готов отправиться в твой инвентарь!</p>
-                <button class="btn-claim" onclick="claimGift()">🎁 ЗАБРАТЬ ПОДАРОК</button>
             </div>
 
         </div>
+
+        <!-- Кнопки снизу -->
+        <div class="story-actions">
+            <button id="btn-next" class="btn-story-next" onclick="goToNextSlide()">Далее →</button>
+            <button id="btn-claim" class="btn-story-claim" onclick="claimGift()" style="display: none;">🎁 ЗАБРАТЬ ПОДАРОК</button>
+        </div>
+
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <!-- ГЛАВНЫЙ ЭКРАН С КОЛЕСОМ -->
     <div class="app-container">
-        
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-btn">BALANCE +</div>
@@ -331,7 +379,6 @@
 
         <div class="wheel-section">
             <div class="arrow-pointer">▼</div>
-            
             <div class="wheel-outer-rim">
                 <div class="wheel-spinner">
                     <div class="center-hub">⭐</div>
@@ -349,9 +396,74 @@
             <button class="nav-item">💰</button>
             <button class="nav-item">👤</button>
         </nav>
-
     </div>
 
-    <script src="script.js"></script>
+    <!-- ВСЯ ЛОГИКА ПЕРЕКЛЮЧЕНИЯ И АВТОМАТИКИ (JS) -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 3;
+        const slideDuration = 4000; // 4 секунды на слайд
+        let progressInterval = null;
+        let currentProgress = 0;
+
+        function startTimer() {
+            clearInterval(progressInterval);
+            currentProgress = 0;
+            
+            const fill = document.getElementById(`fill-${currentSlide}`);
+            
+            progressInterval = setInterval(() => {
+                currentProgress += 2;
+                if (fill) fill.style.width = currentProgress + '%';
+
+                if (currentProgress >= 100) {
+                    clearInterval(progressInterval);
+                    if (currentSlide < totalSlides) {
+                        goToNextSlide();
+                    }
+                }
+            }, slideDuration / 50);
+        }
+
+        function goToNextSlide() {
+            // Помечаем текущую полоску как полностью заполненную
+            const currentBar = document.getElementById(`bar-${currentSlide}`);
+            if (currentBar) currentBar.classList.add('completed');
+
+            // Скрываем текущий слайд
+            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+
+            currentSlide++;
+
+            if (currentSlide <= totalSlides) {
+                // Показываем следующий слайд
+                document.getElementById(`slide-${currentSlide}`).classList.add('active');
+                
+                // Если пришли на последний слайд — меняем кнопку на "ЗАБРАТЬ ПОДАРОК"
+                if (currentSlide === totalSlides) {
+                    document.getElementById('btn-next').style.display = 'none';
+                    document.getElementById('btn-claim').style.display = 'block';
+                }
+                
+                startTimer();
+            }
+        }
+
+        function claimGift() {
+            clearInterval(progressInterval);
+            // Закрываем онбординг
+            document.getElementById('story-onboarding').style.display = 'none';
+            alert('🎉 «Мишка» (15 ⭐) зачислен в твой инвентарь!');
+        }
+
+        // Запуск при старте
+        window.onload = function() {
+            startTimer();
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+        };
+    </script>
 </body>
 </html>
