@@ -42,16 +42,16 @@
             position: relative;
         }
 
-        /* --- ЖИВОЙ АНИМИРОВАННЫЙ ФОН --- */
+        /* --- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН --- */
         .bg-animated-nebula {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none;
             z-index: 0;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(0, 243, 255, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
+                radial-gradient(circle at 20% 20%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
             animation: nebulaPulse 12s ease-in-out infinite alternate;
         }
 
@@ -256,7 +256,7 @@
             font-weight: 800;
         }
 
-        /* --- 3D КОЛЕСО С МЯГКОЙ ПОЗОЛОТОЙ РАМОЙ --- */
+        /* --- 3D КОЛЕСО И СВЕТЯЩАЯСЯ ГИРЛЯНДА --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -325,7 +325,7 @@
             width: 300px;
             height: 300px;
             transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
-            filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8));
+            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
         }
 
         .btn-spin {
@@ -553,7 +553,7 @@
 
         .input-stars { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); color: var(--accent-gold); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; outline: none; text-align: center; }
 
-        /* --- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ --- */
+        /* --- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ --- */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -609,7 +609,6 @@
 </head>
 <body class="theme-night">
 
-    <!-- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН -->
     <div class="bg-animated-nebula"></div>
     <div class="floating-particles-container">
         <div class="particle p1">⭐</div>
@@ -837,7 +836,6 @@
             </div>
         </div>
 
-        <!-- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button id="nav-screen-wheel-list" class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
@@ -934,17 +932,15 @@
             localStorage.setItem('homastar_main_balance', userBalance.toString());
         }
 
-        /* --- ИНТЕРАКТИВНОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ И ПОДСВЕТКА НИЖНЕЙ ПАНЕЛИ --- */
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
             if (target) target.classList.add('active');
 
-            // Подсветка кнопок в нижней панели
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             
             let navTargetId = screenId;
-            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list'; // Для экрана самой игры подсвечиваем раздел колес
+            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list';
             
             const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
             if (activeNavBtn) activeNavBtn.classList.add('active');
@@ -1083,7 +1079,7 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ГЛУБОКАЯ БЛАГОРОДНАЯ ОТРИСОВКА КОЛЕСА БЕЗ КИСЛОТНЫХ ЦВЕТОВ --- */
+        /* --- СОЧНАЯ И ЯРКАЯ НЕОНОВАЯ ОТРИСОВКА КОЛЕСА --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
@@ -1099,12 +1095,12 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Мягкая золотая рама
+            // 1. Блестящая золотая рама
             const rimGrad = ctx.createRadialGradient(radius, radius, radius - 25, radius, radius, radius);
-            rimGrad.addColorStop(0, '#1F1810');
-            rimGrad.addColorStop(0.5, '#C5A038');
-            rimGrad.addColorStop(0.85, '#E8D288');
-            rimGrad.addColorStop(1, '#4A3710');
+            rimGrad.addColorStop(0, '#3A2800');
+            rimGrad.addColorStop(0.5, '#FFD700');
+            rimGrad.addColorStop(0.85, '#FFF5B0');
+            rimGrad.addColorStop(1, '#8B6500');
 
             ctx.beginPath();
             ctx.fillStyle = rimGrad;
@@ -1113,19 +1109,21 @@
 
             const innerRimRadius = radius - 22;
             ctx.beginPath();
-            ctx.fillStyle = '#080A12';
+            ctx.fillStyle = '#0D101D';
             ctx.arc(radius, radius, innerRimRadius, 0, 2 * Math.PI);
             ctx.fill();
 
-            // 2. Глубокие благородные тона секторов
+            // 2. Яркие, сочные неоновые градиенты
             const discRadius = innerRimRadius - 12;
-            const PREMIUM_GRADIENTS = [
-                ['#0F2027', '#203A43'], // Темный ультрамарин
-                ['#310E18', '#8E0E00'], // Рубиновый бархат
-                ['#1F1C2C', '#928DAB'], // Фиолетовый аметист
-                ['#1E130E', '#9A5216'], // Теплая глухая амбра
-                ['#13251D', '#11998E'], // Глубокий изумруд
-                ['#2C1330', '#7B1FA2']  // Королевский пурпур
+            const BRIGHT_NEON_GRADIENTS = [
+                ['#00C6FF', '#0072FF'], // Насыщенный синий
+                ['#FF416C', '#FF4B2B'], // Ярко-красный
+                ['#F857A6', '#FF5858'], // Сочный малиновый
+                ['#FF9900', '#FF5500'], // Огненно-оранжевый
+                ['#A855F7', '#6366F1'], // Фиолетовый неон
+                ['#11998E', '#38EF7D'], // Ярко-изумрудный
+                ['#00F2FE', '#4FACFE'], // Кислотно-голубой
+                ['#FF0844', '#FFB199']  // Коралл
             ];
 
             function getPrizeIcon(val) {
@@ -1138,9 +1136,9 @@
 
             for (let i = 0; i < numSlices; i++) {
                 const angle = i * arc - Math.PI / 2;
-                const colors = PREMIUM_GRADIENTS[i % PREMIUM_GRADIENTS.length];
+                const colors = BRIGHT_NEON_GRADIENTS[i % BRIGHT_NEON_GRADIENTS.length];
 
-                const segGrad = ctx.createRadialGradient(radius, radius, 30, radius, radius, discRadius);
+                const segGrad = ctx.createRadialGradient(radius, radius, 40, radius, radius, discRadius);
                 segGrad.addColorStop(0, colors[0]);
                 segGrad.addColorStop(1, colors[1]);
 
@@ -1151,57 +1149,57 @@
                 ctx.lineTo(radius, radius);
                 ctx.fill();
 
-                // Внутренний тонкий золотой контур
+                // Золотой контур секторов
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(255, 235, 150, 0.7)';
+                ctx.lineWidth = 2.5;
                 ctx.arc(radius, radius, discRadius - 4, angle + 0.03, angle + arc - 0.03);
                 ctx.stroke();
 
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.lineWidth = 2;
                 ctx.moveTo(radius, radius);
                 ctx.lineTo(radius + discRadius * Math.cos(angle), radius + discRadius * Math.sin(angle));
                 ctx.stroke();
 
-                // Иконка и текст
+                // Иконка и сумма
                 ctx.save();
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + arc / 2);
 
                 const icon = getPrizeIcon(prizes[i]);
-                ctx.font = '26px sans-serif';
+                ctx.font = '28px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
                 ctx.shadowBlur = 4;
-                ctx.fillText(icon, discRadius - 42, 0);
+                ctx.fillText(icon, discRadius - 45, 0);
 
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = '900 20px -apple-system, sans-serif';
+                ctx.font = '900 21px -apple-system, sans-serif';
                 ctx.textAlign = 'right';
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 ctx.shadowBlur = 6;
-                ctx.fillText(`+${prizes[i]} ⭐`, discRadius - 76, 0);
+                ctx.fillText(`+${prizes[i]} ⭐`, discRadius - 80, 0);
 
                 ctx.restore();
             }
 
-            // 3. Центральная золотая медаль
+            // 3. Золотая кнопка в центре
             const hubRadius = 44;
             const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
-            hubGrad.addColorStop(0, '#FFE899');
-            hubGrad.addColorStop(0.6, '#C5A038');
-            hubGrad.addColorStop(1, '#4A3710');
+            hubGrad.addColorStop(0, '#FFF5B0');
+            hubGrad.addColorStop(0.6, '#FFD700');
+            hubGrad.addColorStop(1, '#8B6500');
 
             ctx.beginPath();
             ctx.fillStyle = hubGrad;
             ctx.arc(radius, radius, hubRadius, 0, 2 * Math.PI);
             ctx.fill();
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2.5;
             ctx.stroke();
 
             ctx.fillStyle = '#FFFFFF';
@@ -1210,7 +1208,7 @@
             ctx.textBaseline = 'middle';
             ctx.fillText('⭐', radius, radius);
 
-            // 4. Аккуратные лампочки
+            // 4. Яркие неоновые лампочки
             const bulbsContainer = document.getElementById('bulbs-container');
             if (bulbsContainer) {
                 bulbsContainer.innerHTML = '';
@@ -1224,7 +1222,7 @@
                     const y = r * Math.sin(angle);
                     bulb.style.transform = `translate(${x}px, ${y}px)`;
                     bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
-                    bulb.style.boxShadow = i % 2 === 0 ? '0 0 6px #00F3FF' : '0 0 6px #FFD700';
+                    bulb.style.boxShadow = i % 2 === 0 ? '0 0 10px #00F3FF' : '0 0 10px #FFD700';
                     bulbsContainer.appendChild(bulb);
                 }
             }
@@ -1286,6 +1284,9 @@
             activeWheelType = type;
             const config = WHEEL_CONFIGS[type];
             document.getElementById('wheel-title').innerText = config.title;
+            
+            // Отключаем таймер для всех платных колёс
+            clearInterval(timerInterval);
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
 
@@ -1299,7 +1300,7 @@
             openScreen('screen-game-wheel');
         }
 
-        /* --- ЖЕЛЕЗНАЯ СИНХРОНИЗАЦИЯ ТАЙМЕРА ПО АБСОЛЮТНОМУ ВРЕМЕНИ UTC --- */
+        /* --- СТРОГИЙ ТАЙМЕР 24 ЧАСА ТОЛЬКО ДЛЯ БЕСПЛАТНОГО КОЛЕСА --- */
         function checkFreeSpinState() {
             clearInterval(timerInterval);
             const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0');
@@ -1310,7 +1311,7 @@
             const twentyFourHoursMs = 24 * 60 * 60 * 1000;
 
             function updateTimerLogic() {
-                const now = new Date().getTime(); // Используем мировое миллисекундное время UTC
+                const now = new Date().getTime();
                 const timePassed = now - lastSpinTimestamp;
                 const timeLeft = twentyFourHoursMs - timePassed;
 
@@ -1336,7 +1337,7 @@
 
             if (lastSpinTimestamp > 0) {
                 updateTimerLogic();
-                timerInterval = setInterval(updateTimerLogic, 1000); // Секундомер работает непрерывно
+                timerInterval = setInterval(updateTimerLogic, 1000);
             } else {
                 timerBanner.style.display = 'none';
                 btn.classList.remove('disabled');
@@ -1355,7 +1356,6 @@
                 userBalance -= config.price;
                 updateBalanceDisplay();
             } else {
-                // Записываем системный UTC-стемп текущей секунды
                 localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
             }
 
@@ -1420,7 +1420,7 @@
             updateBalanceDisplay();
             setTheme(settings.theme);
 
-            const isCompleted = localStorage.getItem('homastar_onboarding_completed');
+            const isCompleted = localStorage.setItem('homastar_onboarding_completed');
             if (isCompleted === 'true') {
                 document.getElementById('story-onboarding').style.display = 'none';
             }
