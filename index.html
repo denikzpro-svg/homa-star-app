@@ -256,7 +256,7 @@
             font-weight: 800;
         }
 
-        /* --- ЧИСТАЯ PNG-АНИМАЦИЯ ГОТОВОГО 3D КОЛЕСА --- */
+        /* --- ВАША ГОТОВАЯ КАРТИНКА КОЛЕСА --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -267,9 +267,33 @@
             padding: 10px 0;
         }
 
+        .arrow-pointer {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 24px solid var(--accent-blue);
+            z-index: 20;
+            margin-bottom: -12px;
+            filter: drop-shadow(0 0 12px var(--accent-blue));
+            position: relative;
+        }
+
+        .arrow-pointer::after {
+            content: '';
+            position: absolute;
+            top: -22px;
+            left: -9px;
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 14px solid #FFF;
+        }
+
         .wheel-container-asset {
-            width: 310px;
-            height: 310px;
+            width: 320px;
+            height: 320px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -281,7 +305,8 @@
             height: 100%;
             object-fit: contain;
             transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
-            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.3));
+            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
+            display: block;
         }
 
         .btn-spin {
@@ -464,12 +489,38 @@
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
+        /* --- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ --- */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            padding: 12px;
+            border-radius: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .nav-item {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            opacity: 0.4;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            transform: scale(1.22) translateY(-2px);
+            filter: drop-shadow(0 0 10px var(--accent-blue));
+        }
+
+        /* --- МОДАЛКИ --- */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             z-index: 999;
@@ -508,62 +559,11 @@
         .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; text-align: center; cursor: pointer; }
 
         .input-stars { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); color: var(--accent-gold); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; outline: none; text-align: center; }
-
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            padding: 12px;
-            border-radius: 20px;
-        }
-
-        .nav-item {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            opacity: 0.4;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .nav-item.active {
-            opacity: 1;
-            transform: scale(1.22) translateY(-2px);
-            filter: drop-shadow(0 0 10px var(--accent-blue));
-        }
-
-        .story-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0A0B10;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px 20px 40px 20px;
-        }
-
-        .story-progress-container { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
-        .progress-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent-blue); }
-
-        .story-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .story-slide { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
-        .story-slide.active { display: flex; }
-        .story-icon { font-size: 80px; }
-        .story-slide h2 { font-size: 26px; font-weight: 900; color: #FFF; }
-        .story-slide p { font-size: 15px; color: var(--text-sub); line-height: 1.5; max-width: 300px; }
-
-        .badge-price { background: rgba(255, 215, 0, 0.12); color: var(--accent-gold); padding: 8px 18px; border-radius: 20px; font-size: 14px; font-weight: 800; border: 1px solid rgba(255, 215, 0, 0.3); }
-
-        .btn-story-next { width: 100%; background: linear-gradient(135deg, #0066FF, #00F3FF); border: none; color: #FFFFFF; padding: 18px; border-radius: 18px; font-weight: 900; font-size: 16px; cursor: pointer; }
-        .btn-story-claim { width: 100%; background: linear-gradient(135deg, #FFD700, #FF9900); border: none; color: #000000; padding: 18px; border-radius: 18px; font-weight: 900; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body class="theme-night">
 
+    <!-- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН -->
     <div class="bg-animated-nebula"></div>
     <div class="floating-particles-container">
         <div class="particle p1">⭐</div>
@@ -571,40 +571,6 @@
         <div class="particle p3">💎</div>
         <div class="particle p4">🎡</div>
         <div class="particle p5">⭐</div>
-    </div>
-
-    <div id="story-onboarding" class="story-overlay">
-        <div class="story-progress-container">
-            <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
-            <div class="progress-bar"><div class="progress-fill" id="fill-2"></div></div>
-            <div class="progress-bar"><div class="progress-fill" id="fill-3"></div></div>
-        </div>
-
-        <div class="story-content">
-            <div class="story-slide active" id="slide-1">
-                <div class="story-icon">🎡</div>
-                <h2>Добро пожаловать в Homastar!</h2>
-                <p>Крути колесо фортуны, выигрывай Telegram Stars и участвуй в ежедневных розыгрышах!</p>
-            </div>
-
-            <div class="story-slide" id="slide-2">
-                <div class="story-icon">🎒</div>
-                <h2>Собирай бонусы и выбивай Stars</h2>
-                <p>Бесплатное колесо зачисляется сразу на баланс! А реферальные бонусы копят капитал в Инвентаре.</p>
-            </div>
-
-            <div class="story-slide" id="slide-3">
-                <div class="story-icon">🎁</div>
-                <div class="badge-price">Стартовый бонус: 50 ⭐</div>
-                <h2>Твой подарок за старт!</h2>
-                <p>Мы дарим тебе 50 Stars! Бонус уже отправлен в твой инвентарь на заморозку 21 день.</p>
-            </div>
-        </div>
-
-        <div class="story-actions">
-            <button id="btn-next" class="btn-story-next" onclick="goToNextSlide()">Далее →</button>
-            <button id="btn-claim" class="btn-story-claim" onclick="claimGift()" style="display: none;">🎁 ЗАБРАТЬ ПОДАРОК</button>
-        </div>
     </div>
 
     <div class="app-container">
@@ -617,6 +583,7 @@
             </div>
         </header>
 
+        <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="screen-hub" class="screen active">
             <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
                 <div class="card-left">
@@ -652,6 +619,7 @@
             </div>
         </div>
 
+        <!-- СПИСОК ПЛАТНЫХ КОЛЕС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
@@ -701,6 +669,7 @@
             </div>
         </div>
 
+        <!-- ЭКРАН САМОЙ ИГРЫ (РУЛЕТКА) -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -710,10 +679,11 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
+            <!-- БЛОК С ВАШИМ PNG КОЛЕСОМ -->
             <div class="wheel-section">
+                <div class="arrow-pointer"></div>
                 <div class="wheel-container-asset">
-                    <!-- ИСПОЛЬЗУЕМ ВАШУ КРАСИВУЮ PNG КАРТИНКУ КОЛЕСА -->
-                    <img id="wheel-img-asset" class="wheel-image-asset" src="wheel.png" alt="Wheel of Fortune">
+                    <img id="wheel-img-asset" class="wheel-image-asset" src="wheel.png" alt="Wheel of Fortune" onerror="console.error('Не могу найти wheel.png! Проверь настройки Vercel Root Directory.')">
                 </div>
             </div>
 
@@ -742,7 +712,7 @@
             
             <h2 style="font-size: 18px;">👥 Зарабатывай на друзьях</h2>
             <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">
-                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений! <i>(Все бонусы падают в инвентарь на заморозку 21 день).</i>
+                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений!
             </p>
 
             <div class="ref-box">
@@ -790,6 +760,7 @@
             </div>
         </div>
 
+        <!-- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button id="nav-screen-wheel-list" class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
@@ -800,20 +771,19 @@
         </nav>
     </div>
 
+    <!-- МОДАЛКИ (ВЫВОД / ПОПОЛНЕНИЕ / ПОБЕДА) -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
                 <h3 style="font-size: 16px;">💳 Пополнить Telegram Stars</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button>
             </div>
-            
             <div class="package-grid">
                 <div class="package-card" onclick="selectDepositPackage(50)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div>
                 <div class="package-card" onclick="selectDepositPackage(100)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div>
                 <div class="package-card" onclick="selectDepositPackage(250)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">250 ⭐</div></div>
                 <div class="package-card" onclick="selectDepositPackage(500)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">500 ⭐</div></div>
             </div>
-
             <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Количество ⭐">
             <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
         </div>
@@ -856,7 +826,7 @@
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
-        // ТВОЕ КОЛЕСО ИМЕЕТ 10 СЕКТОРОВ
+        // ПРИЗЫ ТОЧНО СОВПАДАЮТ С ВАШИМ PNG (10 СЕКТОРОВ)
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
             common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20] },
@@ -867,18 +837,6 @@
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
-        if (!localStorage.getItem('homastar_starter_gift_given')) {
-            localStorage.setItem('homastar_starter_gift_given', 'true');
-            inventoryItems.push({
-                id: 'starter_gift_' + new Date().getTime(),
-                title: 'Подарок за старт (50 ⭐)',
-                icon: '🎁',
-                value: 50,
-                receivedAt: new Date().getTime()
-            });
-            saveInventory();
-        }
-
         function saveInventory() { localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems)); }
 
         function updateBalanceDisplay() {
@@ -887,6 +845,7 @@
             localStorage.setItem('homastar_main_balance', userBalance.toString());
         }
 
+        // ЛОГИКА НАВИГАЦИИ (ПОДСВЕТКА НИЖНЕЙ ПАНЕЛИ)
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
@@ -895,7 +854,7 @@
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             
             let navTargetId = screenId;
-            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list';
+            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list'; // Для экрана рулетки подсвечиваем джойстик
             
             const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
             if (activeNavBtn) activeNavBtn.classList.add('active');
@@ -938,7 +897,7 @@
             const container = document.getElementById('inventory-list');
             container.innerHTML = '';
             const twentyOneDays = 21 * 24 * 60 * 60 * 1000;
-            const now = new Date().getTime();
+            const now = Date.now(); // Системное время
 
             if (inventoryItems.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:20px;">Инвентарь пуст</div>';
@@ -1038,6 +997,7 @@
             activeWheelType = 'free';
             document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title;
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
+            
             resetWheelRotation();
             checkFreeSpinState();
             openScreen('screen-game-wheel');
@@ -1048,6 +1008,7 @@
             const config = WHEEL_CONFIGS[type];
             document.getElementById('wheel-title').innerText = config.title;
             
+            // ПЛАТНЫЕ КОЛЕСА БЕЗ ТАЙМЕРА
             clearInterval(timerInterval);
             document.getElementById('timer-banner').style.display = 'none';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
@@ -1068,6 +1029,7 @@
             if (img) img.style.transform = 'rotate(0deg)';
         }
 
+        // ЖЕЛЕЗНЫЙ ТАЙМЕР ПО UTC (В МИЛЛИСЕКУНДАХ СЕРВЕРА/ТЕЛЕФОНА)
         function checkFreeSpinState() {
             clearInterval(timerInterval);
             const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0');
@@ -1078,7 +1040,7 @@
             const twentyFourHoursMs = 24 * 60 * 60 * 1000;
 
             function updateTimerLogic() {
-                const now = new Date().getTime();
+                const now = Date.now(); // Системное время (абсолютное)
                 const timePassed = now - lastSpinTimestamp;
                 const timeLeft = twentyFourHoursMs - timePassed;
 
@@ -1127,6 +1089,7 @@
                 return 1;                  // 100 ⭐
             }
 
+            // Платные колеса
             if (type === 'common') {
                 if (count === 0) return 8; // 50 ⭐
                 if (rand < 45) return 3;   // 0 ⭐
@@ -1156,7 +1119,6 @@
             return 3;
         }
 
-        /* --- ВРАЩЕНИЕ ВАШЕГО ГОТОВОГО PNG-КОЛЕСА С ТОЧНЫМ ПОПАДАНИЕМ --- */
         function startSpin(type) {
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[type];
@@ -1167,7 +1129,7 @@
                 userBalance -= config.price;
                 updateBalanceDisplay();
             } else {
-                localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
+                localStorage.setItem('homastar_last_free_spin', Date.now().toString());
             }
 
             isSpinning = true;
@@ -1176,19 +1138,21 @@
 
             const prizeIndex = calculatePrizeIndex(type);
             const prizeValue = config.prizes[prizeIndex];
+            
+            // 10 СЕКТОРОВ В ВАШЕМ PNG
             const numSlices = 10;
             const sectorDegree = 360 / numSlices;
 
-            // Расчет угла для вашего PNG колеса
+            // Расчет точного угла: стрелка указывает ровно по центру сектора
             const targetAngle = 360 - (prizeIndex * sectorDegree);
             
             const currentModulo = currentWheelRotation % 360;
             let distanceToTarget = targetAngle - currentModulo;
             if (distanceToTarget <= 0) distanceToTarget += 360;
 
+            // 6 полных красивых оборотов + доводка до сектора
             const extraRounds = 6 * 360;
-            const totalRotationIncrement = distanceToTarget + extraRounds;
-            currentWheelRotation += totalRotationIncrement;
+            currentWheelRotation += distanceToTarget + extraRounds;
 
             const img = document.getElementById('wheel-img-asset');
             img.style.transform = `rotate(${currentWheelRotation}deg)`;
@@ -1211,34 +1175,9 @@
             }, 5000);
         }
 
-        let currentSlide = 1;
-        const totalSlides = 3;
-
-        function goToNextSlide() {
-            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
-            currentSlide++;
-            if (currentSlide <= totalSlides) {
-                document.getElementById(`slide-${currentSlide}`).classList.add('active');
-                if (currentSlide === totalSlides) {
-                    document.getElementById('btn-next').style.display = 'none';
-                    document.getElementById('btn-claim').style.display = 'block';
-                }
-            }
-        }
-
-        function claimGift() {
-            localStorage.setItem('homastar_onboarding_completed', 'true');
-            document.getElementById('story-onboarding').style.display = 'none';
-        }
-
         window.onload = function() {
             updateBalanceDisplay();
             setTheme(settings.theme);
-
-            const isCompleted = localStorage.getItem('homastar_onboarding_completed');
-            if (isCompleted === 'true') {
-                document.getElementById('story-onboarding').style.display = 'none';
-            }
 
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
