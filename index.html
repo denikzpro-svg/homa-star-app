@@ -193,7 +193,6 @@
         .card-badge.silver { background: #C0C0C0; }
         .card-badge.gold { background: #FFD700; }
         .card-badge.diamond { background: #B9F2FF; }
-        .card-badge.vip { background: var(--accent-purple); color: #FFF; }
 
         .btn-card-action {
             background: rgba(255, 255, 255, 0.05);
@@ -253,9 +252,8 @@
             height: 200px;
             border-radius: 50%;
             background: conic-gradient(
-                #00F3FF 0deg 45deg, #9D00FF 45deg 90deg, #FF6B00 90deg 135deg, 
-                #FFCC00 135deg 180deg, #FF0055 180deg 225deg, #00F3FF 225deg 270deg, 
-                #9D00FF 270deg 315deg, #FFCC00 315deg 360deg
+                #00F3FF 0deg 60deg, #9D00FF 60deg 120deg, #FF6B00 120deg 180deg, 
+                #FFCC00 180deg 240deg, #FF0055 240deg 300deg, #00F3FF 300deg 360deg
             );
             display: flex;
             justify-content: center;
@@ -492,6 +490,39 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .win-modal-card {
+            text-align: center;
+            border: 1px solid var(--accent-gold);
+            background: linear-gradient(180deg, var(--card-bg) 0%, rgba(255, 204, 0, 0.08) 100%);
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+        }
+
+        .win-icon {
+            font-size: 60px;
+            margin: 10px 0;
+            filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.5));
+        }
+
+        .win-amount {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+            margin-bottom: 4px;
+        }
+
+        .win-subtext {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
         }
 
         .modal-header {
@@ -637,15 +668,15 @@
 
             <div class="story-slide" id="slide-2">
                 <div class="story-icon">🎒</div>
-                <h2>Собирай предметы и выбивай Stars</h2>
-                <p>Выигрывай редкие предметы, сохраняй их в своём Инвентаре или обменивай прямо на Telegram Stars!</p>
+                <h2>Собирай бонусы и выбивай Stars</h2>
+                <p>Бесплатное колесо зачисляется сразу на баланс! А реферальные бонусы копят капитал в Инвентаре.</p>
             </div>
 
             <div class="story-slide" id="slide-3">
-                <div class="story-icon gift-bounce">🧸</div>
-                <div class="badge-price">Стоимость: 15 ⭐</div>
+                <div class="story-icon gift-bounce">🎁</div>
+                <div class="badge-price">Стартовый бонус: 50 ⭐</div>
                 <h2>Твой подарок за старт!</h2>
-                <p>Мы дарим тебе предмет «Мишка» (15 ⭐). Он уже отправлен в твой инвентарь на заморозку!</p>
+                <p>Мы дарим тебе 50 Stars! Бонус уже отправлен в твой инвентарь на заморозку 21 день.</p>
             </div>
         </div>
 
@@ -671,7 +702,7 @@
                     <div class="card-icon">🎁</div>
                     <div class="card-info">
                         <h3>Бесплатное колесо <span class="card-badge free">FREE</span></h3>
-                        <p>Доступно 1 раз в 24 часа</p>
+                        <p>1 раз в 24 часа — сразу на баланс!</p>
                     </div>
                 </div>
                 <button class="btn-card-action" style="color: var(--accent-gold); border-color: var(--accent-gold);">Крутить</button>
@@ -681,7 +712,7 @@
                 <div class="card-left">
                     <div class="card-icon">🎡</div>
                     <div class="card-info">
-                        <h3>Колёса <span class="card-badge">5 ВИДОВ</span></h3>
+                        <h3>Колёса <span class="card-badge">4 ВИДА</span></h3>
                         <p>Обычное, Серебряное, Золотое...</p>
                     </div>
                 </div>
@@ -692,7 +723,7 @@
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
                     <div class="card-info">
-                        <h3>Розыгрыш 1000 Stars <span class="card-badge vip">JACKPOT</span></h3>
+                        <h3>Розыгрыш 1000 Stars <span class="card-badge">JACKPOT</span></h3>
                         <p>Купи билет — выиграй суперприз</p>
                     </div>
                 </div>
@@ -747,17 +778,6 @@
                 </div>
                 <button class="btn-card-action">Играть</button>
             </div>
-
-            <div class="menu-card" onclick="openPlayWheel('vip')">
-                <div class="card-left">
-                    <div class="card-icon">👑</div>
-                    <div class="card-info">
-                        <h3>VIP Колесо <span class="card-badge vip">VIP</span></h3>
-                        <p>Цена: 500 Stars / прокрут</p>
-                    </div>
-                </div>
-                <button class="btn-card-action">Играть</button>
-            </div>
         </div>
 
         <div id="screen-game-wheel" class="screen">
@@ -803,7 +823,7 @@
             
             <h2 style="font-size: 18px;">👥 Зарабатывай на друзьях</h2>
             <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">
-                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений! <i>(Все бонусы падают в инвентарь на 21 день).</i>
+                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений! <i>(Все бонусы падают в инвентарь на заморозку 21 день).</i>
             </p>
 
             <div class="ref-box">
@@ -824,7 +844,7 @@
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">🎒 Твой Инвентарь</h2>
-            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">Все начисленные подарки и бонусы находятся в заморозке 21 день.</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">Все реферальные бонусы и подарок 50 ⭐ хранятся в заморозке 21 день.</p>
 
             <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
@@ -916,6 +936,16 @@
         </div>
     </div>
 
+    <div id="modal-win" class="modal-overlay">
+        <div class="modal-card win-modal-card">
+            <div class="win-icon">🌟</div>
+            <h2 style="font-size: 20px; font-weight: 800; color: #FFF;">ПОЗДРАВЛЯЕМ!</h2>
+            <div class="win-amount" id="win-modal-amount">+50 ⭐</div>
+            <div class="win-subtext" id="win-modal-subtext">Зачислено прямо на ваш баланс!</div>
+            <button class="btn-spin" style="background: linear-gradient(90deg, #FFCC00, #FF9900); color: #000;" onclick="closeModal('modal-win')">🎁 ЗАБРАТЬ</button>
+        </div>
+    </div>
+
     <script>
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '0');
         let timerInterval = null;
@@ -941,39 +971,34 @@
             common: {
                 title: '⚙️ Обычное Колесо',
                 price: 20,
-                prizes: [5, 10, 20, 50, 100, 200]
+                prizes: [10, 20, 30, 50, 100]
             },
             silver: {
                 title: '🥈 Серебряное Колесо',
                 price: 50,
-                prizes: [10, 20, 50, 100, 300]
+                prizes: [20, 50, 70, 100, 150, 300]
             },
             gold: {
                 title: '🥇 Золотое Колесо',
                 price: 100,
-                prizes: [20, 50, 100, 200, 500]
+                prizes: [30, 50, 100, 140, 250, 500]
             },
             diamond: {
                 title: '💎 Алмазное Колесо',
                 price: 250,
-                prizes: [50, 100, 250, 500, 1000, 1500]
-            },
-            vip: {
-                title: '👑 VIP Колесо',
-                price: 500,
-                prizes: [100, 250, 500, 1000, 2000, 3000]
+                prizes: [80, 150, 250, 300, 600, 1500]
             }
         };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
-        if (!localStorage.getItem('homastar_bear_time')) {
-            localStorage.setItem('homastar_bear_time', new Date().getTime().toString());
+        if (!localStorage.getItem('homastar_starter_gift_given')) {
+            localStorage.setItem('homastar_starter_gift_given', 'true');
             inventoryItems.push({
-                id: 'gift_bear_' + new Date().getTime(),
-                title: 'Плюшевый Мишка (15 ⭐)',
-                icon: '🧸',
-                value: 15,
+                id: 'starter_gift_' + new Date().getTime(),
+                title: 'Подарок за старт (50 ⭐)',
+                icon: '🎁',
+                value: 50,
                 receivedAt: new Date().getTime()
             });
             saveInventory();
@@ -1001,6 +1026,12 @@
         function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
+        function showWinPopup(amountText, subtext) {
+            document.getElementById('win-modal-amount').innerText = amountText;
+            document.getElementById('win-modal-subtext').innerText = subtext;
+            openModal('modal-win');
+        }
+
         function selectDepositPackage(amount) {
             document.getElementById('custom-deposit-input').value = amount;
         }
@@ -1015,7 +1046,7 @@
             userBalance += val;
             updateBalanceDisplay();
             closeModal('modal-deposit');
-            alert(`🎉 Пополнение прошло успешно! +${val} ⭐ зачислено на баланс.`);
+            showWinPopup(`+${val} ⭐`, 'Пополнение прошло успешно!');
         }
 
         function executeWithdraw() {
@@ -1025,14 +1056,14 @@
                 return;
             }
             if (val > userBalance) {
-                alert('Недостаточно разблокированного баланса! Замороженные бонусы вынести нельзя.');
+                alert('Недостаточно разблокированного баланса!');
                 return;
             }
 
             userBalance -= val;
             updateBalanceDisplay();
             closeModal('modal-withdraw');
-            alert('🎉 Отлично! Ваша заявка принята. В течение 24 часов ваши звёзды будут отправлены на ваш аккаунт!');
+            alert('🎉 Заявка принята! В течение 24 часов звёзды будут отправлены.');
         }
 
         function renderInventory() {
@@ -1098,7 +1129,7 @@
             inventoryItems = inventoryItems.filter(i => i.id !== itemId);
             saveInventory();
             renderInventory();
-            alert(`🎉 ${starsValue} ⭐ успешно переведено из инвентаря на основной баланс!`);
+            showWinPopup(`+${starsValue} ⭐`, 'Успешно переведено из инвентаря на баланс!');
         }
 
         function setTheme(themeName) {
@@ -1135,7 +1166,7 @@
 
         function buyTicket() {
             if (userBalance < 20) {
-                alert('Недостаточно Stars на балансе для покупки билета!');
+                alert('Недостаточно Stars на балансе!');
                 openModal('modal-deposit');
                 return;
             }
@@ -1144,7 +1175,7 @@
             updateBalanceDisplay();
             localStorage.setItem('homastar_tickets', userTickets.toString());
             updateTicketUI();
-            alert(`🎉 Ты успешно купил 1 билет! Всего билетов: ${userTickets}`);
+            showWinPopup('🎟️ 1 Билет', 'Успешно куплен! Всего билетов: ' + userTickets);
         }
 
         function updateTicketUI() {
@@ -1153,7 +1184,6 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        // РАСЧЕТ И АЛГОРИТМ ВЫПАДЕНИЯ ПРИЗОВ
         function calculatePrizeIndex(type) {
             const count = userSpinCounts[type] || 0;
             userSpinCounts[type] = count + 1;
@@ -1172,48 +1202,42 @@
             }
 
             if (type === 'common') {
-                if (count === 0 && Math.random() < 0.8) return 2; // 20 ⭐ новичку
-                if (rand < 45) return 0; // 5 ⭐
-                if (rand < 75) return 1; // 10 ⭐
-                if (rand < 92) return 2; // 20 ⭐
-                if (rand < 98) return 3; // 50 ⭐
-                return 4;                // 100 ⭐
+                if (count === 0) return 3; // 1-й спин = 50 ⭐
+                if (rand < 45) return 0;   // 10 ⭐
+                if (rand < 80) return 1;   // 20 ⭐
+                if (rand < 92) return 2;   // 30 ⭐
+                if (rand < 99) return 3;   // 50 ⭐
+                return 4;                  // 100 ⭐
             }
 
             if (type === 'silver') {
-                if (count === 0 && Math.random() < 0.7) return 2; // 50 ⭐ новичку
-                if (rand < 42) return 0; // 10 ⭐
-                if (rand < 74) return 1; // 20 ⭐
-                if (rand < 92) return 2; // 50 ⭐
-                if (rand < 99) return 3; // 100 ⭐
-                return 4;                // 300 ⭐
+                if (count === 0) return 1; // 1-й спин = 50 ⭐ (в ноль)
+                if (count === 1) return 2; // 2-й спин = 70 ⭐ (+20)
+                if (rand < 42) return 0;   // 20 ⭐
+                if (rand < 80) return 1;   // 50 ⭐
+                if (rand < 92) return 2;   // 70 ⭐
+                if (rand < 98) return 3;   // 100 ⭐
+                return 4;                  // 150 ⭐
             }
 
             if (type === 'gold') {
-                if (count === 0 && Math.random() < 0.65) return 2; // 100 ⭐ новичку
-                if (rand < 43) return 0; // 20 ⭐
-                if (rand < 76) return 1; // 50 ⭐
-                if (rand < 92) return 2; // 100 ⭐
-                if (rand < 99) return 3; // 200 ⭐
-                return 4;                // 500 ⭐
+                if (count === 0) return 2; // 1-й спин = 100 ⭐ (в ноль)
+                if (count === 1) return 3; // 2-й спин = 140 ⭐ (+40)
+                if (rand < 43) return 0;   // 30 ⭐
+                if (rand < 78) return 1;   // 50 ⭐
+                if (rand < 92) return 2;   // 100 ⭐
+                if (rand < 98) return 3;   // 140 ⭐
+                return 4;                  // 250 ⭐
             }
 
             if (type === 'diamond') {
-                if (count === 0 && Math.random() < 0.75) return 2; // 250 ⭐ новичку
-                if (rand < 35) return 0; // 50 ⭐
-                if (rand < 63) return 1; // 100 ⭐
-                if (rand < 83) return 2; // 250 ⭐
-                if (rand < 95) return 3; // 500 ⭐
-                return 4;                // 1000 ⭐
-            }
-
-            if (type === 'vip') {
-                if (count === 0 && Math.random() < 0.7) return 2; // 500 ⭐ новичку
-                if (rand < 34) return 0; // 100 ⭐
-                if (rand < 62) return 1; // 250 ⭐
-                if (rand < 83) return 2; // 500 ⭐
-                if (rand < 95) return 3; // 1000 ⭐
-                return 4;                // 2000 ⭐
+                if (count === 0) return 2; // 1-й спин = 250 ⭐ (в ноль)
+                if (count === 1) return 3; // 2-й спин = 300 ⭐ (+50)
+                if (rand < 38) return 0;   // 80 ⭐
+                if (rand < 68) return 1;   // 150 ⭐
+                if (rand < 88) return 2;   // 250 ⭐
+                if (rand < 96) return 3;   // 300 ⭐
+                return 4;                  // 600 ⭐
             }
 
             return 0;
@@ -1320,21 +1344,15 @@
             setTimeout(() => {
                 isSpinning = false;
                 
+                // Начисление выигрыша сразу на основной баланс!
+                userBalance += prizeValue;
+                updateBalanceDisplay();
+
                 if (type === 'free') {
-                    inventoryItems.push({
-                        id: 'free_prize_' + new Date().getTime(),
-                        title: `Выигрыш в колесе (${prizeValue} ⭐)`,
-                        icon: '🎁',
-                        value: prizeValue,
-                        receivedAt: new Date().getTime()
-                    });
-                    saveInventory();
-                    alert(`🎉 Поздравляем! Вы выиграли ${prizeValue} ⭐! Выигрыш отправлен в Инвентарь на заморозку 21 день.`);
+                    showWinPopup(`+${prizeValue} ⭐`, 'Зачислено прямо на ваш баланс!');
                     checkFreeSpinState();
                 } else {
-                    userBalance += prizeValue;
-                    updateBalanceDisplay();
-                    alert(`🎉 Поздравляем! Вы выиграли ${prizeValue} ⭐! Зачислено на ваш баланс.`);
+                    showWinPopup(`+${prizeValue} ⭐`, 'Зачислено на ваш баланс!');
                     btn.classList.remove('disabled');
                 }
             }, 4000);
