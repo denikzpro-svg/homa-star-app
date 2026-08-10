@@ -209,7 +209,7 @@
             font-weight: 800;
         }
 
-        /* --- БЛОК 3D КОЛЕСА С КАРТИНКОЙ --- */
+        /* --- 3D КОЛЕСО И НЕОНОВЫЕ ЛАМПОЧКИ --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -253,11 +253,32 @@
             position: relative;
         }
 
+        .wheel-bulbs-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .bulb {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin: -4px;
+        }
+
         #wheel-canvas {
             width: 300px;
             height: 300px;
             transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
-            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.25));
+            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.25));
         }
 
         .btn-spin {
@@ -659,7 +680,6 @@
             </div>
         </div>
 
-        <!-- ЭКРАН ИГРЫ С 3D-ТЕКСТУРОЙ КОЛЕСА -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -672,6 +692,7 @@
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
+                    <div class="wheel-bulbs-container" id="bulbs-container"></div>
                     <canvas id="wheel-canvas" width="600" height="600"></canvas>
                 </div>
             </div>
@@ -821,13 +842,6 @@
             silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [20, 50, 70, 100, 150, 300] },
             gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [30, 50, 100, 140, 250, 500] },
             diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [80, 150, 250, 300, 600, 1500] }
-        };
-
-        // Загрузка картинки колеса
-        const wheelImg = new Image();
-        wheelImg.src = 'wheel.png';
-        wheelImg.onload = function() {
-            if (activeWheelType) renderWheelDisc(activeWheelType);
         };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
@@ -990,50 +1004,134 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ОТРИСОВКА 3D-КАРТИНКИ И ВЫИГРЫШЕЙ В 12 СЕКТОРОВ --- */
+        /* --- ПОЛНАЯ АВТОНОМНАЯ 3D-ОТРИСОВКА КОЛЕСА --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const prizes = WHEEL_CONFIGS[type].prizes;
 
-            // Расширяем массив призов ровно до 12 секторов
             let displayPrizes = [];
-            while (displayPrizes.length < 12) {
+            while (displayPrizes.length < 10) {
                 displayPrizes = displayPrizes.concat(prizes);
             }
-            displayPrizes = displayPrizes.slice(0, 12);
+            displayPrizes = displayPrizes.slice(0, 10);
 
-            const numSlices = 12;
+            const numSlices = 10;
             const arc = (2 * Math.PI) / numSlices;
             const radius = canvas.width / 2;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Отрисовка 3D-изображения колеса
-            if (wheelImg.complete && wheelImg.naturalWidth !== 0) {
-                ctx.drawImage(wheelImg, 0, 0, canvas.width, canvas.height);
-            }
+            // 1. Внешняя золотая рама
+            const rimGrad = ctx.createRadialGradient(radius, radius, radius - 25, radius, radius, radius);
+            rimGrad.addColorStop(0, '#2C2115');
+            rimGrad.addColorStop(0.5, '#D4AF37');
+            rimGrad.addColorStop(0.8, '#FFF1B0');
+            rimGrad.addColorStop(1, '#5B4315');
 
-            // 2. Наложение сумм выигрышей на 12 секторов
+            ctx.beginPath();
+            ctx.fillStyle = rimGrad;
+            ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Внутренняя выемка обода
+            const innerRimRadius = radius - 22;
+            ctx.beginPath();
+            ctx.fillStyle = '#111422';
+            ctx.arc(radius, radius, innerRimRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // 2. Отрисовка объёмных глянцевых секторов
+            const discRadius = innerRimRadius - 12;
+            const SECTOR_GRADIENTS = [
+                ['#00C6FF', '#0072FF'],
+                ['#FF416C', '#FF4B2B'],
+                ['#F857A6', '#FF5858'],
+                ['#FF9900', '#FF5500'],
+                ['#7B1FA2', '#E040FB'],
+                ['#11998E', '#38EF7D'],
+                ['#00F2FE', '#4FACFE'],
+                ['#FF0844', '#FFB199'],
+                ['#F12711', '#F5AF19'],
+                ['#B224EF', '#7579FF']
+            ];
+
             for (let i = 0; i < numSlices; i++) {
-                const angle = i * arc - Math.PI / 2 + arc / 2;
+                const angle = i * arc - Math.PI / 2;
+                const colors = SECTOR_GRADIENTS[i % SECTOR_GRADIENTS.length];
+
+                const segGrad = ctx.createRadialGradient(radius, radius, 30, radius, radius, discRadius);
+                segGrad.addColorStop(0, colors[0]);
+                segGrad.addColorStop(1, colors[1]);
+
+                ctx.beginPath();
+                ctx.fillStyle = segGrad;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, discRadius, angle, angle + arc);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+
+                ctx.strokeStyle = '#FFE599';
+                ctx.lineWidth = 3;
+                ctx.stroke();
 
                 ctx.save();
                 ctx.translate(radius, radius);
-                ctx.rotate(angle);
+                ctx.rotate(angle + arc / 2);
 
                 ctx.fillStyle = '#FFFFFF';
                 ctx.font = '900 22px -apple-system, sans-serif';
-                ctx.textAlign = 'center';
+                ctx.textAlign = 'right';
                 ctx.textBaseline = 'middle';
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetX = 2;
                 ctx.shadowOffsetY = 2;
 
-                ctx.fillText(`+${displayPrizes[i]} ⭐`, 0, -radius * 0.65);
-
+                ctx.fillText(`+${displayPrizes[i]} ⭐`, discRadius - 18, 0);
                 ctx.restore();
+            }
+
+            // 3. Центральная объёмная золотая кнопка
+            const hubRadius = 42;
+            const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
+            hubGrad.addColorStop(0, '#FFE899');
+            hubGrad.addColorStop(0.6, '#D4AF37');
+            hubGrad.addColorStop(1, '#664B10');
+
+            ctx.beginPath();
+            ctx.fillStyle = hubGrad;
+            ctx.arc(radius, radius, hubRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '26px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⭐', radius, radius);
+
+            // 4. Неоновые лампочки позолоченного обода
+            const bulbsContainer = document.getElementById('bulbs-container');
+            if (bulbsContainer) {
+                bulbsContainer.innerHTML = '';
+                const numBulbs = 18;
+                for (let i = 0; i < numBulbs; i++) {
+                    const bulb = document.createElement('div');
+                    bulb.className = 'bulb';
+                    const angle = (i * 360 / numBulbs) * (Math.PI / 180);
+                    const r = 138;
+                    const x = r * Math.cos(angle);
+                    const y = r * Math.sin(angle);
+                    bulb.style.transform = `translate(${x}px, ${y}px)`;
+                    bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
+                    bulb.style.boxShadow = i % 2 === 0 ? '0 0 10px #00F3FF' : '0 0 10px #FFD700';
+                    bulbsContainer.appendChild(bulb);
+                }
             }
         }
 
@@ -1151,7 +1249,7 @@
 
             const prizeIndex = calculatePrizeIndex(type);
             const prizeValue = config.prizes[prizeIndex];
-            const sectorDegree = 360 / 12;
+            const sectorDegree = 360 / 10;
 
             const extraRounds = 5 * 360;
             const targetDegree = extraRounds + (360 - (prizeIndex * sectorDegree));
