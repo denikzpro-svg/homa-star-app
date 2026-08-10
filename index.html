@@ -209,7 +209,7 @@
             font-weight: 800;
         }
 
-        /* --- НОВЫЙ ДИЗАЙН КОЛЕСА КАК НА СКРИНШОТЕ --- */
+        /* --- ИГРОВОЕ КОЛЕСО CANVAS --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -217,10 +217,9 @@
             justify-content: center;
             position: relative;
             margin: auto 0;
-            padding: 20px 0;
+            padding: 15px 0;
         }
 
-        /* Неоновый указатель сверху */
         .arrow-pointer {
             width: 0;
             height: 0;
@@ -245,13 +244,12 @@
             border-top: 13px solid #FFF;
         }
 
-        /* Обод с гирляндой лампочек */
         .wheel-outer-rim {
             width: 290px;
             height: 290px;
             border-radius: 50%;
-            background: #101422;
-            border: 10px solid #1A2135;
+            background: #0E121E;
+            border: 8px solid #1C2438;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -259,7 +257,6 @@
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
-        /* Лампочки по контуру */
         .wheel-bulbs-container {
             position: absolute;
             width: 100%;
@@ -280,46 +277,13 @@
             margin: -3.5px;
         }
 
-        /* Крутящийся диск с секторами */
-        .wheel-spinner {
+        #wheel-canvas {
             width: 250px;
             height: 250px;
             border-radius: 50%;
-            position: relative;
-            overflow: hidden;
             transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
-            border: 3px solid #232D48;
         }
 
-        /* Сектор колеса */
-        .slice {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 50%;
-            transform-origin: 0% 100%;
-            overflow: hidden;
-        }
-
-        .slice-content {
-            position: absolute;
-            left: -100%;
-            width: 200%;
-            height: 200%;
-            border-radius: 50%;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 18px;
-            font-size: 11px;
-            font-weight: 900;
-            color: #FFF;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
-
-        /* Центральный замок-звезда */
         .center-hub {
             position: absolute;
             width: 58px;
@@ -734,7 +698,7 @@
             </div>
         </div>
 
-        <!-- ЭКРАН ИГРЫ С ОБНОВЛЕННЫМ КОЛЕСОМ -->
+        <!-- ЭКРАН ИГРЫ С CANVAS КОЛЕСОМ -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -748,7 +712,7 @@
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
                     <div class="wheel-bulbs-container" id="bulbs-container"></div>
-                    <div class="wheel-spinner" id="wheel-spinner"></div>
+                    <canvas id="wheel-canvas" width="500" height="500"></canvas>
                     <div class="center-hub">⭐</div>
                 </div>
             </div>
@@ -900,7 +864,14 @@
             diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [80, 150, 250, 300, 600, 1500] }
         };
 
-        const SECTOR_COLORS = ['#00F3FF', '#9D00FF', '#FF6B00', '#FFD700', '#FF0055', '#00FF66', '#3399FF', '#E056FD'];
+        const SECTOR_THEMES = [
+            { bg1: '#00C6FF', bg2: '#0072FF', text: '#FFFFFF', icon: '💎' },
+            { bg1: '#B92B27', bg2: '#1565C0', text: '#FFFFFF', icon: '⭐' },
+            { bg1: '#F857A6', bg2: '#FF5858', text: '#FFFFFF', icon: '💎' },
+            { bg1: '#FF9900', bg2: '#FF5500', text: '#FFFFFF', icon: '👑' },
+            { bg1: '#7B1FA2', bg2: '#E040FB', text: '#FFFFFF', icon: '⭐' },
+            { bg1: '#11998E', bg2: '#38EF7D', text: '#FFFFFF', icon: '💎' }
+        ];
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
@@ -1062,30 +1033,61 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ГЕНЕРАЦИЯ ДИСКА И ЛАМПОЧЕК --- */
+        /* --- ЧИСТАЯ CANVAS ОТРИСОВКА КОЛЕСА --- */
         function renderWheelDisc(type) {
-            const spinner = document.getElementById('wheel-spinner');
-            spinner.innerHTML = '';
+            const canvas = document.getElementById('wheel-canvas');
+            const ctx = canvas.getContext('2d');
             const prizes = WHEEL_CONFIGS[type].prizes;
             const numSlices = prizes.length;
-            const sliceAngle = 360 / numSlices;
+            const arc = (2 * Math.PI) / numSlices;
+            const radius = canvas.width / 2;
 
-            prizes.forEach((prize, idx) => {
-                const slice = document.createElement('div');
-                slice.className = 'slice';
-                slice.style.transform = `rotate(${idx * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                const content = document.createElement('div');
-                content.className = 'slice-content';
-                content.style.transform = `skewY(-${90 - sliceAngle}deg) rotate(${sliceAngle / 2}deg)`;
-                content.style.background = SECTOR_COLORS[idx % SECTOR_COLORS.length];
-                content.innerText = `+${prize} ⭐`;
+            for (let i = 0; i < numSlices; i++) {
+                const angle = i * arc - Math.PI / 2;
+                const theme = SECTOR_THEMES[i % SECTOR_THEMES.length];
 
-                slice.appendChild(content);
-                spinner.appendChild(slice);
-            });
+                // Градиент сектора
+                const grad = ctx.createRadialGradient(radius, radius, 30, radius, radius, radius);
+                grad.addColorStop(0, theme.bg1);
+                grad.addColorStop(1, theme.bg2);
 
-            // Лампочки гирлянды
+                // Рисуем сектор
+                ctx.beginPath();
+                ctx.fillStyle = grad;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, angle, angle + arc);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+
+                // Разделители секторов
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Текст и иконки
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arc / 2 + Math.PI / 2);
+
+                // Значок в секторе
+                ctx.font = '24px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(theme.icon, 0, -radius + 45);
+
+                // Сумма выигрыша
+                ctx.fillStyle = theme.text;
+                ctx.font = '900 21px -apple-system, sans-serif';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(`+${prizes[i]} ⭐`, 0, -radius + 85);
+
+                ctx.restore();
+            }
+
+            // Лампочки на ободе
             const bulbsContainer = document.getElementById('bulbs-container');
             bulbsContainer.innerHTML = '';
             const numBulbs = 20;
@@ -1093,12 +1095,12 @@
                 const bulb = document.createElement('div');
                 bulb.className = 'bulb';
                 const angle = (i * 360 / numBulbs) * (Math.PI / 180);
-                const r = 138; 
+                const r = 138;
                 const x = r * Math.cos(angle);
                 const y = r * Math.sin(angle);
                 bulb.style.transform = `translate(${x}px, ${y}px)`;
                 bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
-                bulb.style.boxShadow = i % 2 === 0 ? '0 0 6px #00F3FF' : '0 0 6px #FFD700';
+                bulb.style.boxShadow = i % 2 === 0 ? '0 0 8px #00F3FF' : '0 0 8px #FFD700';
                 bulbsContainer.appendChild(bulb);
             }
         }
@@ -1118,28 +1120,28 @@
             }
 
             if (type === 'common') {
-                if (count === 0) return 3;
+                if (count === 0) return 3; // 1-й спин = 50 ⭐
                 if (rand < 45) return 0;
                 if (rand < 80) return 1;
                 return 2;
             }
 
             if (type === 'silver') {
-                if (count === 0) return 1;
-                if (count === 1) return 2;
+                if (count === 0) return 1; // 1-й спин = 50 ⭐
+                if (count === 1) return 2; // 2-й спин = 70 ⭐
                 if (rand < 42) return 0;
                 return 1;
             }
 
             if (type === 'gold') {
-                if (count === 0) return 2;
-                if (count === 1) return 3;
+                if (count === 0) return 2; // 1-й спин = 100 ⭐
+                if (count === 1) return 3; // 2-й спин = 140 ⭐
                 return 0;
             }
 
             if (type === 'diamond') {
-                if (count === 0) return 2;
-                if (count === 1) return 3;
+                if (count === 0) return 2; // 1-й спин = 250 ⭐
+                if (count === 1) return 3; // 2-й спин = 300 ⭐
                 return 0;
             }
 
@@ -1220,11 +1222,11 @@
             const sectorDegree = 360 / config.prizes.length;
 
             const extraRounds = 5 * 360;
-            const targetDegree = extraRounds + (prizeIndex * sectorDegree) + (sectorDegree / 2);
+            const targetDegree = extraRounds + (360 - (prizeIndex * sectorDegree) - (sectorDegree / 2));
             currentWheelRotation += targetDegree;
 
-            const spinner = document.getElementById('wheel-spinner');
-            spinner.style.transform = `rotate(${currentWheelRotation}deg)`;
+            const canvas = document.getElementById('wheel-canvas');
+            canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
 
             setTimeout(() => {
                 isSpinning = false;
