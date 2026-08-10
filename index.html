@@ -179,9 +179,7 @@
             opacity: 1;
         }
 
-        /* ==========================================
-           ПОЛНОЭКРАННЫЙ СТОРИС-ОНБОРДИНГ (ONBOARDING)
-           ========================================== */
+        /* === СТОРИС-ОНБОРДИНГ === */
         .story-overlay {
             position: fixed;
             top: 0;
@@ -196,7 +194,6 @@
             padding: 20px 20px 40px 20px;
         }
 
-        /* Полоски прогресса (Stories Bars) */
         .story-progress-container {
             display: flex;
             gap: 6px;
@@ -210,21 +207,14 @@
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
             overflow: hidden;
-            position: relative;
         }
 
         .progress-fill {
             height: 100%;
             width: 0%;
             background: #00F3FF;
-            transition: width 0.1s linear;
         }
 
-        .progress-bar.completed .progress-fill {
-            width: 100%;
-        }
-
-        /* Контент слайдов */
         .story-content {
             flex: 1;
             display: flex;
@@ -275,7 +265,6 @@
             border: 1px solid rgba(255, 204, 0, 0.4);
         }
 
-        /* Кнопки переключения */
         .story-actions {
             width: 100%;
         }
@@ -318,44 +307,36 @@
 </head>
 <body>
 
-    <!-- ПОЛНОЭКРАННЫЙ ОНБОРДИНГ В СТИЛЕ СТОРИС -->
+    <!-- СТОРИС-ОНБОРДИНГ -->
     <div id="story-onboarding" class="story-overlay">
         
-        <!-- Ползунки / Прогресс-бары сверху -->
         <div class="story-progress-container">
-            <div class="progress-bar" id="bar-1"><div class="progress-fill" id="fill-1"></div></div>
-            <div class="progress-bar" id="bar-2"><div class="progress-fill" id="fill-2"></div></div>
-            <div class="progress-bar" id="bar-3"><div class="progress-fill" id="fill-3"></div></div>
+            <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
+            <div class="progress-bar"><div class="progress-fill" id="fill-2"></div></div>
+            <div class="progress-bar"><div class="progress-fill" id="fill-3"></div></div>
         </div>
 
-        <!-- Контент 3 слайдов -->
         <div class="story-content">
-            
-            <!-- Слайд 1 -->
             <div class="story-slide active" id="slide-1">
                 <div class="story-icon">🎡</div>
                 <h2>Добро пожаловать в Homastar!</h2>
                 <p>Крути колесо фортуны, выигрывай Telegram Stars и участвуй в ежедневных розыгрышах!</p>
             </div>
 
-            <!-- Слайд 2 -->
             <div class="story-slide" id="slide-2">
                 <div class="story-icon">🎒</div>
                 <h2>Собирай предметы и выбивай Stars</h2>
                 <p>Выигрывай редкие предметы, сохраняй их в своём Инвентаре или обменивай прямо на Telegram Stars!</p>
             </div>
 
-            <!-- Слайд 3 -->
             <div class="story-slide" id="slide-3">
                 <div class="story-icon gift-bounce">🧸</div>
                 <div class="badge-price">Стоимость: 15 ⭐</div>
                 <h2>Твой подарок за старт!</h2>
                 <p>Мы дарим тебе предмет «Мишка» (15 ⭐). Он уже готов отправиться в твой инвентарь!</p>
             </div>
-
         </div>
 
-        <!-- Кнопки снизу -->
         <div class="story-actions">
             <button id="btn-next" class="btn-story-next" onclick="goToNextSlide()">Далее →</button>
             <button id="btn-claim" class="btn-story-claim" onclick="claimGift()" style="display: none;">🎁 ЗАБРАТЬ ПОДАРОК</button>
@@ -363,7 +344,7 @@
 
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН С КОЛЕСОМ -->
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="app-container">
         <header class="header">
             <div class="logo">HOMASTAR</div>
@@ -398,11 +379,10 @@
         </nav>
     </div>
 
-    <!-- ВСЯ ЛОГИКА ПЕРЕКЛЮЧЕНИЯ И АВТОМАТИКИ (JS) -->
     <script>
         let currentSlide = 1;
         const totalSlides = 3;
-        const slideDuration = 4000; // 4 секунды на слайд
+        const slideDuration = 4000;
         let progressInterval = null;
         let currentProgress = 0;
 
@@ -426,20 +406,17 @@
         }
 
         function goToNextSlide() {
-            // Помечаем текущую полоску как полностью заполненную
-            const currentBar = document.getElementById(`bar-${currentSlide}`);
-            if (currentBar) currentBar.classList.add('completed');
+            // При клике или завершении таймера текущий ползунок ровно закрашивается на 100%
+            const currentFill = document.getElementById(`fill-${currentSlide}`);
+            if (currentFill) currentFill.style.width = '100%';
 
-            // Скрываем текущий слайд
             document.getElementById(`slide-${currentSlide}`).classList.remove('active');
 
             currentSlide++;
 
             if (currentSlide <= totalSlides) {
-                // Показываем следующий слайд
                 document.getElementById(`slide-${currentSlide}`).classList.add('active');
                 
-                // Если пришли на последний слайд — меняем кнопку на "ЗАБРАТЬ ПОДАРОК"
                 if (currentSlide === totalSlides) {
                     document.getElementById('btn-next').style.display = 'none';
                     document.getElementById('btn-claim').style.display = 'block';
@@ -451,14 +428,27 @@
 
         function claimGift() {
             clearInterval(progressInterval);
-            // Закрываем онбординг
+            
+            // Сохраняем флаг, что пользователь уже забрал подарок
+            localStorage.setItem('homastar_onboarding_completed', 'true');
+
+            // Скрываем окно сторис
             document.getElementById('story-onboarding').style.display = 'none';
             alert('🎉 «Мишка» (15 ⭐) зачислен в твой инвентарь!');
         }
 
-        // Запуск при старте
         window.onload = function() {
-            startTimer();
+            // Проверяем, заходил ли человек ранее
+            const isCompleted = localStorage.getItem('homastar_onboarding_completed');
+            
+            if (isCompleted === 'true') {
+                // Если заходил — сразу убираем слайдер
+                document.getElementById('story-onboarding').style.display = 'none';
+            } else {
+                // Если зашел впервые — запускаем слайдер
+                startTimer();
+            }
+
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
