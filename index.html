@@ -6,6 +6,32 @@
     <title>Homastar</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #0B0C10;
+            --card-bg: #151823;
+            --card-border: #232838;
+            --text-color: #FFFFFF;
+            --text-sub: #A0AAB8;
+            --accent-blue: #00F3FF;
+            --accent-gold: #FFCC00;
+            --accent-purple: #9D00FF;
+        }
+
+        /* ТЕМЫ */
+        body.theme-night {
+            --bg-color: #000000;
+            --card-bg: #0D0E12;
+            --card-border: #1A1C24;
+        }
+
+        body.theme-day {
+            --bg-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --card-border: #E2E8F0;
+            --text-color: #1A202C;
+            --text-sub: #718096;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,13 +41,14 @@
         }
 
         body {
-            background-color: #0B0C10;
-            color: #FFFFFF;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .app-container {
@@ -35,6 +62,7 @@
             position: relative;
         }
 
+        /* ШАПКА БАЛАНСА */
         .header {
             display: flex;
             justify-content: space-between;
@@ -46,19 +74,43 @@
             font-weight: 800;
             font-size: 18px;
             letter-spacing: 1px;
-            color: #A0AAB8;
+            color: var(--text-sub);
         }
 
-        .balance-btn {
-            background: #151823;
-            padding: 8px 16px;
+        .balance-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 4px 8px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #FFCC00;
-            border: 1px solid #232838;
         }
 
+        .balance-value {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            padding: 0 4px;
+        }
+
+        .btn-bal-action {
+            background: #232838;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .btn-bal-action.pay {
+            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            color: #FFF;
+        }
+
+        /* ЭКРАНЫ */
         .screen {
             display: none;
             flex-direction: column;
@@ -73,7 +125,7 @@
         .btn-back {
             background: transparent;
             border: none;
-            color: #00F3FF;
+            color: var(--accent-blue);
             font-size: 14px;
             font-weight: 700;
             display: flex;
@@ -84,9 +136,10 @@
             align-self: flex-start;
         }
 
+        /* КАРТОЧКИ МЕНЮ */
         .menu-card {
-            background: #151823;
-            border: 1px solid #232838;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 16px;
             display: flex;
@@ -99,32 +152,28 @@
         .menu-card:active { transform: scale(0.98); }
 
         .menu-card.featured-free {
-            border: 1px solid #FFCC00;
-            background: linear-gradient(135deg, #151823 0%, #262110 100%);
+            border: 1px solid var(--accent-gold);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 204, 0, 0.1) 100%);
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
         }
 
         .menu-card.featured-wheels {
-            border: 1px solid #00F3FF;
-            background: linear-gradient(135deg, #151823 0%, #1a2235 100%);
+            border: 1px solid var(--accent-blue);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 243, 255, 0.1) 100%);
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
         }
 
         .menu-card.featured-tickets {
-            border: 1px solid #9D00FF;
-            background: linear-gradient(135deg, #151823 0%, #221233 100%);
+            border: 1px solid var(--accent-purple);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(157, 0, 255, 0.1) 100%);
             box-shadow: 0 0 15px rgba(157, 0, 255, 0.2);
         }
 
-        .card-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .card-left { display: flex; align-items: center; gap: 14px; }
 
         .card-icon {
             font-size: 32px;
-            background: #232838;
+            background: rgba(255, 255, 255, 0.05);
             width: 52px;
             height: 52px;
             border-radius: 14px;
@@ -134,10 +183,10 @@
         }
 
         .card-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-        .card-info p { font-size: 12px; color: #A0AAB8; }
+        .card-info p { font-size: 12px; color: var(--text-sub); }
 
         .card-badge {
-            background: #00F3FF;
+            background: var(--accent-blue);
             color: #000;
             font-size: 10px;
             font-weight: 800;
@@ -146,26 +195,27 @@
             margin-left: 6px;
         }
 
-        .card-badge.free { background: #FFCC00; }
+        .card-badge.free { background: var(--accent-gold); }
         .card-badge.silver { background: #C0C0C0; }
         .card-badge.gold { background: #FFD700; }
         .card-badge.diamond { background: #B9F2FF; }
-        .card-badge.vip { background: #9D00FF; color: #FFF; }
+        .card-badge.vip { background: var(--accent-purple); color: #FFF; }
 
         .btn-card-action {
-            background: #232838;
-            border: 1px solid #32394e;
-            color: #00F3FF;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--accent-blue);
             padding: 8px 14px;
             border-radius: 10px;
             font-size: 12px;
             font-weight: 700;
         }
 
+        /* ТАЙМЕР НАД КОЛЕСОМ */
         .timer-banner {
             background: rgba(255, 204, 0, 0.1);
             border: 1px solid rgba(255, 204, 0, 0.3);
-            color: #FFCC00;
+            color: var(--accent-gold);
             padding: 10px 16px;
             border-radius: 14px;
             text-align: center;
@@ -185,19 +235,19 @@
         }
 
         .arrow-pointer {
-            color: #00F3FF;
+            color: var(--accent-blue);
             font-size: 20px;
             margin-bottom: -10px;
             z-index: 10;
-            text-shadow: 0 0 10px #00F3FF;
+            text-shadow: 0 0 10px var(--accent-blue);
         }
 
         .wheel-outer-rim {
             width: 240px;
             height: 240px;
             border-radius: 50%;
-            background: #151823;
-            border: 4px solid #232838;
+            background: var(--card-bg);
+            border: 4px solid var(--card-border);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -222,9 +272,9 @@
         .center-hub {
             width: 46px;
             height: 46px;
-            background: #151823;
+            background: var(--card-bg);
             border-radius: 50%;
-            border: 2px solid #FFCC00;
+            border: 2px solid var(--accent-gold);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -246,25 +296,25 @@
         }
 
         .btn-spin.disabled {
-            background: #232838;
-            color: #718096;
+            background: var(--card-border);
+            color: var(--text-sub);
             box-shadow: none;
             cursor: not-allowed;
         }
 
+        /* БИЛЕТЫ */
         .ticket-banner {
-            background: linear-gradient(135deg, #221233 0%, #151823 100%);
-            border: 1px solid #9D00FF;
+            background: linear-gradient(135deg, rgba(157, 0, 255, 0.15) 0%, var(--card-bg) 100%);
+            border: 1px solid var(--accent-purple);
             border-radius: 20px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
         }
 
         .ticket-prize {
             font-size: 28px;
             font-weight: 900;
-            color: #FFCC00;
+            color: var(--accent-gold);
             margin: 8px 0;
             text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
         }
@@ -272,18 +322,18 @@
         .ticket-stats {
             display: flex;
             justify-content: space-between;
-            background: #151823;
-            border: 1px solid #232838;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             padding: 12px;
             border-radius: 14px;
             margin: 12px 0;
             font-size: 13px;
         }
 
-        /* ИНВЕНТАРЬ И ХОЛД ЭЛЕМЕНТЫ */
+        /* ИНВЕНТАРЬ И ХОЛДЫ */
         .inventory-card {
-            background: #151823;
-            border: 1px solid #232838;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 14px;
             display: flex;
@@ -291,11 +341,7 @@
             gap: 10px;
         }
 
-        .inventory-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .inventory-header { display: flex; align-items: center; justify-content: space-between; }
 
         .hold-badge {
             background: rgba(255, 107, 0, 0.15);
@@ -309,23 +355,17 @@
 
         .hold-badge.ready {
             background: rgba(0, 243, 255, 0.15);
-            color: #00F3FF;
+            color: var(--accent-blue);
             border-color: rgba(0, 243, 255, 0.3);
         }
 
-        .hold-timer-text {
-            font-size: 12px;
-            color: #A0AAB8;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .hold-timer-text { font-size: 12px; color: var(--text-sub); }
 
         .btn-withdraw {
             width: 100%;
-            background: #232838;
-            border: 1px solid #32394e;
-            color: #718096;
+            background: var(--card-border);
+            border: 1px solid var(--card-border);
+            color: var(--text-sub);
             padding: 10px;
             border-radius: 10px;
             font-size: 12px;
@@ -338,13 +378,12 @@
             color: #FFF;
             border: none;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
 
         /* РЕФЕРАЛКА */
         .ref-box {
-            background: #151823;
-            border: 1px solid #232838;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 14px;
             display: flex;
@@ -354,19 +393,16 @@
 
         .ref-link-input {
             width: 100%;
-            background: #0B0C10;
-            border: 1px solid #232838;
-            color: #00F3FF;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            color: var(--accent-blue);
             padding: 12px;
             border-radius: 10px;
             font-size: 12px;
             outline: none;
         }
 
-        .ref-buttons {
-            display: flex;
-            gap: 8px;
-        }
+        .ref-buttons { display: flex; gap: 8px; }
 
         .btn-ref {
             flex: 1;
@@ -378,13 +414,145 @@
             cursor: pointer;
         }
 
-        .btn-copy { background: #232838; color: #FFF; border: 1px solid #32394e; }
+        .btn-copy { background: var(--card-border); color: var(--text-color); }
         .btn-share { background: linear-gradient(90deg, #0066FF, #00F3FF); color: #FFF; }
+
+        /* НАСТРОЙКИ */
+        .setting-row {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 14px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-select-btns {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-color);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-theme {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-theme.active {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: var(--card-border);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .toggle-switch.active { background: var(--accent-blue); }
+
+        .toggle-circle {
+            width: 18px;
+            height: 18px;
+            background: #FFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: left 0.2s ease;
+        }
+
+        .toggle-switch.active .toggle-circle { left: 23px; }
+
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .package-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .package-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .package-card:hover { border-color: var(--accent-gold); }
+
+        .input-stars {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            color: var(--accent-gold);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            outline: none;
+        }
 
         .bottom-nav {
             display: flex;
             justify-content: space-around;
-            background: #151823;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             padding: 12px;
             border-radius: 16px;
         }
@@ -414,37 +582,15 @@
             padding: 20px 20px 40px 20px;
         }
 
-        .story-progress-container {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
+        .story-progress-container { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
+        .progress-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; width: 0%; background: #00F3FF; }
 
-        .story-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
+        .story-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .story-slide { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
         .story-slide.active { display: flex; }
         .story-icon { font-size: 80px; filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4)); }
-        .story-slide h2 { font-size: 26px; font-weight: 800; }
+        .story-slide h2 { font-size: 26px; font-weight: 800; color: #FFF; }
         .story-slide p { font-size: 15px; color: #A0AAB8; line-height: 1.5; max-width: 300px; }
 
         .badge-price {
@@ -485,7 +631,7 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
     </style>
 </head>
-<body>
+<body class="theme-standard">
 
     <!-- 1. СТОРИС-ОНБОРДИНГ (ПОКАЗЫВАЕТСЯ 1 РАЗ) -->
     <div id="story-onboarding" class="story-overlay">
@@ -524,12 +670,17 @@
 
     <!-- 2. ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
     <div class="app-container">
+        <!-- ШАПКА С БАЛАНСОМ -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
-            <div class="balance-btn">BALANCE +</div>
+            <div class="balance-group">
+                <span id="user-balance-text" class="balance-value">0 ⭐</span>
+                <button class="btn-bal-action pay" onclick="openModal('modal-deposit')">+</button>
+                <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
+            </div>
         </header>
 
-        <!-- ЭКРАН 1: ГЛАВНОЕ МЕНЮ (HUB) -->
+        <!-- ЭКРАН 1: ГЛАВНОЕ МЕНЮ (HUB) - СТРОГО 3 КАРТОЧКИ -->
         <div id="screen-hub" class="screen active">
             
             <!-- 1. БЕСПЛАТНОЕ КОЛЕСО -->
@@ -541,7 +692,7 @@
                         <p>Доступно 1 раз в 24 часа</p>
                     </div>
                 </div>
-                <button class="btn-card-action" style="color: #FFCC00; border-color: #FFCC00;">Крутить</button>
+                <button class="btn-card-action" style="color: var(--accent-gold); border-color: var(--accent-gold);">Крутить</button>
             </div>
 
             <!-- 2. КОЛЁСА (5 ВИДОВ) -->
@@ -565,31 +716,7 @@
                         <p>Купи билет — выиграй суперприз</p>
                     </div>
                 </div>
-                <button class="btn-card-action" style="color: #9D00FF; border-color: #9D00FF;">Участвовать</button>
-            </div>
-
-            <!-- 4. ДРУЗЬЯ (РЕФЕРАЛКА) -->
-            <div class="menu-card" onclick="openScreen('screen-friends')">
-                <div class="card-left">
-                    <div class="card-icon">👥</div>
-                    <div class="card-info">
-                        <h3>Пригласить друзей <span class="card-badge free">+2 ⭐</span></h3>
-                        <p>+2 ⭐ за друга + 5% от депо</p>
-                    </div>
-                </div>
-                <button class="btn-card-action">Позвать</button>
-            </div>
-
-            <!-- 5. ИНВЕНТАРЬ -->
-            <div class="menu-card" onclick="openScreen('screen-inventory')">
-                <div class="card-left">
-                    <div class="card-icon">🎒</div>
-                    <div class="card-info">
-                        <h3>Инвентарь <span class="card-badge" id="hub-inv-badge">1</span></h3>
-                        <p>Твой Мишка и заморозки</p>
-                    </div>
-                </div>
-                <button class="btn-card-action">Открыть</button>
+                <button class="btn-card-action" style="color: var(--accent-purple); border-color: var(--accent-purple);">Участвовать</button>
             </div>
 
         </div>
@@ -682,14 +809,14 @@
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
             <div class="ticket-banner">
-                <div style="font-size: 13px; color: #A0AAB8;">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div style="font-size: 13px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
                 <div class="ticket-prize">🏆 1000 STARS</div>
-                <div style="font-size: 12px; color: #00F3FF;">⏱ Итоги через: 18ч 42мин</div>
+                <div style="font-size: 12px; color: var(--accent-blue);">⏱ Итоги через: 18ч 42мин</div>
             </div>
 
             <div class="ticket-stats">
-                <div>Твои билеты: <b id="user-tickets-count" style="color: #FFCC00;">0 шт.</b></div>
-                <div>Шанс на победу: <b id="user-win-chance" style="color: #00F3FF;">0%</b></div>
+                <div>Твои билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0 шт.</b></div>
+                <div>Шанс на победу: <b id="user-win-chance" style="color: var(--accent-blue);">0%</b></div>
             </div>
 
             <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
@@ -700,12 +827,12 @@
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
             <h2 style="font-size: 18px;">👥 Зарабатывай на друзьях</h2>
-            <p style="font-size: 13px; color: #A0AAB8; line-height: 1.4;">
-                Получай <b style="color: #FFCC00;">+2 ⭐</b> за каждого приглашённого друга и <b style="color: #00F3FF;">5%</b> от всех его пополнений навсегда! <i>(Все бонусы падают в инвентарь на 21 день).</i>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">
+                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений! <i>(Все бонусы падают в инвентарь на 21 день).</i>
             </p>
 
             <div class="ref-box">
-                <div style="font-size: 12px; color: #A0AAB8;">Твоя пригласительная ссылка:</div>
+                <div style="font-size: 12px; color: var(--text-sub);">Твоя пригласительная ссылка:</div>
                 <input type="text" id="ref-link-input" class="ref-link-input" value="https://t.me/HomastarBot?start=ref_12345" readonly>
                 <div class="ref-buttons">
                     <button class="btn-ref btn-copy" onclick="copyRefLink()">📋 Копировать</button>
@@ -714,50 +841,129 @@
             </div>
 
             <div class="ticket-stats">
-                <div>Приглашено: <b style="color: #00F3FF;">3 чел.</b></div>
-                <div>Заработано: <b style="color: #FFCC00;">+6 ⭐</b></div>
+                <div>Приглашено: <b style="color: var(--accent-blue);">3 чел.</b></div>
+                <div>Заработано: <b style="color: var(--accent-gold);">+6 ⭐</b></div>
             </div>
         </div>
 
-        <!-- ЭКРАН 6: ИНВЕНТАРЬ С ЛОГИКОЙ ХОЛДА 21 ДЕНЬ -->
+        <!-- ЭКРАН 6: ИНВЕНТАРЬ (ХОЛД 21 ДЕНЬ) -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">🎒 Твой Инвентарь</h2>
-            <p style="font-size: 12px; color: #A0AAB8; margin-bottom: 10px;">Все начисленные подарки и бонусы находятся в заморозке 21 день.</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">Все начисленные подарки и бонусы находятся в заморозке 21 день.</p>
 
-            <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;">
-                <!-- Карточки предзагрузятся через JS -->
+            <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <!-- ЭКРАН 7: НАСТРОЙКИ (ТЕМЫ И ЗВУКИ) -->
+        <div id="screen-settings" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
+
+            <div class="setting-row">
+                <div style="font-size: 14px; font-weight: 700;">Тема оформления</div>
+                <div class="theme-select-btns">
+                    <button id="btn-theme-standard" class="btn-theme active" onclick="setTheme('standard')">Стандарт</button>
+                    <button id="btn-theme-night" class="btn-theme" onclick="setTheme('night')">Ночь</button>
+                    <button id="btn-theme-day" class="btn-theme" onclick="setTheme('day')">День</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div style="font-size: 14px; font-weight: 700;">🎵 Фоновая музыка</div>
+                <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')">
+                    <div class="toggle-circle"></div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div style="font-size: 14px; font-weight: 700;">🔊 Звуковые эффекты</div>
+                <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')">
+                    <div class="toggle-circle"></div>
+                </div>
             </div>
         </div>
 
-        <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+        <!-- НИЖНЯЯ НАВИГАЦИЯ (6 ВКЛАДОК) -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
             <button class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
             <button class="nav-item" onclick="openScreen('screen-tickets')">🎟️</button>
             <button class="nav-item" onclick="openScreen('screen-friends')">👥</button>
             <button class="nav-item" onclick="openScreen('screen-inventory')">🎒</button>
+            <button class="nav-item" onclick="openScreen('screen-settings')">⚙️</button>
         </nav>
     </div>
 
+    <!-- 3. МОДАЛЬНОЕ ОКНО ПОПОЛНЕНИЯ (DEPOSIT) -->
+    <div id="modal-deposit" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-size: 16px;">💳 Пополнить Telegram Stars</h3>
+                <button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button>
+            </div>
+            
+            <div class="package-grid">
+                <div class="package-card" onclick="selectDepositPackage(50)">
+                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">50 ⭐</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Старт</div>
+                </div>
+                <div class="package-card" onclick="selectDepositPackage(100)">
+                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">100 ⭐</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Медиум</div>
+                </div>
+                <div class="package-card" onclick="selectDepositPackage(250)">
+                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">250 ⭐</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">Пакет Про</div>
+                </div>
+                <div class="package-card" onclick="selectDepositPackage(500)">
+                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">500 ⭐</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">Пакет VIP</div>
+                </div>
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-sub); text-align: center;">Или введи свою сумму:</div>
+            <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Количество ⭐">
+
+            <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
+        </div>
+    </div>
+
+    <!-- 4. МОДАЛЬНОЕ ОКНО ВЫВОДА (WITHDRAW) -->
+    <div id="modal-withdraw" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-size: 16px;">📤 Вывод Stars</h3>
+                <button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button>
+            </div>
+
+            <div style="font-size: 13px; color: var(--text-sub);">
+                Доступный баланс: <b id="withdraw-available-bal" style="color: var(--accent-gold);">0 ⭐</b>
+            </div>
+
+            <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма вывода ⭐">
+
+            <button class="btn-spin" style="background: linear-gradient(90deg, #FFCC00, #FF9900); color: #000;" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
+        </div>
+    </div>
+
     <script>
+        let userBalance = parseInt(localStorage.getItem('homastar_main_balance') || '0');
         let timerInterval = null;
-        let holdInterval = null;
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
 
-        // Данные инвентаря с датами получения
+        let settings = {
+            theme: localStorage.getItem('homastar_theme') || 'standard',
+            music: localStorage.getItem('homastar_music') !== 'false',
+            sfx: localStorage.getItem('homastar_sfx') !== 'false'
+        };
+
         let inventoryItems = [
             {
                 id: 'gift_bear',
                 title: 'Плюшевый Мишка (15 ⭐)',
                 icon: '🧸',
                 receivedAt: parseInt(localStorage.getItem('homastar_bear_time') || new Date().getTime().toString())
-            },
-            {
-                id: 'ref_bonus_1',
-                title: 'Бонус за друга (+2 ⭐)',
-                icon: '👤',
-                receivedAt: new Date().getTime() - (2 * 24 * 60 * 60 * 1000) // Пример: получен 2 дня назад
             }
         ];
 
@@ -765,15 +971,58 @@
             localStorage.setItem('homastar_bear_time', new Date().getTime().toString());
         }
 
+        function updateBalanceDisplay() {
+            document.getElementById('user-balance-text').innerText = `${userBalance} ⭐`;
+            document.getElementById('withdraw-available-bal').innerText = `${userBalance} ⭐`;
+            localStorage.setItem('homastar_main_balance', userBalance.toString());
+        }
+
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             const target = document.getElementById(screenId);
             if (target) target.classList.add('active');
             
-            if (screenId === 'screen-inventory') {
-                renderInventory();
-            }
+            if (screenId === 'screen-inventory') renderInventory();
             updateTicketUI();
+        }
+
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        // ПОПОЛНЕНИЕ
+        function selectDepositPackage(amount) {
+            document.getElementById('custom-deposit-input').value = amount;
+        }
+
+        function executeDeposit() {
+            const val = parseInt(document.getElementById('custom-deposit-input').value);
+            if (!val || val <= 0) {
+                alert('Введи корректную сумму Stars!');
+                return;
+            }
+
+            userBalance += val;
+            updateBalanceDisplay();
+            closeModal('modal-deposit');
+            alert(`🎉 Пополнение прошло успешно! +${val} ⭐ зачислено на баланс.`);
+        }
+
+        // ВЫВОД
+        function executeWithdraw() {
+            const val = parseInt(document.getElementById('withdraw-amount-input').value);
+            if (!val || val <= 0) {
+                alert('Введи сумму вывода!');
+                return;
+            }
+            if (val > userBalance) {
+                alert('Недостаточно разблокированного баланса! Замороженные бонусы вынести нельзя.');
+                return;
+            }
+
+            userBalance -= val;
+            updateBalanceDisplay();
+            closeModal('modal-withdraw');
+            alert('🎉 Отлично! Ваша заявка принята. В течение 24 часов ваши звёзды будут отправлены на ваш аккаунт!');
         }
 
         // РЕНДЕР ИНВЕНТАРЯ С ТАЙМЕРАМИ 21 ДЕНЬ
@@ -799,12 +1048,12 @@
                                 <span style="font-size:24px;">${item.icon}</span>
                                 <div>
                                     <h4 style="font-size:14px;">${item.title}</h4>
-                                    <div class="hold-timer-text" style="color:#00F3FF;">✅ Готово к выводу!</div>
+                                    <div class="hold-timer-text" style="color:var(--accent-blue);">✅ Готово к выводу!</div>
                                 </div>
                             </div>
                             <span class="hold-badge ready">РАЗБЛОКИРОВАНО</span>
                         </div>
-                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}')">ВЫВЕСТИ НА БАЛАНС</button>
+                        <button class="btn-withdraw active" onclick="withdrawItem('${item.id}', 15)">ВЫВЕСТИ НА БАЛАНС</button>
                     `;
                 } else {
                     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -829,13 +1078,34 @@
             });
         }
 
-        function withdrawItem(itemId) {
-            alert('🎉 Награда успешно выведена на твой основной баланс!');
+        function withdrawItem(itemId, starsValue) {
+            userBalance += starsValue;
+            updateBalanceDisplay();
             inventoryItems = inventoryItems.filter(i => i.id !== itemId);
             renderInventory();
+            alert(`🎉 ${starsValue} ⭐ успешно переведено из инвентаря на основной баланс!`);
         }
 
-        // РЕФЕРАЛКА КНОПКИ
+        // НАСТРОЙКИ И ТЕМЫ
+        function setTheme(themeName) {
+            document.body.className = `theme-${themeName}`;
+            settings.theme = themeName;
+            localStorage.setItem('homastar_theme', themeName);
+
+            document.querySelectorAll('.btn-theme').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-theme-${themeName}`).classList.add('active');
+        }
+
+        function toggleSetting(type) {
+            settings[type] = !settings[type];
+            localStorage.setItem(`homastar_${type}`, settings[type]);
+            
+            const toggle = document.getElementById(`toggle-${type}`);
+            if (settings[type]) toggle.classList.add('active');
+            else toggle.classList.remove('active');
+        }
+
+        // РЕФЕРАЛКА
         function copyRefLink() {
             const input = document.getElementById('ref-link-input');
             input.select();
@@ -851,7 +1121,14 @@
 
         // БИЛЕТЫ
         function buyTicket() {
+            if (userBalance < 20) {
+                alert('Недостаточно Stars на балансе для покупки билета!');
+                openModal('modal-deposit');
+                return;
+            }
+            userBalance -= 20;
             userTickets++;
+            updateBalanceDisplay();
             localStorage.setItem('homastar_tickets', userTickets.toString());
             updateTicketUI();
             alert(`🎉 Ты успешно купил 1 билет! Всего билетов: ${userTickets}`);
@@ -863,7 +1140,7 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        // КОЛЕСО ЛОГИКА
+        // КОЛЕСО
         function openFreeWheelScreen() {
             document.getElementById('wheel-title').innerText = '🎁 Бесплатное Колесо';
             document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
@@ -980,6 +1257,9 @@
         }
 
         window.onload = function() {
+            updateBalanceDisplay();
+            setTheme(settings.theme);
+
             const isCompleted = localStorage.getItem('homastar_onboarding_completed');
             if (isCompleted === 'true') {
                 document.getElementById('story-onboarding').style.display = 'none';
