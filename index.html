@@ -60,38 +60,139 @@
             border: 1px solid #232838;
         }
 
-        /* Табы тиров */
-        .tier-tabs {
-            display: flex;
-            gap: 8px;
-            background: #151823;
-            padding: 4px;
-            border-radius: 12px;
+        /* ЭКРАНЫ */
+        .screen {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
         }
 
-        .tab-btn {
-            flex: 1;
+        .screen.active {
+            display: flex;
+        }
+
+        .btn-back {
             background: transparent;
             border: none;
-            color: #718096;
-            padding: 8px 0;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
+            color: #00F3FF;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            margin-bottom: 6px;
+            align-self: flex-start;
         }
 
-        .tab-btn.active {
+        /* КАРТОЧКИ МЕНЮ */
+        .menu-card {
+            background: #151823;
+            border: 1px solid #232838;
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .menu-card:active {
+            transform: scale(0.98);
+        }
+
+        .menu-card.featured-free {
+            border: 1px solid #FFCC00;
+            background: linear-gradient(135deg, #151823 0%, #262110 100%);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
+        }
+
+        .menu-card.featured-wheels {
+            border: 1px solid #00F3FF;
+            background: linear-gradient(135deg, #151823 0%, #1a2235 100%);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+        }
+
+        .card-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .card-icon {
+            font-size: 32px;
             background: #232838;
-            color: #FFFFFF;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Колесо */
+        .card-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .card-info p {
+            font-size: 12px;
+            color: #A0AAB8;
+        }
+
+        .card-badge {
+            background: #00F3FF;
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-left: 6px;
+        }
+
+        .card-badge.free { background: #FFCC00; }
+        .card-badge.silver { background: #C0C0C0; }
+        .card-badge.gold { background: #FFD700; }
+        .card-badge.diamond { background: #B9F2FF; }
+        .card-badge.vip { background: #9D00FF; color: #FFF; }
+
+        .btn-card-action {
+            background: #232838;
+            border: 1px solid #32394e;
+            color: #00F3FF;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* БЛОК ТАЙМЕРА НАД КОЛЕСОМ */
+        .timer-banner {
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            color: #FFCC00;
+            padding: 10px 16px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* ЭКРАН С КОЛЕСОМ */
         .wheel-section {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            margin: auto 0;
         }
 
         .arrow-pointer {
@@ -103,8 +204,8 @@
         }
 
         .wheel-outer-rim {
-            width: 260px;
-            height: 260px;
+            width: 240px;
+            height: 240px;
             border-radius: 50%;
             background: #151823;
             border: 4px solid #232838;
@@ -116,8 +217,8 @@
         }
 
         .wheel-spinner {
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             background: conic-gradient(
                 #00F3FF 0deg 45deg, 
@@ -135,18 +236,17 @@
         }
 
         .center-hub {
-            width: 50px;
-            height: 50px;
+            width: 46px;
+            height: 46px;
             background: #151823;
             border-radius: 50%;
             border: 2px solid #FFCC00;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
         }
 
-        /* Кнопка Spin */
         .btn-spin {
             width: 100%;
             background: linear-gradient(90deg, #0066FF, #00F3FF);
@@ -157,6 +257,15 @@
             font-weight: 800;
             font-size: 16px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-spin.disabled {
+            background: #232838;
+            color: #718096;
+            box-shadow: none;
+            cursor: not-allowed;
         }
 
         /* Нижняя навигация */
@@ -173,13 +282,14 @@
             border: none;
             font-size: 18px;
             opacity: 0.5;
+            cursor: pointer;
         }
 
         .nav-item.active {
             opacity: 1;
         }
 
-        /* === СТОРИС-ОНБОРДИНГ === */
+        /* СТОРИС */
         .story-overlay {
             position: fixed;
             top: 0;
@@ -242,18 +352,8 @@
             filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
         }
 
-        .story-slide h2 {
-            font-size: 26px;
-            font-weight: 800;
-            color: #FFFFFF;
-        }
-
-        .story-slide p {
-            font-size: 15px;
-            color: #A0AAB8;
-            line-height: 1.5;
-            max-width: 300px;
-        }
+        .story-slide h2 { font-size: 26px; font-weight: 800; }
+        .story-slide p { font-size: 15px; color: #A0AAB8; line-height: 1.5; max-width: 300px; }
 
         .badge-price {
             background: rgba(255, 204, 0, 0.15);
@@ -263,10 +363,6 @@
             font-size: 14px;
             font-weight: 700;
             border: 1px solid rgba(255, 204, 0, 0.4);
-        }
-
-        .story-actions {
-            width: 100%;
         }
 
         .btn-story-next {
@@ -279,7 +375,6 @@
             font-weight: 800;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
         }
 
         .btn-story-claim {
@@ -292,7 +387,6 @@
             font-weight: 800;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
 
         .gift-bounce {
@@ -307,9 +401,8 @@
 </head>
 <body>
 
-    <!-- СТОРИС-ОНБОРДИНГ -->
+    <!-- 1. СТОРИС-ОНБОРДИНГ (ТОЛЬКО ДЛЯ ПЕРВОГО ВХОДА) -->
     <div id="story-onboarding" class="story-overlay">
-        
         <div class="story-progress-container">
             <div class="progress-bar"><div class="progress-fill" id="fill-1"></div></div>
             <div class="progress-bar"><div class="progress-fill" id="fill-2"></div></div>
@@ -341,45 +434,259 @@
             <button id="btn-next" class="btn-story-next" onclick="goToNextSlide()">Далее →</button>
             <button id="btn-claim" class="btn-story-claim" onclick="claimGift()" style="display: none;">🎁 ЗАБРАТЬ ПОДАРОК</button>
         </div>
-
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <!-- 2. ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
     <div class="app-container">
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-btn">BALANCE +</div>
         </header>
 
-        <div class="tier-tabs">
-            <button class="tab-btn active">Tier I</button>
-            <button class="tab-btn">Tier II</button>
-            <button class="tab-btn">Tier III</button>
-            <button class="tab-btn">Tier IV</button>
+        <!-- ЭКРАН 1: ГЛАВНОЕ МЕНЮ (HUB) -->
+        <div id="screen-hub" class="screen active">
+            
+            <!-- КАРТОЧКА 1: БЕСПЛАТНОЕ КОЛЕСО -->
+            <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
+                <div class="card-left">
+                    <div class="card-icon">🎁</div>
+                    <div class="card-info">
+                        <h3>Бесплатное колесо <span class="card-badge free">FREE</span></h3>
+                        <p>Доступно 1 раз в 24 часа</p>
+                    </div>
+                </div>
+                <button class="btn-card-action" style="color: #FFCC00; border-color: #FFCC00;">Крутить</button>
+            </div>
+
+            <!-- КАРТОЧКА 2: КОЛЁСА (СПИСОК ИЗ 5 ВИДОВ) -->
+            <div class="menu-card featured-wheels" onclick="openScreen('screen-wheel-list')">
+                <div class="card-left">
+                    <div class="card-icon">🎡</div>
+                    <div class="card-info">
+                        <h3>Колёса <span class="card-badge">5 ВИДОВ</span></h3>
+                        <p>Обычное, Серебряное, Золотое...</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Выбрать</button>
+            </div>
+
+            <!-- КАРТОЧКА 3: ИНВЕНТАРЬ -->
+            <div class="menu-card" onclick="openScreen('screen-inventory')">
+                <div class="card-left">
+                    <div class="card-icon">🎒</div>
+                    <div class="card-info">
+                        <h3>Инвентарь <span class="card-badge free">1</span></h3>
+                        <p>Твой Мишка и предметы</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Открыть</button>
+            </div>
+
         </div>
 
-        <div class="wheel-section">
-            <div class="arrow-pointer">▼</div>
-            <div class="wheel-outer-rim">
-                <div class="wheel-spinner">
-                    <div class="center-hub">⭐</div>
+        <!-- ЭКРАН 2: ВЫБОР ИЗ 5 ВИДОВ КОЛЕС -->
+        <div id="screen-wheel-list" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
+
+            <!-- 1. Обычное -->
+            <div class="menu-card" onclick="openPlayWheel('Обычное колесо', '20 ⭐')">
+                <div class="card-left">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-info">
+                        <h3>Обычное колесо</h3>
+                        <p>Цена: 20 Stars / прокрут</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Играть</button>
+            </div>
+
+            <!-- 2. Серебряное -->
+            <div class="menu-card" onclick="openPlayWheel('Серебряное колесо', '50 ⭐')">
+                <div class="card-left">
+                    <div class="card-icon">🥈</div>
+                    <div class="card-info">
+                        <h3>Серебряное колесо <span class="card-badge silver">SILVER</span></h3>
+                        <p>Цена: 50 Stars / прокрут</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Играть</button>
+            </div>
+
+            <!-- 3. Золотое -->
+            <div class="menu-card" onclick="openPlayWheel('Золотое колесо', '100 ⭐')">
+                <div class="card-left">
+                    <div class="card-icon">🥇</div>
+                    <div class="card-info">
+                        <h3>Золотое колесо <span class="card-badge gold">GOLD</span></h3>
+                        <p>Цена: 100 Stars / прокрут</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Играть</button>
+            </div>
+
+            <!-- 4. Алмазное -->
+            <div class="menu-card" onclick="openPlayWheel('Алмазное колесо', '250 ⭐')">
+                <div class="card-left">
+                    <div class="card-icon">💎</div>
+                    <div class="card-info">
+                        <h3>Алмазное колесо <span class="card-badge diamond">DIAMOND</span></h3>
+                        <p>Цена: 250 Stars / прокрут</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Играть</button>
+            </div>
+
+            <!-- 5. VIP -->
+            <div class="menu-card" onclick="openPlayWheel('VIP Колесо', '500 ⭐')">
+                <div class="card-left">
+                    <div class="card-icon">👑</div>
+                    <div class="card-info">
+                        <h3>VIP Колесо <span class="card-badge vip">VIP</span></h3>
+                        <p>Эпические награды и супер-шансы</p>
+                    </div>
+                </div>
+                <button class="btn-card-action">Играть</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 3: ИГРОВОЙ ЭКРАН С КОЛЕСОМ -->
+        <div id="screen-game-wheel" class="screen">
+            <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+
+            <h2 id="wheel-title" style="text-align: center; font-size: 18px; margin-bottom: 6px;">Колесо</h2>
+
+            <!-- ТАЙМЕР НАД КОЛЕСОМ (для бесплатного колеса) -->
+            <div id="timer-banner" class="timer-banner">
+                ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
+            </div>
+
+            <div class="wheel-section">
+                <div class="arrow-pointer">▼</div>
+                <div class="wheel-outer-rim">
+                    <div class="wheel-spinner">
+                        <div class="center-hub">⭐</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-spin-action" class="btn-spin">КРУТИТЬ</button>
+        </div>
+
+        <!-- ЭКРАН 4: ИНВЕНТАРЬ -->
+        <div id="screen-inventory" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Твой Инвентарь</h2>
+            <div class="menu-card">
+                <div class="card-left">
+                    <div class="card-icon">🧸</div>
+                    <div class="card-info">
+                        <h3>Плюшевый Мишка</h3>
+                        <p>Стоимость: 15 ⭐</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="action-section">
-            <button class="btn-spin">SPIN FOR 20 STARS</button>
-        </div>
-
+        <!-- Нижняя навигация -->
         <nav class="bottom-nav">
-            <button class="nav-item active">🎮</button>
-            <button class="nav-item">🎒</button>
-            <button class="nav-item">💰</button>
-            <button class="nav-item">👤</button>
+            <button class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
+            <button class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
+            <button class="nav-item" onclick="openScreen('screen-inventory')">🎒</button>
         </nav>
     </div>
 
     <script>
+        let timerInterval = null;
+
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+        }
+
+        // 1. Открытие БЕСПЛАТНОГО колеса (первая карточка)
+        function openFreeWheelScreen() {
+            document.getElementById('wheel-title').innerText = '🎁 Бесплатное Колесо';
+            document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub');
+            
+            checkFreeSpinState();
+            openScreen('screen-game-wheel');
+        }
+
+        // Проверка состояния бесплатного кручения
+        function checkFreeSpinState() {
+            clearInterval(timerInterval);
+            const lastSpin = localStorage.getItem('homastar_last_free_spin');
+            const btn = document.getElementById('btn-spin-action');
+            const timerBanner = document.getElementById('timer-banner');
+
+            if (lastSpin) {
+                const now = new Date().getTime();
+                const timePassed = now - parseInt(lastSpin);
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if (timePassed < twentyFourHours) {
+                    // Пользователь УЖЕ покрутил: показываем таймер НАД колесом
+                    timerBanner.style.display = 'block';
+                    btn.classList.add('disabled');
+                    btn.innerText = 'УЖЕ ИСПОЛЬЗОВАНО';
+                    btn.onclick = null;
+
+                    updateTimerCountdown(twentyFourHours - timePassed);
+                    timerInterval = setInterval(() => {
+                        const updatedTimePassed = new Date().getTime() - parseInt(lastSpin);
+                        if (updatedTimePassed >= twentyFourHours) {
+                            checkFreeSpinState();
+                        } else {
+                            updateTimerCountdown(twentyFourHours - updatedTimePassed);
+                        }
+                    }, 1000);
+                    return;
+                }
+            }
+
+            // Доступно для прокрута
+            timerBanner.style.display = 'none';
+            btn.classList.remove('disabled');
+            btn.innerText = 'КРУТИТЬ БЕСПЛАТНО';
+            btn.onclick = spinFreeWheel;
+        }
+
+        function updateTimerCountdown(msLeft) {
+            const hours = Math.floor(msLeft / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const seconds = Math.floor((msLeft % (1000 * 60)) / 1000).toString().padStart(2, '0');
+
+            document.getElementById('timer-countdown').innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function spinFreeWheel() {
+            const btn = document.getElementById('btn-spin-action');
+            if (btn.classList.contains('disabled')) return;
+
+            localStorage.setItem('homastar_last_free_spin', new Date().getTime().toString());
+            alert('🎉 Ты прокрутил Бесплатное колесо!');
+            checkFreeSpinState();
+        }
+
+        // 2. Открытие платное колес (из второй карточки)
+        function openPlayWheel(title, price) {
+            document.getElementById('wheel-title').innerText = title;
+            document.getElementById('timer-banner').style.display = 'none';
+            document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list');
+
+            const btn = document.getElementById('btn-spin-action');
+            btn.classList.remove('disabled');
+            btn.innerText = `SPIN FOR ${price}`;
+            btn.onclick = () => alert(`Крутим ${title} за ${price}`);
+
+            openScreen('screen-game-wheel');
+        }
+
+        // Слайд-шоу логика
         let currentSlide = 1;
         const totalSlides = 3;
         const slideDuration = 4000;
@@ -389,63 +696,45 @@
         function startTimer() {
             clearInterval(progressInterval);
             currentProgress = 0;
-            
             const fill = document.getElementById(`fill-${currentSlide}`);
             
             progressInterval = setInterval(() => {
                 currentProgress += 2;
                 if (fill) fill.style.width = currentProgress + '%';
-
                 if (currentProgress >= 100) {
                     clearInterval(progressInterval);
-                    if (currentSlide < totalSlides) {
-                        goToNextSlide();
-                    }
+                    if (currentSlide < totalSlides) goToNextSlide();
                 }
             }, slideDuration / 50);
         }
 
         function goToNextSlide() {
-            // При клике или завершении таймера текущий ползунок ровно закрашивается на 100%
             const currentFill = document.getElementById(`fill-${currentSlide}`);
             if (currentFill) currentFill.style.width = '100%';
-
             document.getElementById(`slide-${currentSlide}`).classList.remove('active');
 
             currentSlide++;
-
             if (currentSlide <= totalSlides) {
                 document.getElementById(`slide-${currentSlide}`).classList.add('active');
-                
                 if (currentSlide === totalSlides) {
                     document.getElementById('btn-next').style.display = 'none';
                     document.getElementById('btn-claim').style.display = 'block';
                 }
-                
                 startTimer();
             }
         }
 
         function claimGift() {
             clearInterval(progressInterval);
-            
-            // Сохраняем флаг, что пользователь уже забрал подарок
             localStorage.setItem('homastar_onboarding_completed', 'true');
-
-            // Скрываем окно сторис
             document.getElementById('story-onboarding').style.display = 'none';
-            alert('🎉 «Мишка» (15 ⭐) зачислен в твой инвентарь!');
         }
 
         window.onload = function() {
-            // Проверяем, заходил ли человек ранее
             const isCompleted = localStorage.getItem('homastar_onboarding_completed');
-            
             if (isCompleted === 'true') {
-                // Если заходил — сразу убираем слайдер
                 document.getElementById('story-onboarding').style.display = 'none';
             } else {
-                // Если зашел впервые — запускаем слайдер
                 startTimer();
             }
 
