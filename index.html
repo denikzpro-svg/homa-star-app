@@ -42,7 +42,6 @@
             position: relative;
         }
 
-        /* --- ЖИВОЙ АНИМИРОВАННЫЙ 3D-ФОН --- */
         .bg-animated-nebula {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -256,7 +255,7 @@
             font-weight: 800;
         }
 
-        /* --- ВАШЕ КОЛЕСО С POSTIMAGES --- */
+        /* --- КОЛЕСО --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -489,7 +488,6 @@
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
-        /* --- ИНТЕРАКТИВНАЯ НИЖНЯЯ ПАНЕЛЬ --- */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -517,7 +515,6 @@
             filter: drop-shadow(0 0 10px var(--accent-blue));
         }
 
-        /* --- МОДАЛКИ --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -675,11 +672,11 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
-            <!-- ПРЯМАЯ ССЫЛКА НА ВАШЕ КОЛЕСО С POSTIMAGES -->
+            <!-- ИСПОЛЬЗУЕМ КОРРЕКТНЫЙ ПРОКСИ-СЕРВЕР ДЛЯ ОБХОДА CORS -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-container-asset">
-                    <img id="wheel-img-asset" class="wheel-image-asset" src="https://i.postimg.cc/fbqm0b1n/wheel.png" alt="Wheel of Fortune">
+                    <img id="wheel-img-asset" class="wheel-image-asset" src="https://images.weserv.nl/?url=i.postimg.cc/fbqm0b1n/wheel.png" alt="Wheel of Fortune">
                 </div>
             </div>
 
