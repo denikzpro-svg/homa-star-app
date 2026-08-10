@@ -209,7 +209,7 @@
             font-weight: 800;
         }
 
-        /* --- ИГРОВОЕ КОЛЕСО CANVAS --- */
+        /* --- БЛОК 3D КОЛЕСА С КАРТИНКОЙ --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -217,86 +217,47 @@
             justify-content: center;
             position: relative;
             margin: auto 0;
-            padding: 15px 0;
+            padding: 10px 0;
         }
 
         .arrow-pointer {
             width: 0;
             height: 0;
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-top: 22px solid var(--accent-blue);
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 24px solid var(--accent-blue);
             z-index: 20;
-            margin-bottom: -10px;
-            filter: drop-shadow(0 0 10px var(--accent-blue));
+            margin-bottom: -12px;
+            filter: drop-shadow(0 0 12px var(--accent-blue));
             position: relative;
         }
 
         .arrow-pointer::after {
             content: '';
             position: absolute;
-            top: -20px;
-            left: -8px;
+            top: -22px;
+            left: -9px;
             width: 0;
             height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 13px solid #FFF;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 14px solid #FFF;
         }
 
         .wheel-outer-rim {
-            width: 290px;
-            height: 290px;
-            border-radius: 50%;
-            background: #0E121E;
-            border: 8px solid #1C2438;
+            width: 300px;
+            height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-
-        .wheel-bulbs-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        .bulb {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            margin: -3.5px;
         }
 
         #wheel-canvas {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
+            width: 300px;
+            height: 300px;
             transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
-        }
-
-        .center-hub {
-            position: absolute;
-            width: 58px;
-            height: 58px;
-            background: radial-gradient(circle, #2A1F4D 0%, #110B27 100%);
-            border-radius: 50%;
-            border: 3px solid var(--accent-gold);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            z-index: 15;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.8);
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.25));
         }
 
         .btn-spin {
@@ -698,7 +659,7 @@
             </div>
         </div>
 
-        <!-- ЭКРАН ИГРЫ С CANVAS КОЛЕСОМ -->
+        <!-- ЭКРАН ИГРЫ С 3D-ТЕКСТУРОЙ КОЛЕСА -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
@@ -711,9 +672,7 @@
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
-                    <div class="wheel-bulbs-container" id="bulbs-container"></div>
-                    <canvas id="wheel-canvas" width="500" height="500"></canvas>
-                    <div class="center-hub">⭐</div>
+                    <canvas id="wheel-canvas" width="600" height="600"></canvas>
                 </div>
             </div>
 
@@ -864,14 +823,12 @@
             diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [80, 150, 250, 300, 600, 1500] }
         };
 
-        const SECTOR_THEMES = [
-            { bg1: '#00C6FF', bg2: '#0072FF', text: '#FFFFFF', icon: '💎' },
-            { bg1: '#B92B27', bg2: '#1565C0', text: '#FFFFFF', icon: '⭐' },
-            { bg1: '#F857A6', bg2: '#FF5858', text: '#FFFFFF', icon: '💎' },
-            { bg1: '#FF9900', bg2: '#FF5500', text: '#FFFFFF', icon: '👑' },
-            { bg1: '#7B1FA2', bg2: '#E040FB', text: '#FFFFFF', icon: '⭐' },
-            { bg1: '#11998E', bg2: '#38EF7D', text: '#FFFFFF', icon: '💎' }
-        ];
+        // Загрузка картинки колеса
+        const wheelImg = new Image();
+        wheelImg.src = 'wheel.png';
+        wheelImg.onload = function() {
+            if (activeWheelType) renderWheelDisc(activeWheelType);
+        };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
 
@@ -1033,75 +990,50 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ЧИСТАЯ CANVAS ОТРИСОВКА КОЛЕСА --- */
+        /* --- ОТРИСОВКА 3D-КАРТИНКИ И ВЫИГРЫШЕЙ В 12 СЕКТОРОВ --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             const ctx = canvas.getContext('2d');
             const prizes = WHEEL_CONFIGS[type].prizes;
-            const numSlices = prizes.length;
+
+            // Расширяем массив призов ровно до 12 секторов
+            let displayPrizes = [];
+            while (displayPrizes.length < 12) {
+                displayPrizes = displayPrizes.concat(prizes);
+            }
+            displayPrizes = displayPrizes.slice(0, 12);
+
+            const numSlices = 12;
             const arc = (2 * Math.PI) / numSlices;
             const radius = canvas.width / 2;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            for (let i = 0; i < numSlices; i++) {
-                const angle = i * arc - Math.PI / 2;
-                const theme = SECTOR_THEMES[i % SECTOR_THEMES.length];
-
-                // Градиент сектора
-                const grad = ctx.createRadialGradient(radius, radius, 30, radius, radius, radius);
-                grad.addColorStop(0, theme.bg1);
-                grad.addColorStop(1, theme.bg2);
-
-                // Рисуем сектор
-                ctx.beginPath();
-                ctx.fillStyle = grad;
-                ctx.moveTo(radius, radius);
-                ctx.arc(radius, radius, radius, angle, angle + arc);
-                ctx.lineTo(radius, radius);
-                ctx.fill();
-
-                // Разделители секторов
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                // Текст и иконки
-                ctx.save();
-                ctx.translate(radius, radius);
-                ctx.rotate(angle + arc / 2 + Math.PI / 2);
-
-                // Значок в секторе
-                ctx.font = '24px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(theme.icon, 0, -radius + 45);
-
-                // Сумма выигрыша
-                ctx.fillStyle = theme.text;
-                ctx.font = '900 21px -apple-system, sans-serif';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-                ctx.shadowBlur = 6;
-                ctx.fillText(`+${prizes[i]} ⭐`, 0, -radius + 85);
-
-                ctx.restore();
+            // 1. Отрисовка 3D-изображения колеса
+            if (wheelImg.complete && wheelImg.naturalWidth !== 0) {
+                ctx.drawImage(wheelImg, 0, 0, canvas.width, canvas.height);
             }
 
-            // Лампочки на ободе
-            const bulbsContainer = document.getElementById('bulbs-container');
-            bulbsContainer.innerHTML = '';
-            const numBulbs = 20;
-            for (let i = 0; i < numBulbs; i++) {
-                const bulb = document.createElement('div');
-                bulb.className = 'bulb';
-                const angle = (i * 360 / numBulbs) * (Math.PI / 180);
-                const r = 138;
-                const x = r * Math.cos(angle);
-                const y = r * Math.sin(angle);
-                bulb.style.transform = `translate(${x}px, ${y}px)`;
-                bulb.style.background = i % 2 === 0 ? '#00F3FF' : '#FFD700';
-                bulb.style.boxShadow = i % 2 === 0 ? '0 0 8px #00F3FF' : '0 0 8px #FFD700';
-                bulbsContainer.appendChild(bulb);
+            // 2. Наложение сумм выигрышей на 12 секторов
+            for (let i = 0; i < numSlices; i++) {
+                const angle = i * arc - Math.PI / 2 + arc / 2;
+
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle);
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '900 22px -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                ctx.fillText(`+${displayPrizes[i]} ⭐`, 0, -radius * 0.65);
+
+                ctx.restore();
             }
         }
 
@@ -1120,28 +1052,28 @@
             }
 
             if (type === 'common') {
-                if (count === 0) return 3; // 1-й спин = 50 ⭐
+                if (count === 0) return 3;
                 if (rand < 45) return 0;
                 if (rand < 80) return 1;
                 return 2;
             }
 
             if (type === 'silver') {
-                if (count === 0) return 1; // 1-й спин = 50 ⭐
-                if (count === 1) return 2; // 2-й спин = 70 ⭐
+                if (count === 0) return 1;
+                if (count === 1) return 2;
                 if (rand < 42) return 0;
                 return 1;
             }
 
             if (type === 'gold') {
-                if (count === 0) return 2; // 1-й спин = 100 ⭐
-                if (count === 1) return 3; // 2-й спин = 140 ⭐
+                if (count === 0) return 2;
+                if (count === 1) return 3;
                 return 0;
             }
 
             if (type === 'diamond') {
-                if (count === 0) return 2; // 1-й спин = 250 ⭐
-                if (count === 1) return 3; // 2-й спин = 300 ⭐
+                if (count === 0) return 2;
+                if (count === 1) return 3;
                 return 0;
             }
 
@@ -1219,10 +1151,10 @@
 
             const prizeIndex = calculatePrizeIndex(type);
             const prizeValue = config.prizes[prizeIndex];
-            const sectorDegree = 360 / config.prizes.length;
+            const sectorDegree = 360 / 12;
 
             const extraRounds = 5 * 360;
-            const targetDegree = extraRounds + (360 - (prizeIndex * sectorDegree) - (sectorDegree / 2));
+            const targetDegree = extraRounds + (360 - (prizeIndex * sectorDegree));
             currentWheelRotation += targetDegree;
 
             const canvas = document.getElementById('wheel-canvas');
