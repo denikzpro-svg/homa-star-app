@@ -156,13 +156,53 @@
             box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
+        /* --- LIVE ЛЕНТА ВЫВОДОВ --- */
+        .live-ticker {
+            background: rgba(0, 243, 255, 0.06);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 6px;
+        }
+
+        .live-badge {
+            background: #FF3344;
+            color: #FFF;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .live-text {
+            color: var(--text-sub);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.5s ease;
+        }
+
         .screen {
             display: none;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             flex: 1;
             overflow-y: auto;
-            padding: 10px 0;
+            padding: 6px 0;
         }
 
         .screen::-webkit-scrollbar { display: none; }
@@ -188,7 +228,7 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: 22px;
-            padding: 20px;
+            padding: 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -219,8 +259,8 @@
             font-size: 28px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             border-radius: 18px;
             display: flex;
             justify-content: center;
@@ -255,6 +295,61 @@
             font-weight: 800;
         }
 
+        /* --- ТАБЛИЦА ЛИДЕРОВ --- */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leader-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .leader-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .leader-rank {
+            font-size: 16px;
+            font-weight: 900;
+            width: 28px;
+            text-align: center;
+            color: var(--text-sub);
+        }
+
+        .leader-card:nth-child(1) .leader-rank { color: #FFD700; text-shadow: 0 0 10px var(--accent-gold-glow); }
+        .leader-card:nth-child(2) .leader-rank { color: #C0C0C0; }
+        .leader-card:nth-child(3) .leader-rank { color: #CD7F32; }
+
+        .leader-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 2px;
+        }
+
+        .leader-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .leader-amount {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-gold-glow);
+        }
+
         /* --- КОЛЕСО НА CANVAS --- */
         .wheel-section {
             display: flex;
@@ -263,34 +358,34 @@
             justify-content: center;
             position: relative;
             margin: auto 0;
-            padding: 10px 0;
+            padding: 6px 0;
         }
 
         .arrow-pointer {
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 26px solid var(--accent-blue);
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 24px solid var(--accent-blue);
             z-index: 20;
-            margin-bottom: -14px;
-            filter: drop-shadow(0 0 12px var(--accent-blue));
+            margin-bottom: -12px;
+            filter: drop-shadow(0 0 10px var(--accent-blue));
             position: relative;
         }
 
         .arrow-pointer::after {
             content: '';
             position: absolute;
-            top: -24px; left: -9px;
+            top: -22px; left: -8px;
             width: 0; height: 0;
-            border-left: 9px solid transparent;
-            border-right: 9px solid transparent;
-            border-top: 15px solid #FFF;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 14px solid #FFF;
         }
 
         .wheel-outer-rim {
-            width: 310px;
-            height: 310px;
+            width: 290px;
+            height: 290px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -315,17 +410,17 @@
         }
 
         #wheel-canvas {
-            width: 310px;
-            height: 310px;
+            width: 290px;
+            height: 290px;
             transition: transform 5s cubic-bezier(0.25, 0.1, 0.1, 1.0);
-            filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.3));
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3));
         }
 
         .btn-spin {
             width: 100%;
             background: linear-gradient(135deg, #0066FF 0%, #00F3FF 100%);
             border: none;
-            padding: 18px;
+            padding: 16px;
             border-radius: 18px;
             color: #FFFFFF;
             font-weight: 900;
@@ -342,12 +437,12 @@
             background: rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.25);
             color: var(--accent-gold);
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 14px;
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             display: none;
         }
 
@@ -500,6 +595,7 @@
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
+        /* --- НИЖНЯЯ ПАНЕЛЬ С НОВЫМИ ВКЛАДКАМИ --- */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -591,6 +687,13 @@
             </div>
         </header>
 
+        <!-- LIVE ЛЕНТА ВЫВОДОВ (СВЕРХУ НА ВСЕХ ЭКРАНАХ) -->
+        <div class="live-ticker">
+            <span class="live-badge">LIVE</span>
+            <span id="live-ticker-text" class="live-text">Загрузка ленты выплат...</span>
+        </div>
+
+        <!-- 1. РАЗДЕЛ ИГР (ГЛАВНЫЙ СТАРТОВЫЙ) -->
         <div id="screen-hub" class="screen active">
             <div class="menu-card featured-free" onclick="openFreeWheelScreen()">
                 <div class="card-left">
@@ -626,8 +729,72 @@
             </div>
         </div>
 
+        <!-- 2. РАЗДЕЛ ЛИДЕРЫ -->
+        <div id="screen-leaders" class="screen">
+            <h2 style="font-size: 18px; margin-bottom: 2px;">🏆 Топ выплат</h2>
+            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 4px;">Лучшие игроки, успешно выведшие Telegram Stars.</p>
+
+            <div class="leaderboard-list">
+                <div class="leader-card">
+                    <div class="leader-left">
+                        <div class="leader-rank">1</div>
+                        <div>
+                            <div class="leader-name">@denikz***</div>
+                            <div class="leader-sub">Алмазное колесо</div>
+                        </div>
+                    </div>
+                    <div class="leader-amount">+500 ⭐</div>
+                </div>
+
+                <div class="leader-card">
+                    <div class="leader-left">
+                        <div class="leader-rank">2</div>
+                        <div>
+                            <div class="leader-name">@homa_***</div>
+                            <div class="leader-sub">Золотое колесо</div>
+                        </div>
+                    </div>
+                    <div class="leader-amount">+300 ⭐</div>
+                </div>
+
+                <div class="leader-card">
+                    <div class="leader-left">
+                        <div class="leader-rank">3</div>
+                        <div>
+                            <div class="leader-name">@telegram***</div>
+                            <div class="leader-sub">Серебряное колесо</div>
+                        </div>
+                    </div>
+                    <div class="leader-amount">+200 ⭐</div>
+                </div>
+
+                <div class="leader-card">
+                    <div class="leader-left">
+                        <div class="leader-rank">4</div>
+                        <div>
+                            <div class="leader-name">@crypto_***</div>
+                            <div class="leader-sub">Бесплатное колесо</div>
+                        </div>
+                    </div>
+                    <div class="leader-amount">+100 ⭐</div>
+                </div>
+
+                <div class="leader-card">
+                    <div class="leader-left">
+                        <div class="leader-rank">5</div>
+                        <div>
+                            <div class="leader-name">@star_user***</div>
+                            <div class="leader-sub">Обычное колесо</div>
+                        </div>
+                    </div>
+                    <div class="leader-amount">+100 ⭐</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СПИСОК ПЛАТНЫХ КОЛЕС -->
         <div id="screen-wheel-list" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в игры</button>
             <h2 style="font-size: 18px; margin-bottom: 4px;">Выбери Колесо:</h2>
 
             <div class="menu-card" onclick="openPlayWheel('common')">
@@ -675,16 +842,16 @@
             </div>
         </div>
 
+        <!-- ЭКРАН ИГРЫ (РУЛЕТКА) -->
         <div id="screen-game-wheel" class="screen">
             <button id="btn-back-from-wheel" class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
 
-            <h2 id="wheel-title" style="text-align: center; font-size: 18px; margin-bottom: 6px;">Колесо</h2>
+            <h2 id="wheel-title" style="text-align: center; font-size: 18px; margin-bottom: 4px;">Колесо</h2>
 
             <div id="timer-banner" class="timer-banner">
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
-            <!-- ТОЧНАЯ КОПИЯ ВАШЕГО КОЛЕСА С ИКОНКАМИ И ЦВЕТАМИ НА CANVAS -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
@@ -696,8 +863,9 @@
             <button id="btn-spin-action" class="btn-spin">КРУТИТЬ</button>
         </div>
 
+        <!-- 3. РАЗДЕЛ БИЛЕТЫ -->
         <div id="screen-tickets" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в игры</button>
             
             <div class="ticket-banner" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, var(--card-bg) 100%); border: 1px solid var(--accent-purple); border-radius: 20px; padding: 20px; text-align: center;">
                 <div style="font-size: 12px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
@@ -713,12 +881,11 @@
             <button class="btn-spin" style="background: linear-gradient(135deg, #A855F7, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
+        <!-- 4. РАЗДЕЛ ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
-            
             <h2 style="font-size: 18px;">👥 Зарабатывай на друзьях</h2>
             <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">
-                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений!
+                Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--accent-blue);">5%</b> от его пополнений! <i>(Холдинг 21 день).</i>
             </p>
 
             <div class="ref-box">
@@ -731,17 +898,17 @@
             </div>
         </div>
 
+        <!-- 5. РАЗДЕЛ ИНВЕНТАРЬ -->
         <div id="screen-inventory" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
-            <h2 style="font-size: 18px; margin-bottom: 4px;">🎒 Твой Инвентарь</h2>
-            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 10px;">Все реферальные бонусы и подарок 50 ⭐ хранятся в заморозке 21 день.</p>
+            <h2 style="font-size: 18px; margin-bottom: 2px;">🎒 Твой Инвентарь</h2>
+            <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">Реферальные бонусы и стартовый подарок хранятся в заморозке 21 день.</p>
 
             <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
+        <!-- 6. РАЗДЕЛ НАСТРОЙКИ -->
         <div id="screen-settings" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
-            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
+            <h2 style="font-size: 18px; margin-bottom: 6px;">⚙️ Настройки</h2>
 
             <div class="setting-row">
                 <div style="font-size: 14px; font-weight: 700;">Тема оформления</div>
@@ -766,9 +933,10 @@
             </div>
         </div>
 
+        <!-- НОВАЯ НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
         <nav class="bottom-nav">
-            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">🏠</button>
-            <button id="nav-screen-wheel-list" class="nav-item" onclick="openScreen('screen-wheel-list')">🎮</button>
+            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')">🎮</button>
+            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')">🏆</button>
             <button id="nav-screen-tickets" class="nav-item" onclick="openScreen('screen-tickets')">🎟️</button>
             <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')">👥</button>
             <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')">🎒</button>
@@ -776,6 +944,7 @@
         </nav>
     </div>
 
+    <!-- МОДАЛКИ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -830,7 +999,6 @@
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
-        // НАСТРОЙКИ СЕКТОРОВ ТОЧНО КАК НА ВАШЕМ СКРИНШОТЕ (ПО ЧАСОВОЙ СТРЕЛКЕ СВЕРХУ)
         const WHEEL_CONFIGS = {
             free: { 
                 title: '🎁 Бесплатное Колесо', 
@@ -880,8 +1048,10 @@
             if (target) target.classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            
             let navTargetId = screenId;
-            if (screenId === 'screen-game-wheel') navTargetId = 'screen-wheel-list';
+            if (screenId === 'screen-game-wheel') navTargetId = 'screen-hub'; // В игре подсвечиваем Игры
+            
             const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
             if (activeNavBtn) activeNavBtn.classList.add('active');
 
@@ -1019,7 +1189,7 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
-        /* --- ТОЧНАЯ ОТРИСОВКА КОЛЕСА ПО ВАШЕМУ ПРИМЕРУ --- */
+        /* --- ОТРИСОВКА КОЛЕСА НА CANVAS --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
@@ -1037,7 +1207,6 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Золотая внешняя рама
             const rimGrad = ctx.createRadialGradient(radius, radius, radius - 28, radius, radius, radius);
             rimGrad.addColorStop(0, '#3A2800');
             rimGrad.addColorStop(0.5, '#FFD700');
@@ -1056,19 +1225,10 @@
             ctx.fill();
 
             const discRadius = innerRimRadius - 10;
-            
-            // Цвета секторов в точности как на вашем скриншоте (по часовой стрелке сверху)
             const EXACT_COLORS = [
-                '#0099FF', // 1: +500 (Синий)
-                '#FF3344', // 2: +100 (Красный)
-                '#7A42F4', // 3: +20 (Фиолетовый)
-                '#FF6600', // 4: TRY (Оранжевый)
-                '#22BB55', // 5: +10 (Зеленый)
-                '#FF3344', // 6: +100 (Красный)
-                '#0099FF', // 7: +20 (Синий)
-                '#7A42F4', // 8: +10 (Фиолетовый)
-                '#FFB800', // 9: +50 (Желтый)
-                '#00D2FF'  // 10: +20 (Голубой)
+                '#0099FF', '#FF3344', '#7A42F4', '#FF6600', 
+                '#22BB55', '#FF3344', '#0099FF', '#7A42F4', 
+                '#FFB800', '#00D2FF'
             ];
 
             for (let i = 0; i < numSlices; i++) {
@@ -1081,7 +1241,6 @@
                 ctx.lineTo(radius, radius);
                 ctx.fill();
 
-                // Золотые разделители секторов
                 ctx.strokeStyle = '#FFD700';
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
@@ -1090,7 +1249,6 @@
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + arc / 2);
 
-                // Иконка
                 ctx.font = '24px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -1098,7 +1256,6 @@
                 ctx.shadowBlur = 4;
                 ctx.fillText(icons[i], discRadius - 55, 0);
 
-                // Текст выигрыша
                 ctx.fillStyle = '#FFFFFF';
                 ctx.font = '900 18px -apple-system, sans-serif';
                 ctx.textAlign = 'right';
@@ -1110,7 +1267,6 @@
                 ctx.restore();
             }
 
-            // Центральная золотая кнопка
             const hubRadius = 45;
             const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
             hubGrad.addColorStop(0, '#FFF5B0');
@@ -1132,7 +1288,6 @@
             ctx.textBaseline = 'middle';
             ctx.fillText('⭐', radius, radius);
 
-            // Лампочки гирлянды
             const bulbsContainer = document.getElementById('bulbs-container');
             if (bulbsContainer) {
                 bulbsContainer.innerHTML = '';
@@ -1320,9 +1475,37 @@
             }, 5000);
         }
 
+        /* --- СИМУЛЯТОР LIVE-ЛЕНТЫ ВЫВОДОВ --- */
+        const liveTickerMessages = [
+            "Игрок @denikz*** успешно вывел 500 ⭐",
+            "Участник @homa_*** забрал 150 ⭐ с Колеса",
+            "Пользователь @crypto*** вывел 50 ⭐",
+            "Игрок @star_user*** получил выплату 300 ⭐",
+            "Успешный вывод 100 ⭐ на аккаунт @telegram***",
+            "Игрок @vova_*** вывел 200 ⭐"
+        ];
+
+        function initLiveTicker() {
+            const tickerEl = document.getElementById('live-ticker-text');
+            if (!tickerEl) return;
+
+            let index = 0;
+            setInterval(() => {
+                tickerEl.style.opacity = '0';
+                setTimeout(() => {
+                    index = (index + 1) % liveTickerMessages.length;
+                    tickerEl.innerText = liveTickerMessages[index];
+                    tickerEl.style.opacity = '1';
+                }, 500);
+            }, 4000); // смена каждые 4 секунды (можно поставить дольше)
+
+            tickerEl.innerText = liveTickerMessages[0];
+        }
+
         window.onload = function() {
             updateBalanceDisplay();
             setTheme(settings.theme);
+            initLiveTicker();
 
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
