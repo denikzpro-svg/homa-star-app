@@ -255,7 +255,7 @@
             font-weight: 800;
         }
 
-        /* --- CANVAS КОЛЕСО --- */
+        /* --- КОЛЕСО НА CANVAS --- */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -684,6 +684,7 @@
                 ⏱ До следующего прокрута: <span id="timer-countdown">23:59:59</span>
             </div>
 
+            <!-- ТОЧНАЯ КОПИЯ ВАШЕГО КОЛЕСА С ИКОНКАМИ И ЦВЕТАМИ НА CANVAS -->
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim">
@@ -829,12 +830,38 @@
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
 
+        // НАСТРОЙКИ СЕКТОРОВ ТОЧНО КАК НА ВАШЕМ СКРИНШОТЕ (ПО ЧАСОВОЙ СТРЕЛКЕ СВЕРХУ)
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
-            common: { title: '⚙️ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
-            silver: { title: '🥈 Серебряное Колесо', price: 50, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
-            gold: { title: '🥇 Золотое Колесо', price: 100, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [500, 100, 20, 0, 10, 100, 20, 10, 50, 20], icons: ['🏆', '💎', '💰', '❌', '⭐', '💎', '💰', '⭐', '👑', '💰'] }
+            free: { 
+                title: '🎁 Бесплатное Колесо', 
+                price: 0, 
+                prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], 
+                icons:  ['🏆', '💎', '💰', '❌', '⭐', '💰', '💎', '📦', '⭐', '⭐'] 
+            },
+            common: { 
+                title: '⚙️ Обычное Колесо', 
+                price: 20, 
+                prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], 
+                icons:  ['🏆', '💎', '💰', '❌', '⭐', '💰', '💎', '📦', '⭐', '⭐'] 
+            },
+            silver: { 
+                title: '🥈 Серебряное Колесо', 
+                price: 50, 
+                prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], 
+                icons:  ['🏆', '💎', '💰', '❌', '⭐', '💰', '💎', '📦', '⭐', '⭐'] 
+            },
+            gold: { 
+                title: '🥇 Золотое Колесо', 
+                price: 100, 
+                prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], 
+                icons:  ['🏆', '💎', '💰', '❌', '⭐', '💰', '💎', '📦', '⭐', '⭐'] 
+            },
+            diamond: { 
+                title: '💎 Алмазное Колесо', 
+                price: 250, 
+                prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], 
+                icons:  ['🏆', '💎', '💰', '❌', '⭐', '💰', '💎', '📦', '⭐', '⭐'] 
+            }
         };
 
         let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
@@ -992,6 +1019,7 @@
             document.getElementById('user-win-chance').innerText = `${chance > 100 ? 100 : chance.toFixed(1)}%`;
         }
 
+        /* --- ТОЧНАЯ ОТРИСОВКА КОЛЕСА ПО ВАШЕМУ ПРИМЕРУ --- */
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
@@ -1009,6 +1037,7 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Золотая внешняя рама
             const rimGrad = ctx.createRadialGradient(radius, radius, radius - 28, radius, radius, radius);
             rimGrad.addColorStop(0, '#3A2800');
             rimGrad.addColorStop(0.5, '#FFD700');
@@ -1027,35 +1056,33 @@
             ctx.fill();
 
             const discRadius = innerRimRadius - 10;
-            const SECTOR_COLORS = [
-                ['#00C6FF', '#0072FF'],
-                ['#FF416C', '#FF4B2B'],
-                ['#A855F7', '#6366F1'],
-                ['#FF9900', '#FF5500'],
-                ['#11998E', '#38EF7D'],
-                ['#F857A6', '#FF5858'],
-                ['#00F2FE', '#4FACFE'],
-                ['#7B1FA2', '#E040FB'],
-                ['#FFD700', '#FF8C00'],
-                ['#00E676', '#00B0FF']
+            
+            // Цвета секторов в точности как на вашем скриншоте (по часовой стрелке сверху)
+            const EXACT_COLORS = [
+                '#0099FF', // 1: +500 (Синий)
+                '#FF3344', // 2: +100 (Красный)
+                '#7A42F4', // 3: +20 (Фиолетовый)
+                '#FF6600', // 4: TRY (Оранжевый)
+                '#22BB55', // 5: +10 (Зеленый)
+                '#FF3344', // 6: +100 (Красный)
+                '#0099FF', // 7: +20 (Синий)
+                '#7A42F4', // 8: +10 (Фиолетовый)
+                '#FFB800', // 9: +50 (Желтый)
+                '#00D2FF'  // 10: +20 (Голубой)
             ];
 
             for (let i = 0; i < numSlices; i++) {
                 const angle = i * arc - Math.PI / 2;
-                const colors = SECTOR_COLORS[i % SECTOR_COLORS.length];
-
-                const segGrad = ctx.createRadialGradient(radius, radius, 30, radius, radius, discRadius);
-                segGrad.addColorStop(0, colors[0]);
-                segGrad.addColorStop(1, colors[1]);
-
+                
                 ctx.beginPath();
-                ctx.fillStyle = segGrad;
+                ctx.fillStyle = EXACT_COLORS[i];
                 ctx.moveTo(radius, radius);
                 ctx.arc(radius, radius, discRadius, angle, angle + arc);
                 ctx.lineTo(radius, radius);
                 ctx.fill();
 
-                ctx.strokeStyle = 'rgba(255, 235, 150, 0.6)';
+                // Золотые разделители секторов
+                ctx.strokeStyle = '#FFD700';
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
@@ -1063,23 +1090,27 @@
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + arc / 2);
 
-                ctx.font = '26px sans-serif';
+                // Иконка
+                ctx.font = '24px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-                ctx.shadowBlur = 6;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                ctx.shadowBlur = 4;
                 ctx.fillText(icons[i], discRadius - 55, 0);
 
+                // Текст выигрыша
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = '900 19px -apple-system, sans-serif';
+                ctx.font = '900 18px -apple-system, sans-serif';
                 ctx.textAlign = 'right';
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 ctx.shadowBlur = 6;
-                ctx.fillText(prizes[i] > 0 ? `+${prizes[i]}` : 'TRY', discRadius - 90, 0);
+                let textVal = prizes[i] > 0 ? `+${prizes[i]}` : 'TRY';
+                ctx.fillText(textVal, discRadius - 88, 0);
 
                 ctx.restore();
             }
 
+            // Центральная золотая кнопка
             const hubRadius = 45;
             const hubGrad = ctx.createRadialGradient(radius, radius, 5, radius, radius, hubRadius);
             hubGrad.addColorStop(0, '#FFF5B0');
@@ -1101,6 +1132,7 @@
             ctx.textBaseline = 'middle';
             ctx.fillText('⭐', radius, radius);
 
+            // Лампочки гирлянды
             const bulbsContainer = document.getElementById('bulbs-container');
             if (bulbsContainer) {
                 bulbsContainer.innerHTML = '';
