@@ -7,26 +7,29 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0F1015;
-            --card-bg: #161822;
-            --card-border: #232738;
-            --text-color: #F1F5F9;
-            --text-sub: #94A3B8;
+            --bg-color: #0A0B10;
+            --card-bg: rgba(20, 23, 34, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #F8FAFC;
+            --text-sub: #8E9BAE;
             --accent-blue: #00F3FF;
-            --accent-gold: #FFCC00;
-            --accent-purple: #9D00FF;
+            --accent-blue-glow: rgba(0, 243, 255, 0.3);
+            --accent-gold: #FFD700;
+            --accent-gold-glow: rgba(255, 215, 0, 0.3);
+            --accent-purple: #A855F7;
+            --accent-purple-glow: rgba(168, 85, 247, 0.3);
         }
 
         body.theme-night {
-            --bg-color: #0F1015;
-            --card-bg: #161822;
-            --card-border: #232738;
+            --bg-color: #0A0B10;
+            --card-bg: rgba(20, 23, 34, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
         }
 
         body.theme-oled {
             --bg-color: #000000;
-            --card-bg: #0A0A0C;
-            --card-border: #1A1A20;
+            --card-bg: rgba(12, 12, 16, 0.9);
+            --card-border: rgba(255, 255, 255, 0.05);
         }
 
         * {
@@ -35,10 +38,14 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
             color: var(--text-color);
             display: flex;
             justify-content: center;
@@ -59,18 +66,21 @@
             position: relative;
         }
 
+        /* Хедер */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
         }
 
         .logo {
-            font-weight: 800;
-            font-size: 18px;
-            letter-spacing: 1px;
-            color: var(--text-sub);
+            font-weight: 900;
+            font-size: 19px;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #FFFFFF, var(--text-sub));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .balance-group {
@@ -78,34 +88,46 @@
             align-items: center;
             gap: 6px;
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
-            padding: 4px 8px;
-            border-radius: 20px;
+            padding: 4px 6px 4px 12px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .balance-value {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 800;
             color: var(--accent-gold);
-            padding: 0 4px;
+            text-shadow: 0 0 10px var(--accent-gold-glow);
         }
 
         .btn-bal-action {
-            background: #232838;
-            border: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--card-border);
             color: var(--accent-blue);
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
-            padding: 6px 10px;
-            border-radius: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-bal-action.pay {
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(135deg, #0066FF, #00F3FF);
             color: #FFF;
+            border: none;
+            box-shadow: 0 0 10px var(--accent-blue-glow);
         }
 
+        .btn-bal-action:active { transform: scale(0.9); }
+
+        /* Экраны */
         .screen {
             display: none;
             flex-direction: column;
@@ -115,108 +137,108 @@
             padding: 10px 0;
         }
 
+        .screen::-webkit-scrollbar { display: none; }
         .screen.active { display: flex; }
 
         .btn-back {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
             color: var(--accent-blue);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            display: flex;
+            padding: 8px 14px;
+            border-radius: 12px;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             align-self: flex-start;
+            backdrop-filter: blur(8px);
         }
 
+        /* Карточки Меню */
         .menu-card {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
+            border-radius: 22px;
+            padding: 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .menu-card:active { transform: scale(0.98); }
+        .menu-card:active { transform: scale(0.97); }
 
         .menu-card.featured-free {
-            border: 1px solid var(--accent-gold);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 204, 0, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 215, 0, 0.08) 100%);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
 
         .menu-card.featured-wheels {
-            border: 1px solid var(--accent-blue);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 243, 255, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 243, 255, 0.08) 100%);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
 
         .menu-card.featured-tickets {
-            border: 1px solid var(--accent-purple);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(157, 0, 255, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(168, 85, 247, 0.08) 100%);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.12);
         }
 
         .card-left { display: flex; align-items: center; gap: 14px; }
 
         .card-icon {
-            font-size: 32px;
+            font-size: 28px;
             background: rgba(255, 255, 255, 0.05);
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
-        .card-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .card-info h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.3px; }
         .card-info p { font-size: 12px; color: var(--text-sub); }
 
         .card-badge {
             background: var(--accent-blue);
             color: #000;
             font-size: 10px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 6px;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 8px;
             margin-left: 6px;
+            letter-spacing: 0.5px;
         }
 
         .card-badge.free { background: var(--accent-gold); }
-        .card-badge.silver { background: #C0C0C0; }
+        .card-badge.silver { background: #E2E8F0; }
         .card-badge.gold { background: #FFD700; }
-        .card-badge.diamond { background: #B9F2FF; }
+        .card-badge.diamond { background: #B9F2FF; box-shadow: 0 0 10px rgba(185, 242, 255, 0.5); }
 
         .btn-card-action {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--card-border);
             color: var(--accent-blue);
-            padding: 8px 14px;
-            border-radius: 10px;
+            padding: 9px 16px;
+            border-radius: 12px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
+            backdrop-filter: blur(6px);
         }
 
-        .timer-banner {
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px solid rgba(255, 204, 0, 0.3);
-            color: var(--accent-gold);
-            padding: 10px 16px;
-            border-radius: 14px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: none;
-        }
-
+        /* Премиум Колесо */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -224,32 +246,33 @@
             justify-content: center;
             position: relative;
             margin: auto 0;
+            padding: 10px 0;
         }
 
         .arrow-pointer {
-            color: var(--accent-blue);
-            font-size: 20px;
-            margin-bottom: -10px;
+            color: var(--accent-gold);
+            font-size: 26px;
+            margin-bottom: -14px;
             z-index: 10;
-            text-shadow: 0 0 10px var(--accent-blue);
+            filter: drop-shadow(0 0 8px var(--accent-gold));
         }
 
         .wheel-outer-rim {
-            width: 240px;
-            height: 240px;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
-            background: var(--card-bg);
-            border: 4px solid var(--card-border);
+            background: radial-gradient(circle, #1E2230 0%, #0D0E15 100%);
+            border: 6px solid #1E2436;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.8);
         }
 
         .wheel-spinner {
-            width: 200px;
-            height: 200px;
+            width: 216px;
+            height: 216px;
             border-radius: 50%;
             background: conic-gradient(
                 #00F3FF 0deg 60deg, #9D00FF 60deg 120deg, #FF6B00 120deg 180deg, 
@@ -259,33 +282,38 @@
             justify-content: center;
             align-items: center;
             transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
         .center-hub {
-            width: 46px;
-            height: 46px;
-            background: var(--card-bg);
+            width: 52px;
+            height: 52px;
+            background: radial-gradient(circle, #1A1D2A 0%, #0A0B10 100%);
             border-radius: 50%;
-            border: 2px solid var(--accent-gold);
+            border: 3px solid var(--accent-gold);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
+            font-size: 20px;
+            box-shadow: 0 0 15px var(--accent-gold-glow);
         }
 
         .btn-spin {
             width: 100%;
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(135deg, #0066FF 0%, #00F3FF 100%);
             border: none;
-            padding: 16px;
-            border-radius: 16px;
+            padding: 18px;
+            border-radius: 18px;
             color: #FFFFFF;
-            font-weight: 800;
+            font-weight: 900;
             font-size: 16px;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 25px var(--accent-blue-glow);
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.2s;
         }
+
+        .btn-spin:active { transform: scale(0.98); }
 
         .btn-spin.disabled {
             background: var(--card-border);
@@ -294,100 +322,94 @@
             cursor: not-allowed;
         }
 
-        .ticket-banner {
-            background: linear-gradient(135deg, rgba(157, 0, 255, 0.15) 0%, var(--card-bg) 100%);
-            border: 1px solid var(--accent-purple);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .ticket-prize {
-            font-size: 28px;
-            font-weight: 900;
+        .timer-banner {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.25);
             color: var(--accent-gold);
-            margin: 8px 0;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
-        }
-
-        .ticket-stats {
-            display: flex;
-            justify-content: space-between;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 12px;
+            padding: 10px 16px;
             border-radius: 14px;
-            margin: 12px 0;
+            text-align: center;
             font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            backdrop-filter: blur(8px);
+            display: none;
         }
 
+        /* Инвентарь */
         .inventory-card {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 18px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .inventory-header { display: flex; align-items: center; justify-content: space-between; }
 
         .hold-badge {
-            background: rgba(255, 107, 0, 0.15);
+            background: rgba(255, 107, 0, 0.12);
             color: #FF6B00;
-            border: 1px solid rgba(255, 107, 0, 0.3);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 8px;
+            border: 1px solid rgba(255, 107, 0, 0.25);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
         }
 
         .hold-badge.ready {
-            background: rgba(0, 243, 255, 0.15);
+            background: rgba(0, 243, 255, 0.12);
             color: var(--accent-blue);
-            border-color: rgba(0, 243, 255, 0.3);
+            border-color: rgba(0, 243, 255, 0.25);
         }
 
-        .hold-timer-text { font-size: 12px; color: var(--text-sub); }
+        .hold-timer-text { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
 
         .btn-withdraw {
             width: 100%;
-            background: var(--card-border);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--card-border);
             color: var(--text-sub);
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 12px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: not-allowed;
         }
 
         .btn-withdraw.active {
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(135deg, #0066FF, #00F3FF);
             color: #FFF;
             border: none;
+            box-shadow: 0 4px 15px var(--accent-blue-glow);
             cursor: pointer;
         }
 
+        /* Рефералы */
         .ref-box {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 18px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .ref-link-input {
             width: 100%;
-            background: var(--bg-color);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--card-border);
             color: var(--accent-blue);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 14px;
+            border-radius: 12px;
             font-size: 12px;
+            font-weight: 700;
             outline: none;
         }
 
@@ -395,22 +417,26 @@
 
         .btn-ref {
             flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
             font-size: 12px;
             border: none;
             cursor: pointer;
+            transition: transform 0.1s;
         }
 
-        .btn-copy { background: var(--card-border); color: var(--text-color); }
-        .btn-share { background: linear-gradient(90deg, #0066FF, #00F3FF); color: #FFF; }
+        .btn-ref:active { transform: scale(0.97); }
+        .btn-copy { background: rgba(255, 255, 255, 0.08); color: var(--text-color); border: 1px solid var(--card-border); }
+        .btn-share { background: linear-gradient(135deg, #0066FF, #00F3FF); color: #FFF; box-shadow: 0 4px 15px var(--accent-blue-glow); }
 
+        /* Настройки */
         .setting-row {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
-            padding: 14px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -418,8 +444,8 @@
 
         .theme-select-btns {
             display: flex;
-            gap: 6px;
-            background: var(--bg-color);
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
             padding: 4px;
             border-radius: 12px;
             border: 1px solid var(--card-border);
@@ -432,40 +458,43 @@
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
         }
 
         .btn-theme.active {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
             border: 1px solid var(--card-border);
         }
 
         .toggle-switch {
-            width: 44px;
-            height: 24px;
-            background: var(--card-border);
-            border-radius: 12px;
+            width: 46px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 13px;
             position: relative;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .toggle-switch.active { background: var(--accent-blue); }
 
         .toggle-circle {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: #FFF;
             border-radius: 50%;
             position: absolute;
             top: 3px;
             left: 3px;
-            transition: left 0.2s ease;
+            transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .toggle-switch.active .toggle-circle { left: 23px; }
 
+        /* Модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -473,6 +502,7 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
             z-index: 999;
             display: none;
             justify-content: center;
@@ -481,48 +511,49 @@
         }
 
         .modal-card {
-            background: var(--card-bg);
+            background: #121520;
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 24px;
             width: 100%;
             max-width: 360px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             animation: slideUp 0.3s ease-out;
         }
 
         @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
+            from { transform: translateY(40px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
         .win-modal-card {
             text-align: center;
-            border: 1px solid var(--accent-gold);
-            background: linear-gradient(180deg, var(--card-bg) 0%, rgba(255, 204, 0, 0.08) 100%);
-            box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            background: linear-gradient(180deg, #161A26 0%, rgba(255, 215, 0, 0.05) 100%);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
         }
 
         .win-icon {
-            font-size: 60px;
-            margin: 10px 0;
-            filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.5));
+            font-size: 64px;
+            margin: 6px 0;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
         }
 
         .win-amount {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 900;
             color: var(--accent-gold);
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
-            margin-bottom: 4px;
+            text-shadow: 0 0 15px var(--accent-gold-glow);
+            margin-bottom: 2px;
         }
 
         .win-subtext {
             font-size: 13px;
             color: var(--text-sub);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .modal-header {
@@ -532,10 +563,13 @@
         }
 
         .btn-close-modal {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
             color: var(--text-sub);
-            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
             cursor: pointer;
         }
 
@@ -546,54 +580,62 @@
         }
 
         .package-card {
-            background: var(--bg-color);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--card-border);
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 14px;
             text-align: center;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .package-card:hover { border-color: var(--accent-gold); }
+        .package-card:hover { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.05); }
 
         .input-stars {
             width: 100%;
-            background: var(--bg-color);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--card-border);
             color: var(--accent-gold);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
             outline: none;
+            text-align: center;
         }
 
+        /* Навигация снизу */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
             background: var(--card-bg);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--card-border);
             padding: 12px;
-            border-radius: 16px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .nav-item {
             background: transparent;
             border: none;
-            font-size: 18px;
-            opacity: 0.5;
+            font-size: 20px;
+            opacity: 0.4;
             cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px;
         }
 
-        .nav-item.active { opacity: 1; }
+        .nav-item.active { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px var(--accent-blue)); }
 
+        /* Обучение Stories */
         .story-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #0F1015;
+            background: #0A0B10;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -602,48 +644,51 @@
         }
 
         .story-progress-container { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
-        .progress-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: #00F3FF; }
+        .progress-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue-glow); }
 
         .story-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .story-slide { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
         .story-slide.active { display: flex; }
-        .story-icon { font-size: 80px; filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4)); }
-        .story-slide h2 { font-size: 26px; font-weight: 800; color: #FFF; }
-        .story-slide p { font-size: 15px; color: #94A3B8; line-height: 1.5; max-width: 300px; }
+        .story-icon { font-size: 80px; filter: drop-shadow(0 0 25px var(--accent-blue-glow)); }
+        .story-slide h2 { font-size: 26px; font-weight: 900; color: #FFF; }
+        .story-slide p { font-size: 15px; color: var(--text-sub); line-height: 1.5; max-width: 300px; }
 
         .badge-price {
-            background: rgba(255, 204, 0, 0.15);
-            color: #FFCC00;
-            padding: 8px 16px;
+            background: rgba(255, 215, 0, 0.12);
+            color: var(--accent-gold);
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 14px;
-            font-weight: 700;
-            border: 1px solid rgba(255, 204, 0, 0.4);
+            font-weight: 800;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px var(--accent-gold-glow);
         }
 
         .btn-story-next {
             width: 100%;
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(135deg, #0066FF, #00F3FF);
             border: none;
             color: #FFFFFF;
             padding: 18px;
-            border-radius: 16px;
-            font-weight: 800;
+            border-radius: 18px;
+            font-weight: 900;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 0 8px 25px var(--accent-blue-glow);
         }
 
         .btn-story-claim {
             width: 100%;
-            background: linear-gradient(90deg, #FFCC00, #FF9900);
+            background: linear-gradient(135deg, #FFD700, #FF9900);
             border: none;
             color: #000000;
             padding: 18px;
-            border-radius: 16px;
-            font-weight: 800;
+            border-radius: 18px;
+            font-weight: 900;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 0 8px 25px var(--accent-gold-glow);
         }
 
         .gift-bounce { animation: bounce 1.2s infinite ease-in-out; }
@@ -705,7 +750,7 @@
                         <p>1 раз в 24 часа — сразу на баланс!</p>
                     </div>
                 </div>
-                <button class="btn-card-action" style="color: var(--accent-gold); border-color: var(--accent-gold);">Крутить</button>
+                <button class="btn-card-action" style="color: var(--accent-gold); border-color: rgba(255, 215, 0, 0.4);">Крутить</button>
             </div>
 
             <div class="menu-card featured-wheels" onclick="openScreen('screen-wheel-list')">
@@ -723,11 +768,11 @@
                 <div class="card-left">
                     <div class="card-icon">🎟️</div>
                     <div class="card-info">
-                        <h3>Розыгрыш 1000 Stars <span class="card-badge">JACKPOT</span></h3>
+                        <h3>Розыгрыш 1000 Stars <span class="card-badge" style="background: var(--accent-purple); color: #FFF;">JACKPOT</span></h3>
                         <p>Купи билет — выиграй суперприз</p>
                     </div>
                 </div>
-                <button class="btn-card-action" style="color: var(--accent-purple); border-color: var(--accent-purple);">Участвовать</button>
+                <button class="btn-card-action" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.4);">Участвовать</button>
             </div>
         </div>
 
@@ -805,7 +850,7 @@
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             
             <div class="ticket-banner">
-                <div style="font-size: 13px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div style="font-size: 12px; color: var(--text-sub); letter-spacing: 1px;">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
                 <div class="ticket-prize">🏆 1000 STARS</div>
                 <div style="font-size: 12px; color: var(--accent-blue);">⏱ Итоги через: 18ч 42мин</div>
             </div>
@@ -815,7 +860,7 @@
                 <div>Шанс на победу: <b id="user-win-chance" style="color: var(--accent-blue);">0%</b></div>
             </div>
 
-            <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #A855F7, #00F3FF); box-shadow: 0 8px 25px var(--accent-purple-glow);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
         <div id="screen-friends" class="screen">
@@ -895,19 +940,19 @@
             
             <div class="package-grid">
                 <div class="package-card" onclick="selectDepositPackage(50)">
-                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">50 ⭐</div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">50 ⭐</div>
                     <div style="font-size: 11px; color: var(--text-sub);">Пакет Старт</div>
                 </div>
                 <div class="package-card" onclick="selectDepositPackage(100)">
-                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">100 ⭐</div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">100 ⭐</div>
                     <div style="font-size: 11px; color: var(--text-sub);">Пакет Медиум</div>
                 </div>
                 <div class="package-card" onclick="selectDepositPackage(250)">
-                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">250 ⭐</div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">250 ⭐</div>
                     <div style="font-size: 11px; color: var(--text-sub);">Пакет Про</div>
                 </div>
                 <div class="package-card" onclick="selectDepositPackage(500)">
-                    <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);">500 ⭐</div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">500 ⭐</div>
                     <div style="font-size: 11px; color: var(--text-sub);">Пакет VIP</div>
                 </div>
             </div>
@@ -932,17 +977,17 @@
 
             <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма вывода ⭐">
 
-            <button class="btn-spin" style="background: linear-gradient(90deg, #FFCC00, #FF9900); color: #000;" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000; box-shadow: 0 8px 25px var(--accent-gold-glow);" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
         </div>
     </div>
 
     <div id="modal-win" class="modal-overlay">
         <div class="modal-card win-modal-card">
             <div class="win-icon">🌟</div>
-            <h2 style="font-size: 20px; font-weight: 800; color: #FFF;">ПОЗДРАВЛЯЕМ!</h2>
+            <h2 style="font-size: 22px; font-weight: 900; color: #FFF;">ПОЗДРАВЛЯЕМ!</h2>
             <div class="win-amount" id="win-modal-amount">+50 ⭐</div>
             <div class="win-subtext" id="win-modal-subtext">Зачислено прямо на ваш баланс!</div>
-            <button class="btn-spin" style="background: linear-gradient(90deg, #FFCC00, #FF9900); color: #000;" onclick="closeModal('modal-win')">🎁 ЗАБРАТЬ</button>
+            <button class="btn-spin" style="background: linear-gradient(135deg, #FFD700, #FF9900); color: #000; box-shadow: 0 8px 25px var(--accent-gold-glow);" onclick="closeModal('modal-win')">🎁 ЗАБРАТЬ</button>
         </div>
     </div>
 
@@ -1344,7 +1389,6 @@
             setTimeout(() => {
                 isSpinning = false;
                 
-                // Начисление выигрыша сразу на основной баланс!
                 userBalance += prizeValue;
                 updateBalanceDisplay();
 
