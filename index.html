@@ -7,29 +7,37 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0B0C10;
-            --card-bg: #151823;
-            --card-border: #232838;
-            --text-color: #FFFFFF;
-            --text-sub: #A0AAB8;
+            --bg-color: #0F1015;
+            --card-bg: #161822;
+            --card-border: #232738;
+            --text-color: #E2E8F0;
+            --text-sub: #94A3B8;
             --accent-blue: #00F3FF;
             --accent-gold: #FFCC00;
             --accent-purple: #9D00FF;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* ТЕМЫ */
-        body.theme-night {
+        /* ТЕМЫ ОФОРМЛЕНИЯ */
+        body.theme-oled {
             --bg-color: #000000;
             --card-bg: #0D0E12;
             --card-border: #1A1C24;
+            --text-color: #E2E8F0;
+            --text-sub: #718096;
+            --card-shadow: none;
         }
 
-        body.theme-day {
-            --bg-color: #F5F7FA;
+        body.theme-light {
+            --bg-color: #F0F3F8;
             --card-bg: #FFFFFF;
             --card-border: #E2E8F0;
-            --text-color: #1A202C;
-            --text-sub: #718096;
+            --text-color: #1E293B;
+            --text-sub: #64748B;
+            --accent-blue: #2563EB;
+            --accent-gold: #D97706;
+            --accent-purple: #7C3AED;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -85,6 +93,7 @@
             border: 1px solid var(--card-border);
             padding: 4px 8px;
             border-radius: 20px;
+            box-shadow: var(--card-shadow);
         }
 
         .balance-value {
@@ -95,7 +104,7 @@
         }
 
         .btn-bal-action {
-            background: #232838;
+            background: var(--card-border);
             border: none;
             color: var(--accent-blue);
             font-size: 11px;
@@ -106,7 +115,7 @@
         }
 
         .btn-bal-action.pay {
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(90deg, #2563EB, var(--accent-blue));
             color: #FFF;
         }
 
@@ -146,34 +155,32 @@
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.1s ease, border-color 0.2s ease;
         }
 
         .menu-card:active { transform: scale(0.98); }
 
         .menu-card.featured-free {
             border: 1px solid var(--accent-gold);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 204, 0, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.15);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(217, 119, 6, 0.08) 100%);
         }
 
         .menu-card.featured-wheels {
             border: 1px solid var(--accent-blue);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 243, 255, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(37, 99, 235, 0.08) 100%);
         }
 
         .menu-card.featured-tickets {
             border: 1px solid var(--accent-purple);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(157, 0, 255, 0.1) 100%);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.2);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(124, 58, 237, 0.08) 100%);
         }
 
         .card-left { display: flex; align-items: center; gap: 14px; }
 
         .card-icon {
             font-size: 32px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.04);
             width: 52px;
             height: 52px;
             border-radius: 14px;
@@ -182,12 +189,16 @@
             align-items: center;
         }
 
+        body.theme-dark .card-icon, body.theme-oled .card-icon {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .card-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
         .card-info p { font-size: 12px; color: var(--text-sub); }
 
         .card-badge {
             background: var(--accent-blue);
-            color: #000;
+            color: #FFF;
             font-size: 10px;
             font-weight: 800;
             padding: 2px 6px;
@@ -195,14 +206,14 @@
             margin-left: 6px;
         }
 
-        .card-badge.free { background: var(--accent-gold); }
-        .card-badge.silver { background: #C0C0C0; }
-        .card-badge.gold { background: #FFD700; }
-        .card-badge.diamond { background: #B9F2FF; }
+        .card-badge.free { background: var(--accent-gold); color: #FFF; }
+        .card-badge.silver { background: #94A3B8; color: #FFF; }
+        .card-badge.gold { background: #D97706; color: #FFF; }
+        .card-badge.diamond { background: #0284C7; color: #FFF; }
         .card-badge.vip { background: var(--accent-purple); color: #FFF; }
 
         .btn-card-action {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.03);
             border: 1px solid var(--card-border);
             color: var(--accent-blue);
             padding: 8px 14px;
@@ -211,10 +222,14 @@
             font-weight: 700;
         }
 
+        body.theme-dark .btn-card-action, body.theme-oled .btn-card-action {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         /* ТАЙМЕР НАД КОЛЕСОМ */
         .timer-banner {
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px solid rgba(255, 204, 0, 0.3);
+            background: rgba(217, 119, 6, 0.1);
+            border: 1px solid rgba(217, 119, 6, 0.3);
             color: var(--accent-gold);
             padding: 10px 16px;
             border-radius: 14px;
@@ -239,7 +254,6 @@
             font-size: 20px;
             margin-bottom: -10px;
             z-index: 10;
-            text-shadow: 0 0 10px var(--accent-blue);
         }
 
         .wheel-outer-rim {
@@ -252,7 +266,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: var(--card-shadow);
         }
 
         .wheel-spinner {
@@ -260,9 +274,9 @@
             height: 200px;
             border-radius: 50%;
             background: conic-gradient(
-                #00F3FF 0deg 45deg, #9D00FF 45deg 90deg, #FF6B00 90deg 135deg, 
-                #FFCC00 135deg 180deg, #FF0055 180deg 225deg, #00F3FF 225deg 270deg, 
-                #9D00FF 270deg 315deg, #FFCC00 315deg 360deg
+                #2563EB 0deg 45deg, #7C3AED 45deg 90deg, #EA580C 90deg 135deg, 
+                #D97706 135deg 180deg, #DC2626 180deg 225deg, #2563EB 225deg 270deg, 
+                #7C3AED 270deg 315deg, #D97706 315deg 360deg
             );
             display: flex;
             justify-content: center;
@@ -283,16 +297,16 @@
 
         .btn-spin {
             width: 100%;
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(90deg, #2563EB, var(--accent-blue));
             border: none;
             padding: 16px;
             border-radius: 16px;
             color: #FFFFFF;
             font-weight: 800;
             font-size: 16px;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
             cursor: pointer;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
         .btn-spin.disabled {
@@ -304,11 +318,12 @@
 
         /* БИЛЕТЫ */
         .ticket-banner {
-            background: linear-gradient(135deg, rgba(157, 0, 255, 0.15) 0%, var(--card-bg) 100%);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, var(--card-bg) 100%);
             border: 1px solid var(--accent-purple);
             border-radius: 20px;
             padding: 20px;
             text-align: center;
+            box-shadow: var(--card-shadow);
         }
 
         .ticket-prize {
@@ -316,7 +331,6 @@
             font-weight: 900;
             color: var(--accent-gold);
             margin: 8px 0;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
         }
 
         .ticket-stats {
@@ -328,6 +342,7 @@
             border-radius: 14px;
             margin: 12px 0;
             font-size: 13px;
+            box-shadow: var(--card-shadow);
         }
 
         /* ИНВЕНТАРЬ И ХОЛДЫ */
@@ -339,14 +354,15 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            box-shadow: var(--card-shadow);
         }
 
         .inventory-header { display: flex; align-items: center; justify-content: space-between; }
 
         .hold-badge {
-            background: rgba(255, 107, 0, 0.15);
-            color: #FF6B00;
-            border: 1px solid rgba(255, 107, 0, 0.3);
+            background: rgba(234, 88, 12, 0.12);
+            color: #EA580C;
+            border: 1px solid rgba(234, 88, 12, 0.3);
             font-size: 11px;
             font-weight: 700;
             padding: 4px 8px;
@@ -354,9 +370,9 @@
         }
 
         .hold-badge.ready {
-            background: rgba(0, 243, 255, 0.15);
+            background: rgba(37, 99, 235, 0.12);
             color: var(--accent-blue);
-            border-color: rgba(0, 243, 255, 0.3);
+            border-color: rgba(37, 99, 235, 0.3);
         }
 
         .hold-timer-text { font-size: 12px; color: var(--text-sub); }
@@ -374,7 +390,7 @@
         }
 
         .btn-withdraw.active {
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(90deg, #2563EB, var(--accent-blue));
             color: #FFF;
             border: none;
             cursor: pointer;
@@ -389,6 +405,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            box-shadow: var(--card-shadow);
         }
 
         .ref-link-input {
@@ -415,7 +432,7 @@
         }
 
         .btn-copy { background: var(--card-border); color: var(--text-color); }
-        .btn-share { background: linear-gradient(90deg, #0066FF, #00F3FF); color: #FFF; }
+        .btn-share { background: linear-gradient(90deg, #2563EB, var(--accent-blue)); color: #FFF; }
 
         /* НАСТРОЙКИ */
         .setting-row {
@@ -426,11 +443,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--card-shadow);
         }
 
         .theme-select-btns {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             background: var(--bg-color);
             padding: 4px;
             border-radius: 12px;
@@ -441,7 +459,7 @@
             background: transparent;
             border: none;
             color: var(--text-sub);
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: 8px;
             font-size: 11px;
             font-weight: 700;
@@ -451,7 +469,7 @@
         .btn-theme.active {
             background: var(--card-bg);
             color: var(--text-color);
-            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
         }
 
         .toggle-switch {
@@ -485,7 +503,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             z-index: 999;
             display: none;
             justify-content: center;
@@ -503,6 +522,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            box-shadow: var(--card-shadow);
         }
 
         .modal-header {
@@ -555,6 +575,7 @@
             border: 1px solid var(--card-border);
             padding: 12px;
             border-radius: 16px;
+            box-shadow: var(--card-shadow);
         }
 
         .nav-item {
@@ -574,7 +595,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #0B0C10;
+            background: #0F1015;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -605,7 +626,7 @@
 
         .btn-story-next {
             width: 100%;
-            background: linear-gradient(90deg, #0066FF, #00F3FF);
+            background: linear-gradient(90deg, #2563EB, #00F3FF);
             border: none;
             color: #FFFFFF;
             padding: 18px;
@@ -631,7 +652,7 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
     </style>
 </head>
-<body class="theme-standard">
+<body class="theme-dark">
 
     <!-- 1. СТОРИС-ОНБОРДИНГ (ПОКАЗЫВАЕТСЯ 1 РАЗ) -->
     <div id="story-onboarding" class="story-overlay">
@@ -819,7 +840,7 @@
                 <div>Шанс на победу: <b id="user-win-chance" style="color: var(--accent-blue);">0%</b></div>
             </div>
 
-            <button class="btn-spin" style="background: linear-gradient(90deg, #9D00FF, #00F3FF);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
+            <button class="btn-spin" style="background: linear-gradient(90deg, #7C3AED, #2563EB);" onclick="buyTicket()">КУПИТЬ БИЛЕТ ЗА 20 ⭐</button>
         </div>
 
         <!-- ЭКРАН 5: ДРУЗЬЯ (РЕФЕРАЛКА) -->
@@ -855,7 +876,7 @@
             <div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
-        <!-- ЭКРАН 7: НАСТРОЙКИ (ТЕМЫ И ЗВУКИ) -->
+        <!-- ЭКРАН 7: НАСТРОЙКИ (3 ТЕМЫ И ЗВУКИ) -->
         <div id="screen-settings" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад в меню</button>
             <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
@@ -863,9 +884,9 @@
             <div class="setting-row">
                 <div style="font-size: 14px; font-weight: 700;">Тема оформления</div>
                 <div class="theme-select-btns">
-                    <button id="btn-theme-standard" class="btn-theme active" onclick="setTheme('standard')">Стандарт</button>
-                    <button id="btn-theme-night" class="btn-theme" onclick="setTheme('night')">Ночь</button>
-                    <button id="btn-theme-day" class="btn-theme" onclick="setTheme('day')">День</button>
+                    <button id="btn-theme-dark" class="btn-theme active" onclick="setTheme('dark')">🌙 Тёмная</button>
+                    <button id="btn-theme-oled" class="btn-theme" onclick="setTheme('oled')">🖤 OLED</button>
+                    <button id="btn-theme-light" class="btn-theme" onclick="setTheme('light')">☀️ Светлая</button>
                 </div>
             </div>
 
@@ -943,7 +964,7 @@
 
             <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма вывода ⭐">
 
-            <button class="btn-spin" style="background: linear-gradient(90deg, #FFCC00, #FF9900); color: #000;" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
+            <button class="btn-spin" style="background: linear-gradient(90deg, #D97706, #EA580C); color: #FFF;" onclick="executeWithdraw()">ПОДТВЕРДИТЬ ВЫВОД</button>
         </div>
     </div>
 
@@ -953,7 +974,7 @@
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
 
         let settings = {
-            theme: localStorage.getItem('homastar_theme') || 'standard',
+            theme: localStorage.getItem('homastar_theme') || 'dark',
             music: localStorage.getItem('homastar_music') !== 'false',
             sfx: localStorage.getItem('homastar_sfx') !== 'false'
         };
@@ -1093,7 +1114,8 @@
             localStorage.setItem('homastar_theme', themeName);
 
             document.querySelectorAll('.btn-theme').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-theme-${themeName}`).classList.add('active');
+            const targetBtn = document.getElementById(`btn-theme-${themeName}`);
+            if (targetBtn) targetBtn.classList.add('active');
         }
 
         function toggleSetting(type) {
@@ -1275,3 +1297,8 @@
     </script>
 </body>
 </html>
+```eor
+
+Я обновил файл `index.html`. В нём установлена приятная тёмно-графитовая тема по умолчанию, а дневной режим переработан в мягкие пастельные тона без резких белых отблесков.
+
+Проверяй обновления и делись мыслями, что обсудим дальше!
