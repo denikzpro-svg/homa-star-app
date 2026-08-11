@@ -10,7 +10,7 @@
         /* --- ПРЕМИУМ WEB3 ПАЛИТРА --- */
         :root {
             --bg-color: #050711;
-            --glass-bg: rgba(12, 16, 28, 0.6); /* Темное стекло */
+            --glass-bg: rgba(12, 16, 28, 0.6);
             --glass-border: rgba(255, 255, 255, 0.05);
             --text-color: #FFFFFF;
             --text-sub: #8B9BB4;
@@ -180,7 +180,6 @@
         .live-marquee-content {
             display: flex;
             gap: 20px;
-            /* Плавная анимация на 5 МИНУТ (300с) */
             animation: scrollMarquee 300s linear infinite;
             padding-left: 20px;
         }
@@ -224,75 +223,91 @@
         .screen::-webkit-scrollbar { display: none; }
         .screen.active { display: flex; }
 
-        /* --- НОВЫЙ ДИЗАЙН (ВАРИАНТ Б): ТЁМНЫЕ КАРТОЧКИ С ВОЗДУХОМ --- */
-        .cards-list {
+        /* --- СТОПКА КАРТОЧЕК С ТЁМНЫМИ ОТТЕНКАМИ И КНОПКОЙ НАВЕРХУ --- */
+        .cards-stack {
             display: flex;
             flex-direction: column;
-            gap: 14px; /* Воздух между карточками */
+            padding-top: 5px;
             padding-bottom: 20px;
         }
 
-        .web3-card {
+        .premium-card {
+            height: 125px; /* Уменьшили высоту, так как низ скрыт */
+            border-radius: 20px;
+            position: relative;
+            margin-top: -45px; /* Эффект наложения */
+            box-shadow: 0 -12px 25px rgba(0,0,0,0.6); /* Мощная верхняя тень для разделения слоев */
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            padding: 16px 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.15); /* Яркая верхняя грань */
+        }
+
+        .premium-card:first-child { 
+            margin-top: 0; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+        }
+
+        .premium-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Тёмные благородные оттенки для каждой карточки */
+        .tier-free-dark { 
+            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.15)); 
+            border-top-color: var(--neon-cyan); 
+        }
+        .tier-common-dark { 
+            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.2)); 
+            border-top-color: #8B9BB4; 
+        }
+        .tier-silver-dark { 
+            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.15)); 
+            border-top-color: #E2E8F0; 
+        }
+        .tier-gold-dark { 
+            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.12)); 
+            border-top-color: var(--accent-gold); 
+        }
+        .tier-diamond-dark { 
+            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.2)); 
+            border-top-color: var(--neon-purple); 
+        }
+
+        /* Расположение элементов внутри: Кнопка справа сверху */
+        .p-card-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            position: relative;
-            overflow: hidden;
         }
 
-        .web3-card:active {
-            transform: scale(0.97);
-        }
-
-        /* Неоновые акценты (боковая подсветка) */
-        .tier-free { border-left: 3px solid var(--neon-cyan); box-shadow: inset 15px 0 30px -20px var(--neon-cyan-glow), 0 8px 24px rgba(0,0,0,0.4); }
-        .tier-common { border-left: 3px solid #8B9BB4; box-shadow: inset 15px 0 30px -20px rgba(139,155,180,0.3), 0 8px 24px rgba(0,0,0,0.4); }
-        .tier-silver { border-left: 3px solid #E2E8F0; box-shadow: inset 15px 0 30px -20px rgba(226,232,240,0.4), 0 8px 24px rgba(0,0,0,0.4); }
-        .tier-gold { border-left: 3px solid var(--accent-gold); box-shadow: inset 15px 0 30px -20px var(--accent-gold-glow), 0 8px 24px rgba(0,0,0,0.4); }
-        .tier-diamond { border-left: 3px solid var(--neon-purple); box-shadow: inset 15px 0 30px -20px var(--neon-purple-glow), 0 8px 24px rgba(0,0,0,0.4); }
-
-        .w-card-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .w-card-icon {
-            font-size: 28px;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0,0,0,0.3);
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .w-card-info h3 {
-            font-size: 15px;
+        .p-card-title-area h3 {
+            font-size: 16px;
             font-weight: 800;
             color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 2px;
             letter-spacing: 0.5px;
         }
 
-        .w-card-info p {
+        .t-icon {
+            font-size: 18px;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .p-card-title-area p {
             font-size: 12px;
             color: var(--text-sub);
             font-weight: 600;
+            padding-left: 26px; /* Выравнивание под текст заголовка */
         }
 
-        /* Яркие кнопки справа */
+        /* Яркие кнопки справа (теперь они маленькие и аккуратные) */
         .w-card-btn {
             padding: 8px 16px;
             border-radius: 12px;
@@ -302,6 +317,7 @@
             border: none;
             color: #000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-transform: uppercase;
         }
 
         .btn-free { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan-glow); }
@@ -310,62 +326,26 @@
         .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); box-shadow: 0 0 15px var(--accent-gold-glow); }
         .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; box-shadow: 0 0 15px var(--neon-purple-glow); }
 
+        /* --- ОСТАЛЬНЫЕ ЭЛЕМЕНТЫ --- */
         .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-color); font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; align-self: flex-start; backdrop-filter: blur(10px); margin-bottom: 10px; }
         .timer-banner { background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--accent-gold); padding: 10px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 800; margin-bottom: 10px; display: none; backdrop-filter: blur(10px); }
 
-        /* --- КОЛЕСО CANVAS (NEON WEB3 STYLE) --- */
-        .wheel-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin: auto 0;
-            padding: 10px 0;
-        }
-
-        .arrow-pointer {
-            width: 0; height: 0;
-            border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan);
-            z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); position: relative;
-        }
-
-        .wheel-outer-rim {
-            width: 300px; height: 300px;
-            display: flex; justify-content: center; align-items: center;
-            position: relative; border-radius: 50%; background: rgba(0,0,0,0.5);
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8);
-        }
-
-        #wheel-canvas {
-            width: 300px; height: 300px;
-            transition: transform 5s cubic-bezier(0.2, 0.8, 0.1, 1.0);
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
-        }
-
-        .btn-spin {
-            width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 20px var(--neon-cyan-glow), inset 0 0 10px var(--neon-cyan-glow); cursor: pointer; transition: all 0.2s; margin-top: 20px; backdrop-filter: blur(10px);
-        }
-
+        /* --- КОЛЕСО CANVAS --- */
+        .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
+        .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); position: relative; }
+        .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; position: relative; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
+        #wheel-canvas { width: 300px; height: 300px; transition: transform 5s cubic-bezier(0.2, 0.8, 0.1, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 20px var(--neon-cyan-glow), inset 0 0 10px var(--neon-cyan-glow); cursor: pointer; transition: all 0.2s; margin-top: 20px; backdrop-filter: blur(10px); }
         .btn-spin:active { transform: scale(0.96); box-shadow: 0 0 30px var(--neon-cyan-glow), inset 0 0 20px var(--neon-cyan-glow); }
         .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); box-shadow: none; cursor: not-allowed; }
 
         /* --- СТЕКЛЯННАЯ НИЖНЯЯ ПАНЕЛЬ --- */
-        .bottom-nav {
-            display: flex; justify-content: space-between;
-            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 28px;
-            position: relative; z-index: 10; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        }
-
-        .nav-item {
-            background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 20px; color: var(--text-sub); opacity: 0.5; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex: 1;
-        }
-
+        .bottom-nav { display: flex; justify-content: space-between; background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 28px; position: relative; z-index: 10; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+        .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 20px; color: var(--text-sub); opacity: 0.5; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex: 1; }
         .nav-label { font-size: 10px; font-weight: 800; }
         .nav-item.active { opacity: 1; color: var(--neon-cyan); transform: translateY(-4px); filter: drop-shadow(0 0 10px var(--neon-cyan-glow)); }
 
-        /* --- УТИЛИТЫ --- */
+        /* --- УТИЛИТЫ И МОДАЛКИ --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); z-index: 999; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-card { background: rgba(15, 20, 35, 0.8); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 0 40px rgba(0, 243, 255, 0.2); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; }
@@ -374,7 +354,6 @@
         .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.2s; }
         .package-card:active { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.1); }
         .input-stars { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); color: var(--accent-gold); padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 900; outline: none; text-align: center; }
-        
         .win-modal-card { text-align: center; border-color: var(--accent-gold); box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
         .win-icon { font-size: 70px; margin: 10px 0; filter: drop-shadow(0 0 20px var(--accent-gold)); }
         .win-amount { font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 4px; text-shadow: 0 0 20px var(--accent-gold-glow); }
@@ -416,70 +395,65 @@
             </div>
         </div>
 
-        <!-- 1. ИГРЫ (ОСНОВНОЙ ЭКРАН С "ВОЗДУШНЫМ" СПИСКОМ) -->
+        <!-- 1. ИГРЫ (ОСНОВНОЙ ЭКРАН - СТОПКА КАРТ С КНОПКОЙ НАВЕРХУ) -->
         <div id="screen-hub" class="screen active">
             
             <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Игры:</h2>
 
-            <div class="cards-list">
+            <div class="cards-stack">
                 <!-- БЕСПЛАТНОЕ КОЛЕСО -->
-                <div class="web3-card tier-free" onclick="openFreeWheelScreen()">
-                    <div class="w-card-left">
-                        <div class="w-card-icon">🎁</div>
-                        <div class="w-card-info">
-                            <h3>Free Spin</h3>
+                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
+                    <div class="p-card-top">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">🎁</span> Free Spin</h3>
                             <p>Раз в 24 часа</p>
                         </div>
+                        <button class="w-card-btn btn-free">КРУТИТЬ</button>
                     </div>
-                    <button class="w-card-btn btn-free">КРУТИТЬ</button>
                 </div>
 
                 <!-- ОБЫЧНОЕ КОЛЕСО -->
-                <div class="web3-card tier-common" onclick="openPlayWheel('common')">
-                    <div class="w-card-left">
-                        <div class="w-card-icon">⚡</div>
-                        <div class="w-card-info">
-                            <h3>Обычное</h3>
+                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
+                    <div class="p-card-top">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">⚡</span> Обычное</h3>
                             <p>20 Stars</p>
                         </div>
+                        <button class="w-card-btn btn-common">SPIN</button>
                     </div>
-                    <button class="w-card-btn btn-common">SPIN</button>
                 </div>
 
                 <!-- СЕРЕБРЯНОЕ КОЛЕСО -->
-                <div class="web3-card tier-silver" onclick="openPlayWheel('silver')">
-                    <div class="w-card-left">
-                        <div class="w-card-icon">🛡️</div>
-                        <div class="w-card-info">
-                            <h3>Серебряное</h3>
+                <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
+                    <div class="p-card-top">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">🛡️</span> Серебряное</h3>
                             <p>50 Stars</p>
                         </div>
+                        <button class="w-card-btn btn-silver">SPIN</button>
                     </div>
-                    <button class="w-card-btn btn-silver">SPIN</button>
                 </div>
 
                 <!-- ЗОЛОТОЕ КОЛЕСО -->
-                <div class="web3-card tier-gold" onclick="openPlayWheel('gold')">
-                    <div class="w-card-left">
-                        <div class="w-card-icon">👑</div>
-                        <div class="w-card-info">
-                            <h3>Золотое</h3>
+                <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
+                    <div class="p-card-top">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">👑</span> Золотое</h3>
                             <p>100 Stars</p>
                         </div>
+                        <button class="w-card-btn btn-gold">SPIN</button>
                     </div>
-                    <button class="w-card-btn btn-gold">SPIN</button>
                 </div>
 
                 <!-- АЛМАЗНОЕ КОЛЕСО -->
-                <div class="web3-card tier-diamond" onclick="openPlayWheel('diamond')">
-                    <div class="w-card-left">
-                        <div class="w-card-icon">💎</div>
-                        <div class="w-card-info">
-                            <h3>Алмазное</h3>
+                <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
+                    <div class="p-card-top">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">💎</span> Алмазное</h3>
                             <p>250 Stars</p>
                         </div>
+                        <button class="w-card-btn btn-diamond">SPIN</button>
                     </div>
-                    <button class="w-card-btn btn-diamond">SPIN</button>
                 </div>
             </div>
 
