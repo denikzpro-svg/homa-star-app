@@ -239,18 +239,6 @@
             <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Разделы:</h2>
             <div class="cards-stack">
                 
-                <!-- НОВЫЙ РЕЖИМ: PVP БИТВА -->
-                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
-                    <div class="p-card-bg-icon">🏓</div>
-                    <div class="p-card-content">
-                        <div class="p-card-title-area">
-                            <h3><span class="t-icon">🏓</span> Star Pong</h3>
-                            <p>PVP Рулетка с игроками!</p>
-                        </div>
-                        <button class="w-card-btn btn-battle">ИГРАТЬ</button>
-                    </div>
-                </div>
-
                 <!-- БЕСПЛАТНОЕ КОЛЕСО -->
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
                     <div class="p-card-bg-icon">🎁</div>
@@ -275,6 +263,18 @@
                     </div>
                 </div>
 
+                <!-- НОВЫЙ РЕЖИМ: АРЕНА (ПИНГ ПОНГ) -->
+                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
+                    <div class="p-card-bg-icon">🏓</div>
+                    <div class="p-card-content">
+                        <div class="p-card-title-area">
+                            <h3><span class="t-icon">🏓</span> Арена</h3>
+                            <p>PVP Рулетка с игроками!</p>
+                        </div>
+                        <button class="w-card-btn btn-battle">ИГРАТЬ</button>
+                    </div>
+                </div>
+
                 <!-- БИЛЕТЫ (РОЗЫГРЫШ) -->
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
                     <div class="p-card-bg-icon">🎟️</div>
@@ -289,7 +289,7 @@
             </div>
         </div>
 
-        <!-- 1.1 НОВАЯ ВКЛАДКА: PVP БИТВА (ПИНГ-ПОНГ РУЛЕТКА) -->
+        <!-- 1.1 НОВАЯ ВКЛАДКА: АРЕНА (ПИНГ-ПОНГ РУЛЕТКА) -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             
