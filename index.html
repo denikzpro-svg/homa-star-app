@@ -78,7 +78,8 @@
 
         /* --- ВСТРОЕННАЯ МЕДЛЕННАЯ LIVE-ЛЕНТА --- */
         .live-bar-embedded { width: 100%; display: flex; align-items: center; margin-bottom: 12px; height: 50px; overflow: hidden; position: relative; z-index: 10; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
-        .live-marquee-content { display: flex; gap: 20px; animation: scrollMarquee 300s linear infinite; padding-left: 20px; }
+        /* Сильно замедлил анимацию: 900s вместо 300s */
+        .live-marquee-content { display: flex; gap: 20px; animation: scrollMarquee 900s linear infinite; padding-left: 20px; }
         @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .live-pill { display: flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 30px; font-weight: 800; font-size: 14px; color: #FFFFFF; white-space: nowrap; background: rgba(10, 15, 30, 0.6); backdrop-filter: blur(10px); border: 1px solid; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
         .live-pill span { color: var(--text-sub); font-size: 11px; font-weight: 600; margin-left: 4px; }
@@ -714,14 +715,17 @@
             const marquee = document.getElementById('marquee-content');
             if (!marquee) return;
             const colors = ['neon-cyan', 'neon-purple', 'neon-pink'];
-            const normalAmounts = ['50', '70', '100', '150', '200', '350', '500'];
             const users = ['@crypto_***', '@homa***', '@den***', '@star***', '@user_99***', '@alex***'];
             let html = '';
-            for(let i = 0; i < 20; i++) {
+            for(let i = 0; i < 30; i++) {
                 let color = colors[Math.floor(Math.random() * colors.length)];
-                let amt = normalAmounts[Math.floor(Math.random() * normalAmounts.length)];
+                let rand = Math.random();
+                let amt = '10';
+                if (rand < 0.5) amt = ['10', '20'][Math.floor(Math.random() * 2)];
+                else if (rand < 0.85) amt = ['50', '70'][Math.floor(Math.random() * 2)];
+                else if (rand < 0.98) amt = ['200', '300', '500'][Math.floor(Math.random() * 3)];
+                else amt = '1 000';
                 let user = users[Math.floor(Math.random() * users.length)];
-                if(i === 7 || i === 16) amt = '1 000';
                 html += `<div class="live-pill ${color}">⭐ ${amt} <span style="display:none;">${user}</span></div>`; 
             }
             marquee.innerHTML = html + html;
