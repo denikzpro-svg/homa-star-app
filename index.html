@@ -222,7 +222,7 @@
         .screen::-webkit-scrollbar { display: none; }
         .screen.active { display: flex; }
 
-        /* --- СТОПКА КАРТОЧЕК С ТЁМНЫМИ ОТТЕНКАМИ И КНОПКОЙ НАВЕРХУ --- */
+        /* --- МАССИВНАЯ СТОПКА КАРТОЧЕК (С НОВЫМИ ДЕТАЛЯМИ И АНИМАЦИЕЙ) --- */
         .cards-stack {
             display: flex;
             flex-direction: column;
@@ -230,93 +230,150 @@
             padding-bottom: 20px;
         }
 
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .premium-card {
-            height: 125px; /* Уменьшили высоту, так как низ скрыт */
-            border-radius: 20px;
+            height: 160px; /* Увеличили размер рамки! Было 125px */
+            border-radius: 24px;
             position: relative;
-            margin-top: -45px; /* Эффект наложения */
-            box-shadow: 0 -12px 25px rgba(0,0,0,0.6); /* Мощная верхняя тень для разделения слоев */
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: -65px; /* Увеличили нахлест, чтобы держать форму стопки */
+            box-shadow: 0 -15px 30px rgba(0,0,0,0.7); /* Тень мощнее */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            padding: 16px 20px;
+            padding: 24px 20px; /* Больше воздуха внутри */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.05);
-            border-top: 1px solid rgba(255,255,255,0.15); /* Яркая верхняя грань */
+            border-top: 1px solid rgba(255,255,255,0.15);
+            overflow: hidden; /* Чтобы блики и водяные знаки не вылезали за края */
+            
+            /* Анимация плавного появления при входе */
+            animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
         }
 
-        .premium-card:first-child { 
-            margin-top: 0; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
-        }
+        /* Задержка появления для эффекта раскрытия колоды */
+        .cards-stack .premium-card:nth-child(1) { animation-delay: 0.05s; margin-top: 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        .cards-stack .premium-card:nth-child(2) { animation-delay: 0.15s; }
+        .cards-stack .premium-card:nth-child(3) { animation-delay: 0.25s; }
+        .cards-stack .premium-card:nth-child(4) { animation-delay: 0.35s; }
+        .cards-stack .premium-card:nth-child(5) { animation-delay: 0.45s; }
 
         .premium-card:active {
-            transform: scale(0.98);
+            transform: translateY(-10px) scale(0.98);
         }
 
-        /* Тёмные благородные оттенки для каждой карточки */
+        /* --- ДЕТАЛИ: ВОДЯНЫЕ ЗНАКИ --- */
+        .p-card-bg-icon {
+            position: absolute;
+            right: -10px;
+            top: 20px;
+            font-size: 110px; /* Огромная иконка на фоне */
+            opacity: 0.04;    /* Почти невидимая */
+            transform: rotate(15deg);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(2px);
+        }
+
+        /* --- ДЕТАЛИ: АНИМАЦИЯ БЛИКА --- */
+        .p-card-shine {
+            position: absolute;
+            top: 0; left: -150%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: skewX(-25deg);
+            animation: shinePass 7s infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes shinePass {
+            0% { left: -150%; }
+            15% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        /* --- ТЁМНЫЕ БЛАГОРОДНЫЕ ОТТЕНКИ + ГЕОМЕТРИЧЕСКАЯ СЕТКА --- */
         .tier-free-dark { 
-            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.15)); 
+            background: 
+                linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)),
+                repeating-linear-gradient(45deg, rgba(0, 243, 255, 0.02) 0px, rgba(0, 243, 255, 0.02) 1px, transparent 1px, transparent 12px);
             border-top-color: var(--neon-cyan); 
         }
         .tier-common-dark { 
-            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.2)); 
+            background: 
+                linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)),
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 12px);
             border-top-color: #8B9BB4; 
         }
         .tier-silver-dark { 
-            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.15)); 
+            background: 
+                linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)),
+                repeating-linear-gradient(-45deg, rgba(226, 232, 240, 0.02) 0px, rgba(226, 232, 240, 0.02) 1px, transparent 1px, transparent 12px);
             border-top-color: #E2E8F0; 
         }
         .tier-gold-dark { 
-            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.12)); 
+            background: 
+                linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)),
+                repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 12px);
             border-top-color: var(--accent-gold); 
         }
         .tier-diamond-dark { 
-            background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.2)); 
+            background: 
+                linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)),
+                repeating-radial-gradient(circle at 0 0, transparent 0, rgba(168, 85, 247, 0.03) 10px, transparent 20px);
             border-top-color: var(--neon-purple); 
         }
 
-        /* Расположение элементов внутри: Кнопка справа сверху */
-        .p-card-top {
+        /* --- ВНУТРЕННИЙ КОНТЕНТ КАРТОЧКИ --- */
+        .p-card-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start; /* Поднимает элементы наверх */
+            position: relative;
+            z-index: 2; /* Поверх водяного знака */
+            height: 100%;
         }
 
         .p-card-title-area h3 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
             color: #FFF;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
+            gap: 10px;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
 
         .t-icon {
-            font-size: 18px;
+            font-size: 20px;
             filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
         }
 
         .p-card-title-area p {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-sub);
             font-weight: 600;
-            padding-left: 26px; /* Выравнивание под текст заголовка */
+            padding-left: 30px; 
         }
 
-        /* Яркие кнопки справа */
+        /* Кнопки теперь висят выше и правее */
         .w-card-btn {
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border-radius: 14px;
             font-weight: 900;
             font-size: 12px;
             letter-spacing: 0.5px;
             border: none;
             color: #000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             text-transform: uppercase;
+            margin-top: 4px; /* Лёгкая корректировка по высоте */
+            cursor: pointer;
         }
 
         .btn-free { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan-glow); }
@@ -335,7 +392,6 @@
         .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; position: relative; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
         #wheel-canvas { width: 300px; height: 300px; transition: transform 5s cubic-bezier(0.2, 0.8, 0.1, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
         
-        /* КНОПКА ПОД КОЛЕСОМ СТАЛА "ИГРАТЬ" */
         .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 20px var(--neon-cyan-glow), inset 0 0 10px var(--neon-cyan-glow); cursor: pointer; transition: all 0.2s; margin-top: 20px; backdrop-filter: blur(10px); }
         .btn-spin:active { transform: scale(0.96); box-shadow: 0 0 30px var(--neon-cyan-glow), inset 0 0 20px var(--neon-cyan-glow); }
         .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); box-shadow: none; cursor: not-allowed; }
@@ -401,12 +457,14 @@
             
             <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Разделы:</h2>
 
-            <!-- СТОПКА ГЛАВНЫХ РАЗДЕЛОВ -->
+            <!-- СТОПКА ГЛАВНЫХ РАЗДЕЛОВ (УВЕЛИЧЕННАЯ) -->
             <div class="cards-stack">
                 
                 <!-- БЕСПЛАТНОЕ КОЛЕСО -->
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">🎁</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3>
                             <p>1 раз в 24 часа — бесплатно!</p>
@@ -417,7 +475,9 @@
 
                 <!-- ВХОД В СПИСОК КОЛЁС -->
                 <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">🎡</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎡</span> Колёса</h3>
                             <p>4 вида: Обычное, Серебряное...</p>
@@ -428,7 +488,9 @@
 
                 <!-- БИЛЕТЫ (РОЗЫГРЫШ) -->
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">🎟️</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎟️</span> Розыгрыш</h3>
                             <p>Главный приз: 1000 STARS</p>
@@ -444,11 +506,13 @@
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Колёса:</h2>
 
-            <!-- СТОПКА КОЛЁС -->
+            <!-- СТОПКА КОЛЁС (УВЕЛИЧЕННАЯ) -->
             <div class="cards-stack">
                 <!-- ОБЫЧНОЕ КОЛЕСО -->
                 <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">⚡</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">⚡</span> Обычное Колесо</h3>
                             <p>Цена: 20 Stars</p>
@@ -459,7 +523,9 @@
 
                 <!-- СЕРЕБРЯНОЕ КОЛЕСО -->
                 <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">🛡️</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🛡️</span> Серебряное Колесо</h3>
                             <p>Цена: 50 Stars</p>
@@ -470,7 +536,9 @@
 
                 <!-- ЗОЛОТОЕ КОЛЕСО -->
                 <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">👑</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">👑</span> Золотое Колесо</h3>
                             <p>Цена: 100 Stars</p>
@@ -481,7 +549,9 @@
 
                 <!-- АЛМАЗНОЕ КОЛЕСО -->
                 <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
-                    <div class="p-card-top">
+                    <div class="p-card-bg-icon">💎</div>
+                    <div class="p-card-shine"></div>
+                    <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">💎</span> Алмазное Колесо</h3>
                             <p>Цена: 250 Stars</p>
