@@ -59,10 +59,10 @@
             justify-content: space-between; padding: 16px; position: relative; z-index: 2;
         }
 
-        /* --- ПЕРЕЛИВАЮЩИЙСЯ ЛОГОТИП (ЦЕНТР) --- */
-        .header { display: flex; justify-content: center; align-items: center; padding: 10px 0 16px 0; z-index: 10; position: relative; }
+        /* --- СТЕКЛЯННАЯ ШАПКА --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 16px 0; z-index: 10; position: relative; }
         .logo { 
-            font-weight: 900; font-size: 24px; letter-spacing: 3px; 
+            font-weight: 900; font-size: 20px; letter-spacing: 2px; 
             background: linear-gradient(90deg, #FFFFFF, var(--neon-cyan), #FFFFFF, var(--neon-purple), #FFFFFF);
             background-size: 300% 100%;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
@@ -71,23 +71,10 @@
         }
         @keyframes gradientText { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- КОМПАКТНЫЙ БЛОК БАЛАНСА И КНОПОК --- */
-        .main-balance-wrapper {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 16px;
-            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;
-        }
-        
-        .m-bal-left { display: flex; flex-direction: column; align-items: flex-start; }
-        .m-bal-left .b-title { font-size: 10px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .m-bal-left .b-amount { font-size: 20px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
-        
-        .m-bal-buttons { display: flex; gap: 8px; }
-        .m-bal-btn { padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 11px; cursor: pointer; border: none; transition: 0.2s; letter-spacing: 0.5px; }
-        .m-bal-btn:active { transform: scale(0.96); }
-        .btn-main-dep { background: var(--neon-cyan); color: #000; box-shadow: 0 0 10px var(--neon-cyan-glow); }
-        .btn-main-wit { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #FFF; }
+        .balance-group { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 8px 6px 16px; border-radius: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+        .balance-value { font-size: 15px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold-glow); letter-spacing: 0.5px; }
+        .btn-bal-action { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--neon-cyan); font-size: 14px; font-weight: 900; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+        .btn-bal-action.pay { background: var(--neon-cyan); color: #000; border: none; box-shadow: 0 0 15px var(--neon-cyan-glow); }
 
         /* --- ВСТРОЕННАЯ МЕДЛЕННАЯ LIVE-ЛЕНТА --- */
         .live-bar-embedded { width: 100%; display: flex; align-items: center; margin-bottom: 12px; height: 50px; overflow: hidden; position: relative; z-index: 10; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
@@ -241,19 +228,12 @@
         <!-- СТЕКЛЯННАЯ ШАПКА -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
+            <div class="balance-group">
+                <span id="user-balance-text" class="balance-value">0 ⭐</span>
+                <button class="btn-bal-action pay" onclick="openModal('modal-deposit')">+</button>
+                <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
+            </div>
         </header>
-
-        <!-- КОМПАКТНАЯ КАРТОЧКА БАЛАНСА -->
-        <div class="main-balance-wrapper">
-            <div class="m-bal-left">
-                <div class="b-title">Баланс</div>
-                <div class="b-amount" id="user-balance-text">0 ⭐</div>
-            </div>
-            <div class="m-bal-buttons">
-                <button class="m-bal-btn btn-main-dep" onclick="openModal('modal-deposit')">ПОПОЛНИТЬ</button>
-                <button class="m-bal-btn btn-main-wit" onclick="openModal('modal-withdraw')">ВЫВЕСТИ</button>
-            </div>
-        </div>
 
         <!-- ПЛАВНАЯ НЕОНОВАЯ LIVE-ЛЕНТА -->
         <div class="live-bar-embedded">
@@ -332,6 +312,7 @@
             <!-- ИГРОВАЯ АРЕНА (ДИНАМИЧЕСКИЙ ГРАДИЕНТ) -->
             <div class="battle-arena" id="battle-arena-bg">
                 <div class="battle-timer">16</div>
+                <!-- Аватарки рисуются поверх цветных секторов -->
                 <div class="battle-avatar" style="top: 25%; left: 70%; border-color: var(--neon-cyan);">😎</div>
                 <div class="battle-avatar" style="top: 75%; left: 25%; border-color: var(--neon-pink);">😈</div>
                 <div class="battle-avatar" style="top: 60%; left: 80%; border-color: var(--accent-gold);">👾</div>
