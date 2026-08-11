@@ -59,13 +59,33 @@
             justify-content: space-between; padding: 16px; position: relative; z-index: 2;
         }
 
-        /* --- СТЕКЛЯННАЯ ШАПКА --- */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 12px 0; z-index: 10; position: relative; }
-        .logo { font-weight: 900; font-size: 20px; letter-spacing: 2px; background: linear-gradient(90deg, #FFFFFF, var(--text-sub)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .balance-group { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 8px 6px 16px; border-radius: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
-        .balance-value { font-size: 15px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold-glow); letter-spacing: 0.5px; }
-        .btn-bal-action { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--neon-cyan); font-size: 14px; font-weight: 900; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .btn-bal-action.pay { background: var(--neon-cyan); color: #000; border: none; box-shadow: 0 0 15px var(--neon-cyan-glow); }
+        /* --- ПЕРЕЛИВАЮЩИЙСЯ ЛОГОТИП (ЦЕНТР) --- */
+        .header { display: flex; justify-content: center; align-items: center; padding: 10px 0 16px 0; z-index: 10; position: relative; }
+        .logo { 
+            font-weight: 900; font-size: 24px; letter-spacing: 3px; 
+            background: linear-gradient(90deg, #FFFFFF, var(--neon-cyan), #FFFFFF, var(--neon-purple), #FFFFFF);
+            background-size: 300% 100%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            animation: gradientText 5s linear infinite;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1); 
+        }
+        @keyframes gradientText { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+        /* --- НОВЫЙ БЛОК БАЛАНСА И КНОПОК --- */
+        .main-balance-wrapper {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 20px; text-align: center; margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden;
+        }
+        .main-balance-wrapper .b-title { font-size: 12px; color: var(--text-sub); font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; }
+        .main-balance-wrapper .b-amount { font-size: 38px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 20px var(--accent-gold-glow); margin-bottom: 18px; }
+        
+        .m-bal-buttons { display: flex; gap: 12px; }
+        .m-bal-btn { flex: 1; padding: 14px 0; border-radius: 14px; font-weight: 900; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; letter-spacing: 0.5px; }
+        .m-bal-btn:active { transform: scale(0.96); }
+        .btn-main-dep { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan-glow); }
+        .btn-main-wit { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #FFF; }
 
         /* --- ВСТРОЕННАЯ МЕДЛЕННАЯ LIVE-ЛЕНТА --- */
         .live-bar-embedded { width: 100%; display: flex; align-items: center; margin-bottom: 12px; height: 50px; overflow: hidden; position: relative; z-index: 10; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
@@ -78,24 +98,23 @@
         .neon-pink { border-color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink-glow), inset 0 0 8px var(--neon-pink-glow); }
 
         /* --- СТЕКЛЯННЫЕ ЭКРАНЫ И ПЛАВНЫЕ ПЕРЕХОДЫ --- */
-        .screen {
-            display: none; flex-direction: column; flex: 1; overflow-y: auto; padding: 4px 0; z-index: 5; position: relative;
-        }
+        .screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding: 4px 0; z-index: 5; position: relative; }
         .screen::-webkit-scrollbar { display: none; }
         
-        /* Анимация плавного появления (Slide In & Fade) */
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .screen.active { 
-            display: flex; 
-            animation: fadeSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .screen.active { display: flex; animation: fadeSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
         /* --- СТОПКА КАРТОЧЕК --- */
         .cards-stack { display: flex; flex-direction: column; padding-top: 5px; padding-bottom: 20px; }
-        .premium-card { height: 160px; border-radius: 24px; position: relative; margin-top: -65px; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; padding: 24px 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.15); overflow: hidden; }
+        
+        .premium-card { 
+            height: 160px; border-radius: 24px; position: relative; margin-top: -65px; 
+            /* УСИЛЕННЫЕ ГРАНИ И ТЕНИ */
+            border: 1px solid rgba(255,255,255,0.05); border-top: 2px solid rgba(255,255,255,0.15); 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; padding: 24px 20px; 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); overflow: hidden; 
+        }
+        
         .premium-card:first-child { margin-top: 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
         .premium-card:active { transform: translateY(-10px) scale(0.98); }
         
@@ -106,12 +125,38 @@
         .p-card-title-area p { font-size: 13px; color: var(--text-sub); font-weight: 600; padding-left: 30px; }
         .w-card-btn { padding: 10px 20px; border-radius: 14px; font-weight: 900; font-size: 12px; letter-spacing: 0.5px; border: none; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-transform: uppercase; margin-top: 4px; cursor: pointer; }
 
-        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)), repeating-linear-gradient(45deg, rgba(0, 243, 255, 0.02) 0px, rgba(0, 243, 255, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--neon-cyan); }
-        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)), repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 12px); border-top-color: #8B9BB4; }
-        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)), repeating-linear-gradient(-45deg, rgba(226, 232, 240, 0.02) 0px, rgba(226, 232, 240, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: #E2E8F0; }
-        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)), repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--accent-gold); }
-        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)), repeating-radial-gradient(circle at 0 0, transparent 0, rgba(168, 85, 247, 0.03) 10px, transparent 20px); border-top-color: var(--neon-purple); }
-        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)), repeating-linear-gradient(90deg, rgba(255, 46, 147, 0.02) 0px, rgba(255, 46, 147, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--neon-pink); }
+        /* --- АНИМАЦИЯ БЕГУЩЕГО БЛИКА --- */
+        .p-card-shine {
+            position: absolute; top: 0; left: -100%; width: 40%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent);
+            transform: skewX(-30deg); animation: shinePass 6s infinite ease-in-out; z-index: 1; pointer-events: none;
+        }
+        @keyframes shinePass { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        /* Задержки для бликов, чтобы карточки мерцали по очереди */
+        .cards-stack .premium-card:nth-child(1) .p-card-shine { animation-delay: 0s; }
+        .cards-stack .premium-card:nth-child(2) .p-card-shine { animation-delay: 1.2s; }
+        .cards-stack .premium-card:nth-child(3) .p-card-shine { animation-delay: 2.4s; }
+        .cards-stack .premium-card:nth-child(4) .p-card-shine { animation-delay: 3.6s; }
+
+        /* --- ЯРКИЕ ВЕРХНИЕ ГРАНИ (INNER GLOW) --- */
+        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)), repeating-linear-gradient(45deg, rgba(0, 243, 255, 0.02) 0px, rgba(0, 243, 255, 0.02) 1px, transparent 1px, transparent 12px); 
+            border-top-color: var(--neon-cyan); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-cyan-glow); }
+        
+        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)), repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 12px); 
+            border-top-color: #8B9BB4; box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px rgba(139,155,180,0.3); }
+        
+        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)), repeating-linear-gradient(-45deg, rgba(226, 232, 240, 0.02) 0px, rgba(226, 232, 240, 0.02) 1px, transparent 1px, transparent 12px); 
+            border-top-color: #E2E8F0; box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px rgba(226,232,240,0.4); }
+        
+        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)), repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 12px); 
+            border-top-color: var(--accent-gold); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--accent-gold-glow); }
+        
+        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)), repeating-radial-gradient(circle at 0 0, transparent 0, rgba(168, 85, 247, 0.03) 10px, transparent 20px); 
+            border-top-color: var(--neon-purple); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-purple-glow); }
+        
+        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)), repeating-linear-gradient(90deg, rgba(255, 46, 147, 0.02) 0px, rgba(255, 46, 147, 0.02) 1px, transparent 1px, transparent 12px); 
+            border-top-color: var(--neon-pink); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-pink-glow); }
 
         .btn-free { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan-glow); }
         .btn-common { background: #8B9BB4; color: #FFF; }
@@ -122,34 +167,10 @@
 
         /* --- PVP BATTLE СТИЛИ --- */
         .battle-header-info { display: flex; justify-content: center; align-items: center; background: var(--glass-bg); padding: 12px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 16px; font-weight: 800; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
-        .battle-arena {
-            width: 100%; aspect-ratio: 1 / 1; border-radius: 32px; position: relative; overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.8); margin-bottom: 16px;
-            /* Динамический фон через JS, пока заглушка */
-            background: conic-gradient(from 0deg, var(--neon-pink) 0 35%, var(--neon-cyan) 35% 70%, var(--accent-gold) 70% 85%, var(--neon-purple) 85% 100%);
-            border: 2px solid rgba(255,255,255,0.05);
-        }
-        
-        /* Затемняем арену, чтобы не выжигало глаза, оставляем только неоновый цвет */
-        .battle-arena::after {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(10, 15, 30, 0.4); backdrop-filter: blur(2px); pointer-events: none;
-        }
-
-        .battle-timer {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(12, 16, 28, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);
-            width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center;
-            font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 10;
-        }
-
-        /* Аватарки на арене */
-        .battle-avatar {
-            position: absolute; width: 44px; height: 44px; border-radius: 50%; background: #1A2235;
-            border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; font-size: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 5; transform: translate(-50%, -50%);
-        }
+        .battle-arena { width: 100%; aspect-ratio: 1 / 1; border-radius: 32px; position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.8); margin-bottom: 16px; background: conic-gradient(from 0deg, var(--neon-pink) 0 35%, var(--neon-cyan) 35% 70%, var(--accent-gold) 70% 85%, var(--neon-purple) 85% 100%); border: 2px solid rgba(255,255,255,0.05); }
+        .battle-arena::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10, 15, 30, 0.4); backdrop-filter: blur(2px); pointer-events: none; }
+        .battle-timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(12, 16, 28, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 10; }
+        .battle-avatar { position: absolute; width: 44px; height: 44px; border-radius: 50%; background: #1A2235; border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 5; transform: translate(-50%, -50%); }
 
         .battle-players-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
         .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--glass-border); }
@@ -220,12 +241,17 @@
         <!-- СТЕКЛЯННАЯ ШАПКА -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
-            <div class="balance-group">
-                <span id="user-balance-text" class="balance-value">0 ⭐</span>
-                <button class="btn-bal-action pay" onclick="openModal('modal-deposit')">+</button>
-                <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
-            </div>
         </header>
+
+        <!-- ОТДЕЛЬНАЯ КАРТОЧКА БАЛАНСА -->
+        <div class="main-balance-wrapper">
+            <div class="b-title">Твой баланс</div>
+            <div class="b-amount" id="user-balance-text">0 ⭐</div>
+            <div class="m-bal-buttons">
+                <button class="m-bal-btn btn-main-dep" onclick="openModal('modal-deposit')">ПОПОЛНИТЬ</button>
+                <button class="m-bal-btn btn-main-wit" onclick="openModal('modal-withdraw')">ВЫВЕСТИ</button>
+            </div>
+        </div>
 
         <!-- ПЛАВНАЯ НЕОНОВАЯ LIVE-ЛЕНТА -->
         <div class="live-bar-embedded">
@@ -242,6 +268,7 @@
                 <!-- БЕСПЛАТНОЕ КОЛЕСО -->
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
                     <div class="p-card-bg-icon">🎁</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3>
@@ -254,6 +281,7 @@
                 <!-- ВХОД В СПИСОК КОЛЁС -->
                 <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
                     <div class="p-card-bg-icon">🎡</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎡</span> Колёса</h3>
@@ -266,6 +294,7 @@
                 <!-- НОВЫЙ РЕЖИМ: АРЕНА (ПИНГ ПОНГ) -->
                 <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
                     <div class="p-card-bg-icon">🏓</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🏓</span> Арена</h3>
@@ -278,6 +307,7 @@
                 <!-- БИЛЕТЫ (РОЗЫГРЫШ) -->
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
                     <div class="p-card-bg-icon">🎟️</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area">
                             <h3><span class="t-icon">🎟️</span> Розыгрыш</h3>
@@ -300,7 +330,6 @@
             <!-- ИГРОВАЯ АРЕНА (ДИНАМИЧЕСКИЙ ГРАДИЕНТ) -->
             <div class="battle-arena" id="battle-arena-bg">
                 <div class="battle-timer">16</div>
-                <!-- Аватарки рисуются поверх цветных секторов -->
                 <div class="battle-avatar" style="top: 25%; left: 70%; border-color: var(--neon-cyan);">😎</div>
                 <div class="battle-avatar" style="top: 75%; left: 25%; border-color: var(--neon-pink);">😈</div>
                 <div class="battle-avatar" style="top: 60%; left: 80%; border-color: var(--accent-gold);">👾</div>
@@ -347,6 +376,7 @@
             <div class="cards-stack">
                 <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
                     <div class="p-card-bg-icon">⚡</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">⚡</span> Обычное Колесо</h3><p>Цена: 20 Stars</p></div>
                         <button class="w-card-btn btn-common">ИГРАТЬ</button>
@@ -354,6 +384,7 @@
                 </div>
                 <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
                     <div class="p-card-bg-icon">🛡️</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🛡️</span> Серебряное Колесо</h3><p>Цена: 50 Stars</p></div>
                         <button class="w-card-btn btn-silver">ИГРАТЬ</button>
@@ -361,6 +392,7 @@
                 </div>
                 <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
                     <div class="p-card-bg-icon">👑</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">👑</span> Золотое Колесо</h3><p>Цена: 100 Stars</p></div>
                         <button class="w-card-btn btn-gold">ИГРАТЬ</button>
@@ -368,6 +400,7 @@
                 </div>
                 <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
                     <div class="p-card-bg-icon">💎</div>
+                    <div class="p-card-shine"></div>
                     <div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">💎</span> Алмазное Колесо</h3><p>Цена: 250 Stars</p></div>
                         <button class="w-card-btn btn-diamond">ИГРАТЬ</button>
