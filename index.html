@@ -34,6 +34,12 @@
         /* АНИМАЦИИ ФОНА */
         .bg-animated-nebula { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; background: radial-gradient(circle at 15% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 40%); animation: nebulaPulse 15s ease-in-out infinite alternate; }
         @keyframes nebulaPulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
+        .floating-particles-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
+        .particle { position: absolute; opacity: 0.4; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); animation: floatAround 20s infinite linear; }
+        .particle.p1 { top: 10%; left: 15%; font-size: 14px; animation-duration: 25s; }
+        .particle.p2 { top: 60%; left: 85%; font-size: 10px; animation-duration: 18s; animation-delay: -5s; }
+        .particle.p3 { top: 35%; left: 80%; font-size: 16px; animation-duration: 30s; animation-delay: -10s; }
+        @keyframes floatAround { 0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; } 50% { transform: translateY(-40px) rotate(180deg); opacity: 0.6; } 100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; } }
 
         /* ШАПКА */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 16px 0; z-index: 10; position: relative; }
@@ -67,9 +73,24 @@
         .p-card-title-area p { font-size: 13px; color: var(--text-sub); font-weight: 600; padding-left: 30px; }
         .w-card-btn { padding: 10px 20px; border-radius: 14px; font-weight: 900; font-size: 12px; border: none; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-top: 4px; cursor: pointer; }
 
-        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)); border-top-color: var(--neon-cyan); }
-        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)); border-top-color: var(--neon-pink); }
-        .btn-free { background: var(--neon-cyan); } .btn-battle { background: var(--neon-pink); color: #FFF; }
+        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)); border-top-color: var(--neon-cyan); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-cyan-glow); }
+        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)); border-top-color: #8B9BB4; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)); border-top-color: #E2E8F0; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)); border-top-color: var(--accent-gold); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)); border-top-color: var(--neon-purple); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)); border-top-color: var(--neon-pink); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+
+        .btn-free { background: var(--neon-cyan); } .btn-common { background: #8B9BB4; color: #FFF; } .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); } .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; } .btn-battle { background: var(--neon-pink); color: #FFF; }
+
+        /* КОЛЕСО CANVAS */
+        .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 13px; padding: 8px 16px; border-radius: 14px; cursor: pointer; align-self: flex-start; margin-bottom: 10px; }
+        .timer-banner { background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--accent-gold); padding: 10px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 800; margin-bottom: 10px; display: none; }
+        .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
+        .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); }
+        .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
+        #wheel-canvas { width: 300px; height: 300px; transition: transform 10s cubic-bezier(0.4, 0.0, 0.1, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; }
+        .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); pointer-events: none; }
 
         /* =========================================
            АРЕНА (CANVAS + ПИНГ ПОНГ)
@@ -82,10 +103,7 @@
             background: #0B0E17; border: 2px solid var(--glass-border); overflow: hidden;
         }
 
-        /* Сам Canvas (доска + шарик) */
         #arena-canvas { width: 100%; height: 100%; display: block; }
-
-        /* Контейнер для DOM-аватарок поверх Canvas */
         #arena-avatars-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         .board-avatar {
             position: absolute; width: 44px; height: 44px; border-radius: 50%; 
@@ -95,7 +113,6 @@
             transition: all 0.5s ease;
         }
 
-        /* Таймер в центре */
         .board-timer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80px; height: 80px; background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(5px); 
@@ -103,7 +120,6 @@
             align-items: center; font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
         }
 
-        /* Окно результата */
         .board-overlay-result {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 20;
@@ -112,7 +128,6 @@
         }
         @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* Кнопка реакций на поле */
         .arena-reaction-btn {
             position: absolute; bottom: 10px; right: 10px; width: 44px; height: 44px;
             background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
@@ -121,7 +136,6 @@
         }
         .arena-reaction-btn:active { transform: scale(0.9); }
         
-        /* Панель выбора реакций */
         .reaction-picker {
             position: absolute; bottom: 60px; right: 10px; display: none; gap: 8px;
             background: rgba(10, 15, 30, 0.9); padding: 8px; border-radius: 20px;
@@ -132,7 +146,6 @@
         .emoji-option { font-size: 24px; cursor: pointer; transition: 0.2s; }
         .emoji-option:active { transform: scale(1.3); }
 
-        /* Анимация летящих эмодзи */
         .flying-emoji {
             position: absolute; font-size: 24px; pointer-events: none; z-index: 25;
             animation: flyUpAndFade 2s ease-out forwards;
@@ -143,7 +156,6 @@
             100% { opacity: 0; transform: translate(-50%, -200%) scale(1); }
         }
 
-        /* Список игроков */
         .b-players-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; max-height: 140px; overflow-y: auto; padding-right: 5px; }
         .b-players-list::-webkit-scrollbar { width: 4px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
@@ -152,7 +164,6 @@
         .b-player-info h4 { font-size: 13px; font-weight: 800; margin-bottom: 2px; display:flex; align-items:center; gap:6px; }
         .b-player-bet { font-size: 14px; font-weight: 900; color: var(--accent-gold); }
 
-        /* КАСТОМНАЯ СТАВКА (Нижняя панель) */
         .b-bet-controls { display: flex; gap: 8px; margin-bottom: 8px; }
         .b-quick-btn { flex: 1; padding: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 14px; color: #FFF; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 13px; }
         
@@ -168,16 +179,44 @@
         }
         .custom-bet-submit.disabled { background: var(--glass-bg); color: var(--text-sub); box-shadow: none; pointer-events: none; border: 1px solid var(--glass-border); }
 
+        /* ОСТАЛЬНЫЕ ВКЛАДКИ (ПОДИУМ, РЕФЕРАЛКИ, НАСТРОЙКИ) */
+        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 30px; }
+        .podium-step { display: flex; flex-direction: column; align-items: center; background: var(--glass-bg); border-radius: 20px 20px 8px 8px; border: 1px solid var(--glass-border); padding: 12px 6px; width: 30%; text-align: center; position: relative; }
+        .podium-1 { height: 150px; border-color: var(--accent-gold); z-index: 2; transform: translateY(-15px); }
+        .podium-2 { height: 120px; border-color: #C0C0C0; }
+        .podium-3 { height: 100px; border-color: #CD7F32; }
+        .p-ava { font-size: 32px; margin-bottom: 10px; } .podium-1 .p-ava { font-size: 44px; margin-top: -35px; }
+        .p-crown { position: absolute; top: -50px; font-size: 32px; filter: drop-shadow(0 0 15px var(--accent-gold)); }
+        .p-name { font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; width: 100%; white-space: nowrap; }
+        .p-score { font-size: 13px; font-weight: 900; color: var(--accent-gold); }
+
+        .card-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 10px; }
+        .ref-box input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 14px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; outline: none; }
+        .ref-box button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; }
+        .toggle-switch { width: 50px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
+        .toggle-switch.active { background: var(--neon-cyan); }
+        .toggle-circle { width: 24px; height: 24px; background: #FFF; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
+        .toggle-switch.active .toggle-circle { left: 24px; }
+
         /* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
         .bottom-nav { display: flex; justify-content: space-between; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 28px; position: relative; z-index: 10; margin-top: auto; }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 20px; color: var(--text-sub); opacity: 0.5; cursor: pointer; flex: 1; }
         .nav-label { font-size: 10px; font-weight: 800; }
         .nav-item.active { opacity: 1; color: var(--neon-cyan); transform: translateY(-4px); }
+
+        /* МОДАЛКИ */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); z-index: 999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        .modal-card { background: rgba(15, 20, 35, 0.95); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; }
+        .btn-close-modal { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .input-stars { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); color: var(--accent-gold); padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 900; text-align: center; outline: none; }
+        .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; }
     </style>
 </head>
 <body class="theme-night">
 
     <div class="bg-animated-nebula"></div>
+    <div class="floating-particles-container"><div class="particle p1">✨</div><div class="particle p2">✦</div><div class="particle p3">✨</div></div>
 
     <div class="app-container">
         <!-- ШАПКА -->
@@ -185,46 +224,91 @@
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
                 <span id="user-balance-text" class="balance-value">0 ⭐</span>
-                <button class="btn-bal-action pay" onclick="alert('Пополнение в демо отключено')">+</button>
-                <button class="btn-bal-action" onclick="alert('Вывод в демо отключен')">-</button>
+                <button class="btn-bal-action pay" onclick="openModal('modal-deposit')">+</button>
+                <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
             </div>
         </header>
 
-        <!-- ХАБ И ДРУГИЕ ОКНА СКРЫТЫ ДЛЯ ФОКУСА НА АРЕНЕ (Демо) -->
-        <div id="screen-hub" class="screen">
+        <!-- ЛЕНТА -->
+        <div class="live-bar-embedded"><div class="live-marquee-content" id="marquee-content"></div></div>
+
+        <!-- 1. ГЛАВНЫЙ ЭКРАН ХАБ -->
+        <div id="screen-hub" class="screen active">
             <h2 style="font-size: 18px; margin-bottom: 5px;">Разделы:</h2>
             <div class="cards-stack">
+                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
+                    <div class="p-card-bg-icon">🎁</div><div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p>1 раз в 24 часа — бесплатно!</p></div>
+                        <button class="w-card-btn btn-free">ИГРАТЬ</button>
+                    </div>
+                </div>
+                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
+                    <div class="p-card-bg-icon">🎡</div><div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> Колёса</h3><p>4 вида: Обычное, Серебряное...</p></div>
+                        <button class="w-card-btn btn-silver">ВЫБРАТЬ</button>
+                    </div>
+                </div>
                 <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
                     <div class="p-card-bg-icon">🏓</div><div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> Арена</h3><p>PVP Рулетка с игроками!</p></div>
                         <button class="w-card-btn btn-battle">ИГРАТЬ</button>
                     </div>
                 </div>
+                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
+                    <div class="p-card-bg-icon">🎟️</div><div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> Розыгрыш</h3><p>Главный приз: 1000 STARS</p></div>
+                        <button class="w-card-btn btn-diamond">БИЛЕТЫ</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ======================= -->
-        <!-- АРЕНА (ПИНГ-ПОНГ НА CANVAS) -->
-        <!-- ======================= -->
-        <div id="screen-battle" class="screen active">
+        <!-- 2. СПИСОК ПЛАТНЫХ КОЛЁС -->
+        <div id="screen-wheel-list" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
+            <div class="cards-stack">
+                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>⚡ Обычное</h3><p>Цена: 20 Stars</p></div><button class="w-card-btn btn-common">ИГРАТЬ</button></div>
+                </div>
+                <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>🛡️ Серебряное</h3><p>Цена: 50 Stars</p></div><button class="w-card-btn btn-silver">ИГРАТЬ</button></div>
+                </div>
+                <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>👑 Золотое</h3><p>Цена: 100 Stars</p></div><button class="w-card-btn btn-gold">ИГРАТЬ</button></div>
+                </div>
+                <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>💎 Алмазное</h3><p>Цена: 250 Stars</p></div><button class="w-card-btn btn-diamond">ИГРАТЬ</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ЭКРАН ИГРЫ (КОЛЕСО) -->
+        <div id="screen-game-wheel" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel">◄ Назад</button>
+            <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
+            <div id="timer-banner" class="timer-banner">⏱ Доступно через: <span id="timer-countdown">23:59:59</span></div>
+            <div class="wheel-section">
+                <div class="arrow-pointer"></div>
+                <div class="wheel-outer-rim"><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
+            </div>
+            <button id="btn-spin-action" class="btn-spin">ИГРАТЬ</button>
+        </div>
+
+        <!-- 4. АРЕНА (ПИНГ-ПОНГ НА CANVAS) -->
+        <div id="screen-battle" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="battle-header-info">
                 <span style="color: var(--text-sub); font-size:14px;">Общий Банк:</span>
                 <span id="arena-total-bank" style="color: var(--accent-gold); font-size: 18px;">⭐ 0</span>
             </div>
             
             <div class="arena-wrapper" id="arena-wrapper">
-                <!-- CANVAS ДЛЯ ИДЕАЛЬНЫХ ЛИНИЙ И ШАРИКА -->
                 <canvas id="arena-canvas" width="600" height="600"></canvas>
-                
-                <!-- СЛОЙ ДЛЯ АВАТАРОК И ЭМОДЗИ -->
                 <div id="arena-avatars-layer"></div>
-                
                 <div class="board-timer" id="arena-timer">20</div>
-                
-                <!-- АВТОМАТИЧЕСКОЕ ОКНО ПОБЕДЫ -->
                 <div class="board-overlay-result" id="arena-overlay"></div>
 
-                <!-- КНОПКА ЭМОЦИЙ -->
                 <div class="arena-reaction-btn" onclick="toggleReactionPicker()">💬</div>
                 <div class="reaction-picker" id="reaction-picker">
                     <div class="emoji-option" onclick="sendReaction('🔥')">🔥</div>
@@ -237,7 +321,6 @@
             
             <div class="b-players-list" id="arena-players-list"></div>
 
-            <!-- БЫСТРЫЕ СТАВКИ -->
             <div class="b-bet-controls">
                 <button class="b-quick-btn" onclick="document.getElementById('arena-bet-input').value = 50">50</button>
                 <button class="b-quick-btn" onclick="document.getElementById('arena-bet-input').value = 100">100</button>
@@ -245,38 +328,166 @@
                 <button class="b-quick-btn" onclick="document.getElementById('arena-bet-input').value = Math.floor(userBalance)">MAX</button>
             </div>
             
-            <!-- КАСТОМНЫЙ ВВОД СТАВКИ -->
             <div class="custom-bet-row">
                 <input type="number" id="arena-bet-input" class="custom-bet-input" placeholder="Сумма ⭐">
                 <button class="custom-bet-submit" id="arena-action-btn" onclick="placeUserBet()">ПОСТАВИТЬ</button>
             </div>
         </div>
 
+        <!-- 5. БИЛЕТЫ -->
+        <div id="screen-tickets" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
+                <div style="font-size: 12px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin: 10px 0;">🏆 1000 STARS</div>
+                <div style="font-size: 13px; color: var(--neon-cyan);">⏱ Итоги через: 18ч 42мин</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 20px;">
+                <div>Билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b></div>
+                <div>Шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
+            </div>
+            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
+        </div>
+
+        <!-- 6. ЗАЛ СЛАВЫ -->
+        <div id="screen-leaders" class="screen">
+            <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px;">🏆 Зал Славы</h2>
+            <div class="podium-container">
+                <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">@0x_Shark</div><div class="p-score">12 400 ⭐</div></div>
+                <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">@Denya_Boss</div><div class="p-score">15 000 ⭐</div></div>
+                <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">@NeonHoma</div><div class="p-score">8 900 ⭐</div></div>
+            </div>
+        </div>
+
+        <!-- 7. ДРУЗЬЯ -->
+        <div id="screen-friends" class="screen">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">👥 Друзья</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--neon-cyan);">5%</b> от его пополнений!</p>
+            <div class="card-box ref-box">
+                <input type="text" id="ref-link-input" value="https://t.me/HomastarBot?start=ref_123" readonly>
+                <div style="display: flex; gap: 8px;"><button style="background:rgba(255,255,255,0.05); color:#FFF;" onclick="copyRefLink()">📋 Копия</button><button style="background:var(--neon-cyan); color:#000;" onclick="shareRefLink()">✈️ Шаре</button></div>
+            </div>
+        </div>
+
+        <!-- 8. ИНВЕНТАРЬ И НАСТРОЙКИ -->
+        <div id="screen-inventory" class="screen"><h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Инвентарь</h2><div class="card-box" style="text-align: center; color: var(--text-sub);">Пока здесь пусто. Выигрывай призы на колесе!</div></div>
+        <div id="screen-settings" class="screen">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size: 15px; font-weight: 700;">🎵 Музыка</div><div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div></div>
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div><div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div></div>
+        </div>
+
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
-            <button class="nav-item active"><span>🎮</span><span class="nav-label">Арена</span></button>
+            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label">Игры</span></button>
+            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label">Лидеры</span></button>
+            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label">Друзья</span></button>
+            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label">Инвентарь</span></button>
+            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label">Настройки</span></button>
         </nav>
     </div>
 
+    <!-- МОДАЛКИ ПОПОЛНЕНИЯ / ВЫВОДА / ПОБЕДЫ -->
+    <div id="modal-deposit" class="modal-overlay">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
+            <div class="package-grid"><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 50"><div style="font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 100"><div style="font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div></div>
+            <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Сумма ⭐">
+            <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
+        </div>
+    </div>
+    <div id="modal-withdraw" class="modal-overlay">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
+            <div style="font-size: 14px; color: var(--text-sub); text-align: center; margin-top:10px;">Доступно: <b id="withdraw-available-bal" style="color: var(--accent-gold);">0 ⭐</b></div>
+            <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма ⭐">
+            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="executeWithdraw()">ВЫВЕСТИ</button>
+        </div>
+    </div>
+    <div id="modal-win" class="modal-overlay">
+        <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
+            <div style="font-size: 70px;">🌟</div><h2 id="win-modal-title" style="font-size: 24px; font-weight: 900; color: #FFF;">ПОБЕДА!</h2>
+            <div id="win-modal-amount" style="font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">+50 ⭐</div>
+            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win')">ЗАБРАТЬ</button>
+        </div>
+    </div>
+
+    <!-- СКРИПТЫ -->
     <script>
-        // Базовый баланс для теста
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '2500');
+        let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
+        let timerInterval = null;
+        let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
         
         function updateBalanceDisplay() {
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
+            document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             localStorage.setItem('homastar_main_balance', userBalance.toString());
         }
-        updateBalanceDisplay();
+
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            let navTargetId = screenId;
+            if (['screen-game-wheel', 'screen-tickets', 'screen-wheel-list', 'screen-battle'].includes(screenId)) navTargetId = 'screen-hub';
+            const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
+            if (activeNavBtn) activeNavBtn.classList.add('active');
+            
+            if(screenId === 'screen-tickets') updateTicketUI();
+            if(screenId === 'screen-battle' && arenaState === 'STOPPED') startArenaRound();
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showWinPopup(amount, title="ПОБЕДА!") { 
+            document.getElementById('win-modal-title').innerText = title;
+            document.getElementById('win-modal-amount').innerText = amount; 
+            openModal('modal-win'); 
+        }
+
+        function executeDeposit() { 
+            const val = parseFloat(document.getElementById('custom-deposit-input').value); 
+            if (!val || val <= 0) return alert('Введи сумму!'); 
+            userBalance += val; updateBalanceDisplay(); closeModal('modal-deposit'); alert(`Успешно пополнено на ${val} ⭐`);
+        }
+        function executeWithdraw() { 
+            const val = parseFloat(document.getElementById('withdraw-amount-input').value); 
+            if (!val || val <= 0) return alert('Введи сумму!'); 
+            if (val > userBalance) return alert('Недостаточно баланса!'); 
+            userBalance -= val; updateBalanceDisplay(); closeModal('modal-withdraw'); alert('Заявка на вывод создана!'); 
+        }
+
+        // БИЛЕТЫ, ДРУЗЬЯ И НАСТРОЙКИ
+        function buyTicket() {
+            if (userBalance < 20) return openModal('modal-deposit');
+            userBalance -= 20; userTickets++; updateBalanceDisplay();
+            localStorage.setItem('homastar_tickets', userTickets.toString());
+            updateTicketUI();
+            alert('Билет успешно куплен!');
+        }
+        function updateTicketUI() {
+            document.getElementById('user-tickets-count').innerText = userTickets;
+            document.getElementById('user-win-chance').innerText = `${userTickets * 4.5 > 100 ? 100 : (userTickets * 4.5).toFixed(1)}%`;
+        }
+        function copyRefLink() { document.getElementById('ref-link-input').select(); document.execCommand('copy'); alert('Ссылка скопирована!'); }
+        function shareRefLink() { window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай ко мне!`, '_blank'); }
+        function toggleSetting(type) { 
+            settings[type] = !settings[type]; 
+            localStorage.setItem(`homastar_${type}`, settings[type]); 
+            const toggle = document.getElementById(`toggle-${type}`); 
+            if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active'); 
+        }
 
         // ==========================================
         // CANVAS АРЕНА (ДВИЖОК ПИНГ-ПОНГА)
         // ==========================================
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
-        const CANVAS_SIZE = 600; // Высокое разрешение для чёткости
+        const CANVAS_SIZE = 600; 
         const CENTER = CANVAS_SIZE / 2;
         
-        // База ботов
         const fakeBotNames = ['Max_99', 'Илья', 'Vityok', 'Artem', '@crypto_bull', 'Ton_Hunter', '0x_Whale', 'Ghost', 'Denys'];
         const arenaColors = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600'];
         const botEmojis = ['🔥', '👍', '😂', '🚀', '😭', '😎'];
@@ -285,10 +496,9 @@
         let arenaTimer = null;
         let arenaTimeLeft = 20;
         let arenaBank = 0;
-        let arenaState = 'STOPPED'; // WAITING, PLAYING, RESULT
+        let arenaState = 'STOPPED'; 
         let botCount = 0;
         
-        // Переменные физики шарика
         let animFrameId = null;
         let ballX = CENTER;
         let ballY = CENTER;
@@ -296,21 +506,15 @@
         let ballSpeedX = 0;
         let ballSpeedY = 0;
 
-        function openScreen(id) { document.getElementById(id).classList.add('active'); }
-
-        // Генерация бота с некруглыми ставками
         function generateBotPlayer() {
             const name = fakeBotNames[Math.floor(Math.random() * fakeBotNames.length)];
-            // Генерируем "кривые" ставки (например: 34, 86, 114, 255)
             const bet = Math.floor(Math.random() * 300) + 20; 
             const color = arenaColors[botCount % arenaColors.length]; 
             const imgId = Math.floor(Math.random() * 70) + 1;
             const avatarHtml = `<img src="https://i.pravatar.cc/100?img=${imgId}" style="width:100%; height:100%; object-fit:cover;">`;
-            
             return { id: 'bot_'+botCount, name, bet, color, avatarHtml, isUser: false };
         }
 
-        // 1. ЗАПУСК РАУНДА
         function startArenaRound() {
             arenaState = 'WAITING';
             arenaTimeLeft = 20;
@@ -328,23 +532,19 @@
             btn.classList.remove('disabled');
             btn.innerText = 'ПОСТАВИТЬ';
             
-            // Прячем шарик (отрисовываем пустое поле)
             ballX = CENTER; ballY = CENTER;
             drawCanvasFrame(); 
 
-            // Первый бот для затравки
             addBotToArena();
 
             arenaTimer = setInterval(() => {
                 arenaTimeLeft--;
                 document.getElementById('arena-timer').innerText = arenaTimeLeft;
                 
-                // Боты влетают рандомно (максимум 3)
                 if (botCount < 3 && arenaTimeLeft > 3 && Math.random() > 0.6) {
                     addBotToArena();
                 }
 
-                // Боты иногда кидают реакции
                 if (arenaPlayers.length > 0 && Math.random() > 0.7) {
                     let randomBot = arenaPlayers[Math.floor(Math.random() * arenaPlayers.length)];
                     if(!randomBot.isUser) {
@@ -369,7 +569,6 @@
             addPlayerToUI(bot);
         }
 
-        // Пользователь ставит кастомную сумму
         function placeUserBet() {
             if(arenaState !== 'WAITING') return;
             if (arenaPlayers.find(p => p.isUser)) return alert('Ты уже в игре!');
@@ -412,10 +611,9 @@
             list.prepend(row);
         }
 
-        // 2. ОТРИСОВКА ИДЕАЛЬНЫХ СЕКТОРОВ НА CANVAS
         function recalculateSectors() {
             if (arenaPlayers.length === 0) return;
-            let currentAngle = -Math.PI / 2; // Начинаем с 12 часов
+            let currentAngle = -Math.PI / 2; 
             
             const avatarsContainer = document.getElementById('arena-avatars-layer');
             avatarsContainer.innerHTML = ''; 
@@ -423,17 +621,15 @@
             arenaPlayers.forEach(p => {
                 let sliceAngle = (p.bet / arenaBank) * (2 * Math.PI);
                 
-                // Сохраняем математику для шарика
                 p.startRad = currentAngle;
                 p.endRad = currentAngle + sliceAngle;
                 p.midRad = currentAngle + (sliceAngle / 2);
                 
-                // Высчитываем координаты для аватарок (в процентах для DOM)
-                let radiusOffset = 32; // Отступ от центра
+                let radiusOffset = 32; 
                 let x = 50 + radiusOffset * Math.cos(p.midRad);
                 let y = 50 + radiusOffset * Math.sin(p.midRad);
                 
-                p.domX = x; p.domY = y; // Сохраняем для спавна эмодзи
+                p.domX = x; p.domY = y; 
 
                 let ava = document.createElement('div');
                 ava.className = 'board-avatar';
@@ -443,19 +639,17 @@
 
                 currentAngle += sliceAngle;
                 
-                // Обновляем проценты в UI
                 const percEl = document.getElementById(`ui-perc-${p.id}`);
                 if(percEl) percEl.innerText = `${((p.bet / arenaBank)*100).toFixed(1)}%`;
             });
 
             document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
-            drawCanvasFrame(); // Отрисовываем доску
+            drawCanvasFrame(); 
         }
 
         function drawCanvasFrame() {
             ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
             
-            // Отрисовка секторов (Pie Chart)
             if (arenaPlayers.length > 0) {
                 arenaPlayers.forEach(p => {
                     ctx.beginPath();
@@ -464,7 +658,6 @@
                     ctx.fillStyle = p.color;
                     ctx.fill();
                     
-                    // Белые неоновые разделители между секторами
                     ctx.beginPath();
                     ctx.moveTo(CENTER, CENTER);
                     ctx.lineTo(CENTER + Math.cos(p.endRad) * CENTER, CENTER + Math.sin(p.endRad) * CENTER);
@@ -477,7 +670,6 @@
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
             }
 
-            // Отрисовка шарика (только если играем)
             if (arenaState === 'PLAYING') {
                 ctx.beginPath();
                 ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
@@ -485,19 +677,17 @@
                 ctx.shadowColor = '#00F3FF';
                 ctx.shadowBlur = 20;
                 ctx.fill();
-                ctx.shadowBlur = 0; // Сброс теней
+                ctx.shadowBlur = 0; 
             }
         }
 
-        // 3. ФИЗИКА ШАРИКА (ПИНГ-ПОНГ)
         function endBettingPhase() {
             arenaState = 'PLAYING';
             document.getElementById('arena-timer').style.display = 'none';
-            document.getElementById('reaction-picker').style.display = 'none'; // Прячем панель эмоций
+            document.getElementById('reaction-picker').style.display = 'none'; 
             document.getElementById('arena-action-btn').classList.add('disabled');
             document.getElementById('arena-action-btn').innerText = 'ШАРИК В ИГРЕ...';
 
-            // Выбор победителя (без комиссии, весь банк)
             let rand = Math.random() * arenaBank;
             let winner;
             for(let p of arenaPlayers) {
@@ -506,11 +696,10 @@
             }
             if(!winner) winner = arenaPlayers[arenaPlayers.length-1];
 
-            // Стартовый пинок шарика
             ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.random() * 4);
             ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.random() * 4);
             let startTime = null;
-            let bouncePhase = true; // true = летает, false = летит к победителю
+            let bouncePhase = true; 
 
             function animateBall(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -520,28 +709,24 @@
                     ballX += ballSpeedX;
                     ballY += ballSpeedY;
 
-                    // Рикошеты от квадратных бортов Canvas
                     if (ballX <= ballRadius || ballX >= CANVAS_SIZE - ballRadius) ballSpeedX *= -1;
                     if (ballY <= ballRadius || ballY >= CANVAS_SIZE - ballRadius) ballSpeedY *= -1;
 
-                    // Через 3.5 секунды переходим в режим торможения в сектор победителя
                     if (progress > 3500) {
                         bouncePhase = false;
                     }
                 } else {
-                    // Магнитится к аватарке победителя (Smooth Lerp)
                     let targetX = CENTER + Math.cos(winner.midRad) * (CENTER * 0.64);
                     let targetY = CENTER + Math.sin(winner.midRad) * (CENTER * 0.64);
                     
                     ballX += (targetX - ballX) * 0.05;
                     ballY += (targetY - ballY) * 0.05;
 
-                    // Проверяем, остановился ли шарик (почти долетел)
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
-                        drawCanvasFrame(); // Последний кадр
+                        drawCanvasFrame(); 
                         setTimeout(() => showArenaResult(winner), 500);
-                        return; // Останавливаем луп
+                        return; 
                     }
                 }
 
@@ -552,7 +737,6 @@
             animFrameId = requestAnimationFrame(animateBall);
         }
 
-        // 4. РЕЗУЛЬТАТ И ПОВТОР
         function showArenaResult(winner) {
             arenaState = 'RESULT';
             
@@ -560,7 +744,7 @@
             overlay.style.display = 'flex';
             
             if (winner.isUser) {
-                userBalance += arenaBank; // Забирает 100% банка!
+                userBalance += arenaBank; 
                 updateBalanceDisplay();
                 overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:24px; text-shadow:0 0 15px var(--accent-gold-glow);">ТВОЙ БАНК!</h3><div style="font-size:20px; font-weight:900;">+${arenaBank} ⭐</div>`;
                 spawnEmojiFromPlayer(winner, '🤑');
@@ -568,7 +752,6 @@
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:18px;">Победил ${winner.name}</h3><div style="font-size:16px; color:var(--accent-gold); font-weight:800;">Забрал ${arenaBank} ⭐</div>`;
             }
 
-            // Перезапуск через 3 сек
             setTimeout(() => {
                 if (document.getElementById('screen-battle').classList.contains('active')) {
                     startArenaRound();
@@ -578,9 +761,7 @@
             }, 3000);
         }
 
-        // ==========================================
-        // ЖИВЫЕ РЕАКЦИИ (ЭМОДЗИ)
-        // ==========================================
+        // ЖИВЫЕ РЕАКЦИИ
         function toggleReactionPicker() {
             if(arenaState !== 'WAITING') return;
             const picker = document.getElementById('reaction-picker');
@@ -589,18 +770,15 @@
 
         function sendReaction(emoji) {
             document.getElementById('reaction-picker').style.display = 'none';
-            // Ищем игрока в массиве
             let userObj = arenaPlayers.find(p => p.isUser);
             if(userObj) {
                 spawnEmojiFromPlayer(userObj, emoji);
             } else {
-                // Если игрок еще не поставил ставку, спавним просто снизу
                 spawnFloatingEmoji(emoji, 50, 90);
             }
         }
 
         function spawnEmojiFromPlayer(playerObj, emoji) {
-            // Спавним эмодзи по координатам аватарки игрока
             spawnFloatingEmoji(emoji, playerObj.domX, playerObj.domY);
         }
 
@@ -612,14 +790,128 @@
             el.style.left = `${leftPerc}%`;
             el.style.top = `${topPerc}%`;
             layer.appendChild(el);
-            
-            // Удаляем из DOM после завершения анимации
             setTimeout(() => el.remove(), 2000);
         }
 
-        // Автозапуск при загрузке
+        // ==========================================
+        // КОЛЕСО RNG (ОБЫЧНЫЕ ИГРЫ)
+        // ==========================================
+        const WHEEL_CONFIGS = {
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
+            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 5, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 15, 10], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
+        };
+
+        const WHEEL_WEIGHTS = {
+            free: [0.005, 0.015, 0.08, 0.9, 49, 0.005, 0.015, 0.08, 0.9, 49], 
+            common: [0.1, 0.9, 2, 5, 7, 10, 20, 25, 15, 15], 
+            silver: [0.1, 0.9, 2, 5, 7, 10, 20, 25, 15, 15],
+            gold:   [0.1, 0.9, 2, 5, 7, 10, 20, 25, 15, 15],
+            diamond:[0.1, 0.9, 2, 5, 7, 10, 20, 25, 15, 15]
+        };
+
+        let currentWheelRotation = 0;
+        let isSpinning = false;
+
+        function renderWheelDisc(type) {
+            const canvas = document.getElementById('wheel-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            currentWheelRotation = 0; canvas.style.transform = 'rotate(0deg)';
+            const config = WHEEL_CONFIGS[type]; const radius = canvas.width / 2; const arc = (2 * Math.PI) / 10;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const NEON_COLORS = ['rgba(0, 243, 255, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 215, 0, 0.2)', 'rgba(0, 255, 136, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(0, 243, 255, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 102, 0, 0.2)', 'rgba(0, 153, 255, 0.2)'];
+            const BORDER_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#FFD700', '#00FF88', '#FF2E93', '#00F3FF', '#A855F7', '#FF6600', '#0099FF'];
+            for (let i = 0; i < 10; i++) {
+                const angle = i * arc - Math.PI / 2;
+                ctx.beginPath(); ctx.fillStyle = NEON_COLORS[i]; ctx.moveTo(radius, radius); ctx.arc(radius, radius, radius - 20, angle, angle + arc); ctx.lineTo(radius, radius); ctx.fill();
+                ctx.strokeStyle = BORDER_COLORS[i]; ctx.lineWidth = 3; ctx.stroke();
+                ctx.save(); ctx.translate(radius, radius); ctx.rotate(angle + arc / 2);
+                ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#FFFFFF'; ctx.fillText(config.icons[i], radius - 80, 0);
+                ctx.font = '900 20px -apple-system, sans-serif'; ctx.textAlign = 'right'; 
+                let textVal = config.prizes[i] > 0 ? `+${config.prizes[i]}` : '0'; ctx.fillText(textVal, radius - 115, 0); ctx.restore();
+            }
+            ctx.beginPath(); ctx.fillStyle = '#0B0E17'; ctx.arc(radius, radius, 50, 0, 2 * Math.PI); ctx.fill();
+            ctx.strokeStyle = '#00F3FF'; ctx.lineWidth = 4; ctx.stroke();
+            ctx.fillStyle = '#FFFFFF'; ctx.font = '30px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('⭐', radius, radius);
+        }
+
+        function calculatePrizeIndex(type) {
+            const weights = WHEEL_WEIGHTS[type]; let sum = 0;
+            for(let w of weights) sum += w;
+            let rand = Math.random() * sum;
+            for (let i = 0; i < weights.length; i++) {
+                if (rand < weights[i]) return i;
+                rand -= weights[i];
+            }
+            return weights.length - 1; 
+        }
+
+        function startSpin(type) {
+            if (isSpinning) return; 
+            const config = WHEEL_CONFIGS[type];
+            if (type !== 'free') {
+                if (userBalance < config.price) return openModal('modal-deposit');
+                userBalance -= config.price; updateBalanceDisplay();
+            } else { localStorage.setItem('homastar_last_free_spin', Date.now().toString()); }
+            
+            isSpinning = true; document.getElementById('btn-spin-action').classList.add('disabled');
+            const prizeIndex = calculatePrizeIndex(type);
+            const prizeValue = config.prizes[prizeIndex];
+            const arc = 360 / 10; const targetAngle = 360 - (prizeIndex + 0.5) * arc;
+            const currentModulo = currentWheelRotation % 360; 
+            let distance = targetAngle - currentModulo; if (distance <= 0) distance += 360;
+            
+            currentWheelRotation += distance + (10 * 360); 
+            document.getElementById('wheel-canvas').style.transform = `rotate(${currentWheelRotation}deg)`;
+            
+            setTimeout(() => {
+                isSpinning = false; userBalance += prizeValue; updateBalanceDisplay();
+                showWinPopup(`+${prizeValue} ⭐`, "КОЛЕСО!");
+                if (type === 'free') { checkFreeSpinState(); } else { document.getElementById('btn-spin-action').classList.remove('disabled'); }
+            }, 10000);
+        }
+
+        function checkFreeSpinState() {
+            clearInterval(timerInterval); 
+            const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0'); 
+            const btn = document.getElementById('btn-spin-action'); const timerBanner = document.getElementById('timer-banner'); const timerText = document.getElementById('timer-countdown'); 
+            const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+            function updateTimerLogic() {
+                const timeLeft = twentyFourHoursMs - (Date.now() - lastSpinTimestamp);
+                if (timeLeft > 0) {
+                    timerBanner.style.display = 'block'; btn.classList.add('disabled'); btn.innerText = 'ОЖИДАНИЕ...'; btn.onclick = null;
+                    const h = Math.floor(timeLeft / (1000 * 60 * 60)); const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); const s = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    timerText.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                } else {
+                    clearInterval(timerInterval); timerBanner.style.display = 'none'; btn.classList.remove('disabled'); btn.innerText = 'ИГРАТЬ БЕСПЛАТНО'; btn.onclick = () => startSpin('free');
+                }
+            }
+            if (lastSpinTimestamp > 0) { updateTimerLogic(); timerInterval = setInterval(updateTimerLogic, 1000); } 
+            else { timerBanner.style.display = 'none'; btn.classList.remove('disabled'); btn.innerText = 'ИГРАТЬ БЕСПЛАТНО'; btn.onclick = () => startSpin('free'); }
+        }
+
+        function openFreeWheelScreen() { activeWheelType = 'free'; document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title; document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub'); renderWheelDisc('free'); checkFreeSpinState(); openScreen('screen-game-wheel'); }
+        function openPlayWheel(type) { activeWheelType = type; const config = WHEEL_CONFIGS[type]; document.getElementById('wheel-title').innerText = config.title; clearInterval(timerInterval); document.getElementById('timer-banner').style.display = 'none'; document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list'); renderWheelDisc(type); document.getElementById('btn-spin-action').classList.remove('disabled'); document.getElementById('btn-spin-action').innerText = `ИГРАТЬ (${config.price} ⭐)`; document.getElementById('btn-spin-action').onclick = () => startSpin(type); openScreen('screen-game-wheel'); }
+
+        function initLiveTicker() {
+            const marquee = document.getElementById('marquee-content');
+            if (!marquee) return;
+            const colors = ['neon-cyan', 'neon-purple', 'neon-pink'];
+            let html = '';
+            for(let i = 0; i < 30; i++) {
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                let amt = ['10', '20', '50', '100', '500'][Math.floor(Math.random() * 5)];
+                html += `<div class="live-pill ${color}">⭐ ${amt} <span style="display:none;">@user</span></div>`; 
+            }
+            marquee.innerHTML = html + html;
+        }
+
         window.onload = function() {
-            startArenaRound();
+            updateBalanceDisplay();
+            initLiveTicker();
             if (window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }
         };
     </script>
