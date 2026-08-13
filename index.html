@@ -216,25 +216,25 @@
             <div class="cards-stack">
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
                     <div class="p-card-bg-icon">🎁</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3 data-tr="card_free_title"><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p data-tr="card_free_desc">1 раз в 24 часа — бесплатно!</p></div>
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> <span data-tr="card_free_title">Бесплатное Колесо</span></h3><p data-tr="card_free_desc">1 раз в 24 часа — бесплатно!</p></div>
                         <button class="w-card-btn btn-free" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
                     <div class="p-card-bg-icon">🎡</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3 data-tr="card_wheels_title"><span class="t-icon">🎡</span> Колёса</h3><p data-tr="card_wheels_desc">4 вида: Обычное, Серебряное...</p></div>
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> <span data-tr="card_wheels_title">Колёса</span></h3><p data-tr="card_wheels_desc">4 вида: Обычное, Серебряное...</p></div>
                         <button class="w-card-btn btn-silver" data-tr="btn_select">ВЫБРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
                     <div class="p-card-bg-icon">🏓</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3 data-tr="card_arena_title"><span class="t-icon">🏓</span> Арена</h3><p data-tr="card_arena_desc">PVP Рулетка с игроками!</p></div>
+                        <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> <span data-tr="card_arena_title">Арена</span></h3><p data-tr="card_arena_desc">PVP Рулетка с игроками!</p></div>
                         <button class="w-card-btn btn-battle" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
                     <div class="p-card-bg-icon">🎟️</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3 data-tr="card_giveaway_title"><span class="t-icon">🎟️</span> Розыгрыш</h3><p data-tr="card_giveaway_desc">Главный приз: 1000 STARS</p></div>
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> <span data-tr="card_giveaway_title">Розыгрыш</span></h3><p data-tr="card_giveaway_desc">Главный приз: 1000 STARS</p></div>
                         <button class="w-card-btn btn-diamond" data-tr="btn_tickets">БИЛЕТЫ</button>
                     </div>
                 </div>
@@ -397,7 +397,7 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ (ЗАЛ СЛАВЫ УБРАН) -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ (ЗАЛ СЛАВЫ УБРАН НАВСЕГДА) -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span></button>
             <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span></button>
@@ -406,7 +406,7 @@
         </nav>
     </div>
 
-    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ) -->
+    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - ОДИН РАЗ ПРИ ПЕРВОМ ВХОДЕ) -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
             <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
@@ -456,9 +456,9 @@
         const translations = {
             ru: {
                 sections: "Разделы:",
-                card_free_title: "🎁 Бесплатное Колесо",
+                card_free_title: "Бесплатное Колесо",
                 card_free_desc: "1 раз в 24 часа — бесплатно!",
-                card_wheels_title: "Колёса:",
+                card_wheels_title: "Колёса",
                 card_wheels_desc: "4 вида: Обычное, Серебряное...",
                 card_arena_title: "Арена",
                 card_arena_desc: "PVP Рулетка с игроками!",
@@ -504,9 +504,9 @@
             },
             en: {
                 sections: "Sections:",
-                card_free_title: "🎁 Free Wheel",
+                card_free_title: "Free Wheel",
                 card_free_desc: "Once every 24 hours — free!",
-                card_wheels_title: "Wheels:",
+                card_wheels_title: "Wheels",
                 card_wheels_desc: "4 types: Common, Silver...",
                 card_arena_title: "Arena",
                 card_arena_desc: "PVP Roulette with players!",
@@ -704,7 +704,6 @@
             userBalance += val; updateBalanceDisplay(); closeModal('modal-deposit'); alert(`Успешно пополнено на ${val} ⭐`);
         }
         function executeWithdraw() { 
-            const val = parseFloat(document.getElementById('custom-withdraw-input') ? document.getElementById('custom-withdraw-input').value : document.getElementById('withdraw-amount-input').value); 
             const inputVal = parseFloat(document.getElementById('withdraw-amount-input').value);
             if (!inputVal || inputVal <= 0) return alert('Введи сумму!'); 
             if (inputVal > userBalance) return alert('Недостаточно баланса!'); 
@@ -712,7 +711,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ
+        // ЛОГИКА СЛАЙД-ШОУ (ПОКАЗЫВАЕМ СТРОГО 1 РАЗ ПРИ ПЕРВОМ ВХОДЕ)
         // ==========================================
         const onboardingSlides = [
             { icon: "🎁", title: "ЕЖЕДНЕВНЫЕ НАГРАДЫ", desc: "Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков." },
@@ -725,10 +724,12 @@
         const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000;
 
         function checkOnboarding() {
-            // Принудительно показываем слайд-шоу при каждом старте или сбросе
-            document.getElementById('modal-onboarding').style.display = 'flex';
-            currentSlideIndex = 0;
-            renderSlide();
+            const isSeen = localStorage.getItem('homastar_onboarding_seen_' + userId);
+            if (!isSeen) {
+                document.getElementById('modal-onboarding').style.display = 'flex';
+                currentSlideIndex = 0;
+                renderSlide();
+            }
         }
 
         function renderSlide() {
@@ -1285,7 +1286,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА СО ЗВУКАМИ ТРЕЩОТКИ
+        // ЛОГИКА КОЛЕСА
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
