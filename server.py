@@ -19,6 +19,8 @@ game_state = {
 BOT_NAMES = ['Max_99', 'Илья', 'Vityok', 'Artem', '@crypto_bull', 'Ton_Hunter', '0x_Whale']
 ARENA_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600']
 
+loop_started = False
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -80,6 +82,10 @@ def run_game_loop():
 
 @socketio.on('connect')
 def handle_connect():
+    global loop_started
+    if not loop_started:
+        loop_started = True
+        socketio.start_background_task(run_game_loop)
     emit('game_tick', game_state)
 
 @socketio.on('place_bet')
@@ -114,5 +120,4 @@ def handle_bet(data):
     socketio.emit('game_tick', game_state)
 
 if __name__ == '__main__':
-    socketio.start_background_task(run_game_loop)
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
