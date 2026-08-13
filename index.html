@@ -80,8 +80,9 @@
         .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); }
         .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
         #wheel-canvas { width: 300px; height: 300px; transition: transform 6s cubic-bezier(0.15, 0.9, 0.2, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; }
-        .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); pointer-events: none; opacity: 0.5; }
+        
+        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; box-shadow: 0 0 15px var(--neon-cyan-glow); }
+        .btn-spin.disabled { border-color: #FF4444; color: #FF4444; pointer-events: none; opacity: 0.7; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
 
         .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
         
@@ -256,7 +257,7 @@
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim"><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             </div>
-            <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ</button>
+            <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ (20 ⭐)</button>
         </div>
 
         <!-- 4. АРЕНА -->
@@ -378,6 +379,11 @@
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             localStorage.setItem('homastar_main_balance', userBalance.toString());
+            
+            // Проверяем доступность колеса при обновлении баланса
+            if (currentWheelType) {
+                updateWheelButtonState();
+            }
         }
 
         function openScreen(screenId) {
@@ -719,7 +725,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА (СТРОГИЕ КОЭФФИЦИЕНТЫ И ЦЕНЫ)
+        // ЛОГИКА КОЛЕСА (С ЦЕНАМИ И ПРОВЕРКОЙ БАЛАНСА)
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
@@ -789,10 +795,25 @@
             ctx.fillText('⭐', radius, radius);
         }
 
+        function updateWheelButtonState() {
+            const config = WHEEL_CONFIGS[currentWheelType];
+            const btn = document.getElementById('btn-spin-action');
+            if (!config || isSpinning) return;
+
+            if (userBalance < config.price) {
+                btn.innerText = `НЕДОСТАТОЧНО СРЕДСТВ (${config.price} ⭐)`;
+                btn.classList.add('disabled');
+            } else {
+                btn.innerText = config.price > 0 ? `ИГРАТЬ (${config.price} ⭐)` : `КРУТИТЬ БЕСПЛАТНО`;
+                btn.classList.remove('disabled');
+            }
+        }
+
         function openFreeWheelScreen() { 
             currentWheelType = 'free';
             document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title; 
             renderWheelDisc('free'); 
+            updateWheelButtonState();
             openScreen('screen-game-wheel'); 
         }
 
@@ -801,6 +822,7 @@
             const config = WHEEL_CONFIGS[type]; 
             document.getElementById('wheel-title').innerText = config.title; 
             renderWheelDisc(type); 
+            updateWheelButtonState();
             openScreen('screen-game-wheel'); 
         }
 
@@ -808,8 +830,12 @@
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[currentWheelType];
 
+            if (userBalance < config.price) {
+                openModal('modal-deposit');
+                return;
+            }
+
             if (config.price > 0) {
-                if (userBalance < config.price) return openModal('modal-deposit');
                 userBalance -= config.price;
                 updateBalanceDisplay();
             }
@@ -819,7 +845,6 @@
             btn.classList.add('disabled');
             btn.innerText = 'КРУТИМ...';
 
-            // Выбираем приз по жестким весам
             let random = Math.random() * config.weights.reduce((a, b) => a + b, 0);
             let prize = config.prizes[0];
             let winningIndex = 0;
@@ -845,8 +870,7 @@
 
             setTimeout(() => {
                 isSpinning = false;
-                btn.classList.remove('disabled');
-                btn.innerText = 'ИГРАТЬ';
+                updateWheelButtonState();
 
                 userBalance += prize;
                 updateBalanceDisplay();
