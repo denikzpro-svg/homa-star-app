@@ -433,9 +433,9 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И CANVAS АРЕНА
+        // ПОДКЛЮЧЕНИЕ К RENDER И CANVAS АРЕНА
         // ==========================================
-        const socket = io();
+        const socket = io('https://homastar-server.onrender.com');
         const userId = 'user_' + Math.floor(Math.random() * 100000);
 
         const canvas = document.getElementById('arena-canvas');
@@ -530,7 +530,6 @@
 
                 currentAngle += sliceAngle;
 
-                // Добавляем игрока в список под ареной
                 const row = document.createElement('div');
                 row.className = 'b-player-row';
                 row.innerHTML = `
@@ -634,7 +633,7 @@
             }
         }
 
-        // КОЛЕСО (РЕНДЕР)
+        // КОЛЕСО
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
             common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 5, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
@@ -642,14 +641,11 @@
             gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
             diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
         };
-        let currentWheelRotation = 0;
-        let isSpinning = false;
 
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            currentWheelRotation = 0; canvas.style.transform = 'rotate(0deg)';
             const config = WHEEL_CONFIGS[type]; const radius = canvas.width / 2; const arc = (2 * Math.PI) / 10;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const NEON_COLORS = ['rgba(0, 243, 255, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 215, 0, 0.2)', 'rgba(0, 255, 136, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(0, 243, 255, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 102, 0, 0.2)', 'rgba(0, 153, 255, 0.2)'];
