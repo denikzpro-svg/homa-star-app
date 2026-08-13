@@ -101,6 +101,8 @@
             width: 100%; aspect-ratio: 1/1; border-radius: 24px; position: relative; overflow: hidden; margin-bottom: 16px; 
             background: #1A2235; transition: background 0.5s ease-out; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid var(--glass-border);
+            transform: translateZ(0); /* Аппаратное ускорение для сглаживания кривых линий conic-gradient */
+            will-change: background;
         }
         
         .board-avatar {
@@ -118,11 +120,12 @@
             align-items: center; font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
         }
         
-        /* Рикошетящий шарик */
+        /* Плавный рикошетящий шарик */
         .board-ping-pong-ball {
             position: absolute; width: 18px; height: 18px; background: #FFF; border-radius: 50%;
             box-shadow: 0 0 15px #FFF, 0 0 30px var(--neon-cyan); display: none; z-index: 15;
             transform: translate(-50%, -50%);
+            will-change: left, top;
         }
 
         /* Автоматическое окно результата прямо на поле */
@@ -415,7 +418,7 @@
         function toggleSetting(type) { settings[type] = !settings[type]; localStorage.setItem(`homastar_${type}`, settings[type]); const toggle = document.getElementById(`toggle-${type}`); if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active'); }
 
         // ==========================================
-        // БЕСКОНЕЧНЫЙ ЦИКЛ АРЕНЫ С ПИНГ-ПОНГОМ
+        // БЕСКОНЕЧНЫЙ ЦИКЛ АРЕНЫ С ПИНГ-ПОНГОМ (requestAnimationFrame)
         // ==========================================
         
         const fakeBotNames = ['Max_99', 'Илья', 'Vityok', 'Artem', '@crypto_bull', '@solana_king', 'Ton_Hunter', '0x_Whale', '***', '@dark_soul', 'Ghost', 'user_8471', 'Denys', 'Alina', 'KriptoBrat', 'Dmitry'];
@@ -425,9 +428,9 @@
         let arenaTimer = null;
         let arenaTimeLeft = 20;
         let arenaBank = 0;
-        let arenaState = 'STOPPED'; // WAITING, PLAYING, RESULT
+        let arenaState = 'STOPPED'; 
         let botCount = 0;
-        let bounceInterval = null;
+        let animFrameId = null;
 
         function generateBotPlayer() {
             const name = fakeBotNames[Math.floor(Math.random() * fakeBotNames.length)];
@@ -443,7 +446,6 @@
             if(arenaState === 'STOPPED') startArenaRound();
         }
 
-        // 1. СТАРТ РАУНДА (20 сек на ставки)
         function startArenaRound() {
             arenaState = 'WAITING';
             arenaTimeLeft = 20;
@@ -462,23 +464,21 @@
             btn.classList.remove('disabled');
             btn.innerText = 'ПОСТАВИТЬ МАКС.';
             
-            updateArenaBoard(); // Чистим доску
+            updateArenaBoard(); 
 
-            // Закидываем 1 бота на старте
             addBotToArena();
 
             arenaTimer = setInterval(() => {
                 arenaTimeLeft--;
                 document.getElementById('arena-timer').innerText = arenaTimeLeft;
                 
-                // Лимит 3 бота за раунд
                 if (botCount < 3 && arenaTimeLeft > 3 && Math.random() > 0.6) {
                     addBotToArena();
                 }
 
                 if (arenaTimeLeft <= 0) {
                     clearInterval(arenaTimer);
-                    endBettingPhase(); // Переход к пинг-понгу
+                    endBettingPhase(); 
                 }
             }, 1000);
         }
@@ -531,7 +531,6 @@
             list.prepend(row);
         }
 
-        // ДИНАМИЧЕСКИЕ СЕКТОРА
         function updateArenaBoard() {
             const board = document.getElementById('arena-board');
             const avatarsContainer = document.getElementById('arena-avatars-container');
@@ -548,7 +547,8 @@
             arenaPlayers.forEach(p => {
                 let sliceAngle = (p.bet / arenaBank) * 360;
                 let endAngle = currentAngle + sliceAngle;
-                gradientParams.push(`${p.color} ${currentAngle}deg ${endAngle}deg`);
+                // Добавляем плавный переход для сглаживания зубчатых краев градиента
+                gradientParams.push(`${p.color} ${currentAngle}deg, ${p.color} ${endAngle}deg`);
 
                 let midAngleRad = (currentAngle + sliceAngle / 2) * (Math.PI / 180);
                 let radiusOffset = 32; 
@@ -575,7 +575,6 @@
             }
         }
 
-        // 2. ФАЗА ПИНГ-ПОНГА (Шарик носится по экрану)
         function endBettingPhase() {
             arenaState = 'PLAYING';
             document.getElementById('arena-timer').style.display = 'none';
@@ -584,9 +583,8 @@
 
             const ball = document.getElementById('arena-ball');
             ball.style.display = 'block';
-            ball.style.transition = 'none'; // Убираем плавность для быстрых рикошетов
+            ball.style.transition = 'none'; 
 
-            // Честный выбор победителя пропорционально ставке
             let rand = Math.random() * arenaBank;
             let winner;
             for(let p of arenaPlayers) {
@@ -595,50 +593,48 @@
             }
             if(!winner) winner = arenaPlayers[arenaPlayers.length-1];
 
-            // Начинаем хаотичный пинг-понг
+            // Плавная физика на requestAnimationFrame
             let ballX = 50, ballY = 50;
-            let vx = (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random());
-            let vy = (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random());
-            let bounceTime = 0;
+            let speedX = (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.4);
+            let speedY = (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.4);
+            let startTime = null;
 
-            bounceInterval = setInterval(() => {
-                ballX += vx; ballY += vy;
-                
-                // Рикошет от стен (квадрат 0-100%)
-                if(ballX <= 3 || ballX >= 97) vx *= -1;
-                if(ballY <= 3 || ballY >= 97) vy *= -1;
-                
+            function animateBall(timestamp) {
+                if (!startTime) startTime = timestamp;
+                let progress = timestamp - startTime;
+
+                ballX += speedX;
+                ballY += speedY;
+
+                if (ballX <= 3 || ballX >= 97) speedX *= -1;
+                if (ballY <= 3 || ballY >= 97) speedY *= -1;
+
                 ball.style.left = ballX + '%';
                 ball.style.top = ballY + '%';
-                
-                bounceTime += 30;
 
-                // Через 4 секунды хаоса шарик летит в победную точку
-                if(bounceTime >= 4000) {
-                    clearInterval(bounceInterval);
-                    
-                    // Высчитываем координаты центра сектора победителя
+                if (progress < 4000) {
+                    animFrameId = requestAnimationFrame(animateBall);
+                } else {
                     let winAngleRad = (winner.startAngle + (winner.endAngle - winner.startAngle)/2 - 90) * (Math.PI / 180);
                     let targetX = 50 + 40 * Math.cos(winAngleRad);
                     let targetY = 50 + 40 * Math.sin(winAngleRad);
-                    
-                    ball.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)'; // Плавное замедление в нужной точке
+
+                    ball.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
                     ball.style.left = targetX + '%';
                     ball.style.top = targetY + '%';
-                    
-                    // Через 1 сек показываем результат
+
                     setTimeout(() => {
                         showArenaResult(winner);
                     }, 1200);
                 }
-            }, 30);
+            }
+            
+            animFrameId = requestAnimationFrame(animateBall);
         }
 
-        // 3. АВТОМАТИЧЕСКАЯ ВЫДАЧА ПРИЗА И ЗАПУСК ПО НОВОЙ
         function showArenaResult(winner) {
             arenaState = 'RESULT';
-            const commission = Math.floor(arenaBank * 0.15); // 15% комиссия проекта
-            const winAmount = arenaBank - commission;
+            const winAmount = arenaBank; // Победитель забирает 100% банка
             
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
@@ -651,18 +647,17 @@
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:18px;">Победил ${winner.name}</h3><div style="font-size:16px; color:var(--accent-gold); font-weight:800;">Забрал ${winAmount} ⭐</div>`;
             }
 
-            // Через 3 секунды всё обнуляется и цикл запускается заново
             setTimeout(() => {
                 if (document.getElementById('screen-battle').classList.contains('active')) {
                     startArenaRound();
                 } else {
-                    arenaState = 'STOPPED'; // Если ушел с вкладки, останавливаем
+                    arenaState = 'STOPPED'; 
                 }
             }, 3000);
         }
 
         // ==========================================
-        // КОЛЕСО RNG (Осталось без изменений)
+        // КОЛЕСО RNG 
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
