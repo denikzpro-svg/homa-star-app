@@ -16,7 +16,7 @@ game_state = {
     "winner": None
 }
 
-BOT_NAMES = ['Max_99', 'Илья', 'Vityok', 'Artem', '@crypto_bull', 'Ton_Hunter', '0x_Whale']
+BOT_NAMES = ['Alexander', 'Maxim', 'Dmitriy', 'Sergey', 'Andrey', 'Vladislav', 'Artem']
 ARENA_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600']
 
 loop_started = False
@@ -29,6 +29,9 @@ def add_bot():
     if len(game_state["players"]) >= 4:
         return
     name = random.choice(BOT_NAMES)
+    # Проверяем, чтобы имя не повторялось в текущем раунде
+    if any(p["name"] == name for p in game_state["players"]):
+        return
     bet = random.randint(30, 250)
     color = ARENA_COLORS[len(game_state["players"]) % len(ARENA_COLORS)]
     
@@ -78,7 +81,8 @@ def run_game_loop():
         game_state["winner"] = winner
         socketio.emit('game_over', game_state)
         
-        socketio.sleep(4)
+        # Даем время на 10 секунд анимации шарика + показ результатов
+        socketio.sleep(13)
 
 @socketio.on('connect')
 def handle_connect():
