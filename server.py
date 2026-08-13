@@ -8,7 +8,6 @@ from flask_socketio import SocketIO, emit
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-# Состояние арены
 game_state = {
     "status": "WAITING",
     "time_left": 20,
@@ -43,7 +42,6 @@ def add_bot():
 
 def run_game_loop():
     while True:
-        # 1. ФАЗА СТАВОК (20 секунд)
         game_state["status"] = "WAITING"
         game_state["time_left"] = 20
         game_state["bank"] = 0
@@ -61,7 +59,6 @@ def run_game_loop():
             socketio.sleep(1)
             game_state["time_left"] -= 1
 
-        # 2. ФАЗА ИГРЫ
         game_state["status"] = "PLAYING"
         
         if not game_state["players"]:
