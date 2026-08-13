@@ -269,7 +269,7 @@
                 <div class="arrow-pointer"></div>
                 <div class="wheel-outer-rim"><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             </div>
-            <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ (20 ⭐)</button>
+            <button id="btn-spin-action" class="btn-spin" onclick="spinWheel(); haptic('heavy');">ИГРАТЬ (20 ⭐)</button>
         </div>
 
         <!-- 4. АРЕНА -->
@@ -368,7 +368,7 @@
             </div>
         </div>
 
-        <!-- НАСТРОЙКИ (ТОЛЬКО ЯЗЫК И ВИБРАЦИЯ) -->
+        <!-- НАСТРОЙКИ -->
         <div id="screen-settings" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 15px;" data-tr="nav_settings">⚙️ Настройки</h2>
             
@@ -384,7 +384,7 @@
 
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_haptic">📳 Вибрация (Haptic)</div>
+                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_haptic">📳 Вибрация</div>
                 </div>
                 <div id="toggle-haptic" class="toggle-switch active" onclick="toggleHaptic(); haptic('light');"><div class="toggle-circle"></div></div>
             </div>
@@ -399,7 +399,7 @@
         </nav>
     </div>
 
-    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - СТРОГО 1 РАЗ) -->
+    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
             <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
@@ -444,7 +444,7 @@
 
     <script>
         // ==========================================
-        // ТАКТИЛЬНЫЙ ОТКЛИК (ВИБРАЦИЯ ЧЕРЕЗ TELEGRAM API)
+        // ТАКТИЛЬНЫЙ ОТКЛИК (ВИБРАЦИЯ ВЕЗДЕ)
         // ==========================================
         let hapticEnabled = localStorage.getItem('homastar_haptic') !== 'false';
 
@@ -471,7 +471,7 @@
         }
 
         // ==========================================
-        // ЯЗЫКОВОЙ СЛОВАРЬ (РУССКИЙ / АНГЛИЙСКИЙ)
+        // ЯЗЫКОВОЙ СЛОВАРЬ
         // ==========================================
         const translations = {
             ru: {
@@ -649,7 +649,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ (СБРАСЫВАЕТСЯ НА 1 РАЗ)
+        // ЛОГИКА СЛАЙД-ШОУ
         // ==========================================
         const onboardingSlides = [
             { icon: "🎁", title: "ЕЖЕДНЕВНЫЕ НАГРАДЫ", desc: "Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков." },
@@ -779,7 +779,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА РОЗЫГРЫША
+        // РОЗЫГРЫШ
         // ==========================================
         let giveawayParticipants = [
             { name: "Alexander", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
@@ -1212,7 +1212,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА
+        // ЛОГИКА КОЛЕСА (ВИБРАЦИЯ В ТАКТ ТРЕЩОТКЕ)
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
@@ -1355,9 +1355,10 @@
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
+            // Вибрация трещоткой в такт вращению колеса
             let tickInterval = setInterval(() => {
                 haptic('light');
-            }, 150);
+            }, 120);
 
             setTimeout(() => {
                 clearInterval(tickInterval);
