@@ -292,7 +292,7 @@
             </div>
         </div>
 
-        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: ЖИВЫЕ АВАТАРКИ, МЕМЫ И АНИМЕ) -->
+        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: ТОЛЬКО ЖИВЫЕ/МЕМНЫЕ АВАТАРКИ И ТЕЛЕГРАМ ПРОФИЛЬ) -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
@@ -380,6 +380,10 @@
         let userHasTicket = localStorage.getItem('homastar_has_ticket') === 'true';
         let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
         
+        let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
+        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces";
+
         function updateBalanceDisplay() {
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
@@ -423,7 +427,7 @@
         }
 
         // ==========================================
-        // БАЗА ДАННЫХ БОТОВ (ЖИВЫЕ АВАТАРКИ: АНИМЕ, МЕМЫ, РЕАЛЬНЫЕ ЛЮДИ)
+        // БАЗА ДАННЫХ БОТОВ (ЖИВЫЕ АВАТАРКИ: МЕМЫ, АНИМЕ, РЕАЛЬНЫЕ ЛЮДИ)
         // ==========================================
         let giveawayParticipants = [
             { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
@@ -533,6 +537,7 @@
             if (!listEl) return;
             listEl.innerHTML = '';
             
+            // Выводим реального пользователя с его аватаркой из Телеграма
             if (userHasTicket) {
                 let userRow = document.createElement('div');
                 userRow.className = 'b-player-row';
@@ -584,10 +589,6 @@
             transports: ['websocket', 'polling']
         });
         const userId = 'user_' + Math.floor(Math.random() * 100000);
-
-        let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
-        let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
-        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces";
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
