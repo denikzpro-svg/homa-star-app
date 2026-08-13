@@ -16,9 +16,18 @@ game_state = {
     "winner": None
 }
 
-BOT_NAMES = ['Alexander', 'Maxim', 'Dmitriy', 'Sergey', 'Andrey', 'Vladislav', 'Artem']
-ARENA_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600']
+# База «архивных» аватарок и нормальных человеческих имен
+BOT_PROFILES = [
+    {"name": "Alexander", "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Maxim", "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Dmitriy", "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Sergey", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Andrey", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Vladislav", "avatar": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces"},
+    {"name": "Artem", "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&crop=faces"}
+]
 
+ARENA_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600']
 loop_started = False
 
 @app.route('/')
@@ -26,18 +35,18 @@ def index():
     return send_from_directory('.', 'index.html')
 
 def add_bot():
-    if len(game_state["players"]) >= 4:
+    if len(game_state["players"]) >= 5:
         return
-    name = random.choice(BOT_NAMES)
-    # Проверяем, чтобы имя не повторялось в текущем раунде
-    if any(p["name"] == name for p in game_state["players"]):
+    profile = random.choice(BOT_PROFILES)
+    if any(p["name"] == profile["name"] for p in game_state["players"]):
         return
-    bet = random.randint(30, 250)
+    bet = random.randint(30, 200)
     color = ARENA_COLORS[len(game_state["players"]) % len(ARENA_COLORS)]
     
     bot = {
         "id": f"bot_{random.randint(1000,9999)}",
-        "name": name,
+        "name": profile["name"],
+        "avatar": profile["avatar"],
         "bet": bet,
         "color": color,
         "isUser": False
@@ -58,7 +67,7 @@ def run_game_loop():
         while game_state["time_left"] > 0:
             socketio.emit('game_tick', game_state)
             
-            if len(game_state["players"]) < 4 and game_state["time_left"] > 3 and random.random() > 0.6:
+            if len(game_state["players"]) < 5 and game_state["time_left"] > 3 and random.random() > 0.5:
                 add_bot()
 
             socketio.sleep(1)
@@ -81,7 +90,7 @@ def run_game_loop():
         game_state["winner"] = winner
         socketio.emit('game_over', game_state)
         
-        # Даем время на 10 секунд анимации шарика + показ результатов
+        # 10 секунд полета шарика + 3 секунды показа результатов
         socketio.sleep(13)
 
 @socketio.on('connect')
@@ -114,6 +123,7 @@ def handle_bet(data):
     user_player = {
         "id": user_id,
         "name": user_name,
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
         "bet": bet_amount,
         "color": "#FFD700",
         "isUser": True
@@ -122,6 +132,17 @@ def handle_bet(data):
     game_state["players"].append(user_player)
     game_state["bank"] += bet_amount
     socketio.emit('game_tick', game_state)
+
+@socketio.on('cancel_bet')
+def handle_cancel_bet(data):
+    if game_state["status"] != "WAITING":
+        return
+    user_id = data.get("id")
+    player = next((p for p in game_state["players"] if p["id"] == user_id and p.get("isUser")), None)
+    if player:
+        game_state["bank"] -= player["bet"]
+        game_state["players"].remove(player)
+        socketio.emit('game_tick', game_state)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
