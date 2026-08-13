@@ -228,7 +228,7 @@
             </div>
         </div>
 
-        <!-- 2. СПИСОК КОЛЁС -->
+        <!-- 2. СПИСОК КОЛЁС (С ЦЕНАМИ И НУЛЯМИ) -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
@@ -434,7 +434,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ОБРАБОТКА ЗАВИСАНИЙ АНИМАЦИИ)
+        // СОКЕТЫ И АРЕНА
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -672,14 +672,13 @@
             }
         }
 
-        // Жесткий таймер на 5 секунд без шансов на зависание
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 5000; // Ровно 5 секунд
+            let flightDuration = 5000;
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -694,7 +693,6 @@
                     drawCanvasFrame();
                     animFrameId = requestAnimationFrame(animate);
                 } else {
-                    // Анимация завершилась ровно через 5 секунд — гарантированно показываем результат
                     cancelAnimationFrame(animFrameId);
                     ballX = CENTER_X + Math.cos(winner.midRad) * 120;
                     ballY = CENTER_Y + Math.sin(winner.midRad) * 90;
@@ -711,7 +709,6 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Автоматическое зачисление звезд победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
@@ -722,14 +719,14 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА
+        // ЛОГИКА КОЛЕСА (СТАРЫЕ ЦЕНЫ И КОЭФФИЦИЕНТЫ С НУЛЯМИ)
         // ==========================================
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 20, 10, 5, 100, 50, 20, 10, 5], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
-            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 10, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 20, 10], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 0, 10, 5, 0, 50, 20, 0, 5], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
+            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 0, 30, 25, 0, 15, 10, 0, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 0, 75, 60, 0, 35, 25, 0, 10], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 0, 150, 120, 0, 75, 50, 0, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 0, 400, 300, 0, 200, 100, 0, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
         };
 
         let currentWheelType = 'free';
@@ -751,7 +748,7 @@
                 ctx.save(); ctx.translate(radius, radius); ctx.rotate(angle + arc / 2);
                 ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#FFFFFF'; ctx.fillText(config.icons[i], radius - 80, 0);
                 ctx.font = '900 20px -apple-system, sans-serif'; ctx.textAlign = 'right'; 
-                let textVal = `+${config.prizes[i]}`; ctx.fillText(textVal, radius - 115, 0); ctx.restore();
+                let textVal = config.prizes[i] > 0 ? `+${config.prizes[i]}` : '0'; ctx.fillText(textVal, radius - 115, 0); ctx.restore();
             }
             ctx.beginPath(); ctx.fillStyle = '#0B0E17'; ctx.arc(radius, radius, 50, 0, 2 * Math.PI); ctx.fill();
             ctx.strokeStyle = '#00F3FF'; ctx.lineWidth = 4; ctx.stroke();
@@ -768,7 +765,7 @@
             currentWheelType = type;
             const config = WHEEL_CONFIGS[type]; 
             document.getElementById('wheel-title').innerText = config.title; 
-            renderWheelDisc('type); 
+            renderWheelDisc(type); 
             openScreen('screen-game-wheel'); 
         }
 
@@ -803,9 +800,13 @@
                 btn.innerText = 'ИГРАТЬ';
 
                 const prize = config.prizes[winningIndex];
-                userBalance += prize;
-                updateBalanceDisplay();
-                showWinPopup(`+${prize} ⭐`, "ПОБЕДА!");
+                if (prize > 0) {
+                    userBalance += prize;
+                    updateBalanceDisplay();
+                    showWinPopup(`+${prize} ⭐`, "ПОБЕДА!");
+                } else {
+                    showWinPopup("0 ⭐", "УВЫ, НУЛЬ!");
+                }
             }, 6000);
         }
 
