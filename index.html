@@ -292,7 +292,7 @@
             </div>
         </div>
 
-        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: 20⭐, 1 БИЛЕТ НА РУКИ, ТАЙМЕР 10 ЧАСОВ, СТАБИЛЬНЫЙ СПИСОК УЧАСТНИКОВ) -->
+        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: ЖИВЫЕ АВАТАРКИ, МЕМЫ И АНИМЕ) -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
@@ -423,25 +423,27 @@
         }
 
         // ==========================================
-        // ЛОГИКА РОЗЫГРЫША (1000 ЗВЁЗД, 20⭐, 1 БИЛЕТ, СТАБИЛЬНЫЙ СПИСОК БОТОВ)
+        // БАЗА ДАННЫХ БОТОВ (ЖИВЫЕ АВАТАРКИ: АНИМЕ, МЕМЫ, РЕАЛЬНЫЕ ЛЮДИ)
         // ==========================================
         let giveawayParticipants = [
-            { name: "Илья", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" },
-            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" }
+            { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" }
         ];
         let giveawaySecondsLeft = 36000; // 10 часов
 
         const availableBots = [
-            { name: "Илья", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" },
-            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Лёха Жми на газ", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Malik", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Sanek_777", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" },
-            { name: "John", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&crop=faces" }
+            { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Лёха Жми на газ", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Malik", avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Sanek_777", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&h=100&fit=crop&crop=faces" },
+            { name: "John", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Анимешник 228", avatar: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Мемный король", avatar: "https://images.unsplash.com/photo-1563089145-599997674d42?w=100&h=100&fit=crop&crop=faces" }
         ];
 
         function maybeAddBot() {
@@ -486,8 +488,8 @@
                 userHasTicket = false;
                 localStorage.setItem('homastar_has_ticket', 'false');
                 giveawayParticipants = [
-                    { name: "Илья", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" },
-                    { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces" }
+                    { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+                    { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" }
                 ]; 
                 updateTicketUI();
             }
@@ -531,7 +533,6 @@
             if (!listEl) return;
             listEl.innerHTML = '';
             
-            // Сначала всегда выводим реального пользователя, если у него есть билет
             if (userHasTicket) {
                 let userRow = document.createElement('div');
                 userRow.className = 'b-player-row';
@@ -549,7 +550,6 @@
                 listEl.appendChild(userRow);
             }
 
-            // Затем выводим всех ботов из массива без сброса и затирания
             giveawayParticipants.forEach(p => {
                 let row = document.createElement('div');
                 row.className = 'b-player-row';
@@ -587,7 +587,7 @@
 
         let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
         let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
-        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces";
+        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces";
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
