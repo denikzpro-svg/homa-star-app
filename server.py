@@ -9,7 +9,7 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 game_state = {
-    "status": "PAUSE",  # PAUSE (ожидание, можно ставить), WAITING (таймер 20 сек), PLAYING (полет шарика)
+    "status": "PAUSE",  # PAUSE (ожидание/ставки игроков), WAITING (активный таймер), PLAYING (полет шарика)
     "time_left": 20,
     "bank": 0,
     "players": [],
@@ -55,17 +55,16 @@ def add_bot():
 
 def run_game_loop():
     while True:
-        # ФАЗА 1: ПАУЗА (Ожидание игроков 5-7 сек, боты НЕ ставят, но РЕАЛЬНЫЕ игроки МОГУТ ставить!)
+        # Фаза 1: Пауза (5-7 сек). Боты спят, реальные игроки могут ставить ставки.
         game_state["status"] = "PAUSE"
         game_state["bank"] = 0
         game_state["players"] = []
         game_state["winner"] = None
         socketio.emit('game_tick', game_state)
         
-        pause_duration = random.randint(5, 7)
-        socketio.sleep(pause_duration)
+        socketio.sleep(random.randint(5, 7))
 
-        # ФАЗА 2: ТАЙМЕР СТАВОК (20 секунд, подключаются и боты, и игроки)
+        # Фаза 2: Активный отсчет (20 сек). Подключаются боты.
         game_state["status"] = "WAITING"
         game_state["time_left"] = 20
         socketio.emit('game_tick', game_state)
@@ -73,14 +72,13 @@ def run_game_loop():
         while game_state["time_left"] > 0:
             socketio.emit('game_tick', game_state)
             
-            # Боты делают ставки постепенно во время таймера
             if len(game_state["players"]) < 5 and game_state["time_left"] > 3 and random.random() > 0.4:
                 add_bot()
 
             socketio.sleep(1)
             game_state["time_left"] -= 1
 
-        # ФАЗА 3: ПОЛЕТ ШАРИКА (7 секунд)
+        # Фаза 3: Розыгрыш (Полет шарика 5 сек)
         game_state["status"] = "PLAYING"
         
         if not game_state["players"]:
@@ -98,8 +96,8 @@ def run_game_loop():
         game_state["winner"] = winner
         socketio.emit('game_over', game_state)
         
-        # Ждем завершения анимации шарика (7 сек) + показ результатов (3 сек)
-        socketio.sleep(10)
+        # Ожидание завершения анимации шарика (5 сек) + показ результата
+        socketio.sleep(7)
 
 @socketio.on('connect')
 def handle_connect():
@@ -111,7 +109,7 @@ def handle_connect():
 
 @socketio.on('place_bet')
 def handle_bet(data):
-    # Разрешаем ставить и в PAUSE (игроку), и в WAITING
+    # Ставки разрешены во время Паузы и Ожидания
     if game_state["status"] not in ["PAUSE", "WAITING"]:
         return
     
@@ -127,8 +125,7 @@ def handle_bet(data):
     if bet_amount <= 0:
         return
 
-    existing = next((p for p in game_state["players"] if p["id"] == user_id), None)
-    if existing:
+    if any(p["id"] == user_id for p in game_state["players"]):
         return
 
     user_player = {
