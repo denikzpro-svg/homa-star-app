@@ -106,7 +106,7 @@
 
         .board-timer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 70px; height: 70px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px); 
+            width: 75px; height: 75px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px); 
             border-radius: 50%; border: 2px solid var(--glass-border); display: flex; flex-direction: column; justify-content: center; 
             align-items: center; font-size: 18px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
             text-align: center; padding: 4px;
@@ -434,12 +434,17 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ОБРАБОТКА СТАТУСА PAUSE И ОЖИДАНИЯ)
+        // СОКЕТЫ И ПОДТЯГИВАНИЕ РЕАЛЬНОГО ФОТО ИЗ TELEGRAM
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
         });
         const userId = 'user_' + Math.floor(Math.random() * 100000);
+
+        // Получаем реальные данные пользователя из Telegram WebApp (если открыто в боте)
+        let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
+        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces";
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
@@ -464,7 +469,7 @@
         let isAnimating = false;
 
         function setQuickBet(val) {
-            if (!hasUserBet && arenaState === 'WAITING') {
+            if (!hasUserBet && (arenaState === 'WAITING' || arenaState === 'PAUSE')) {
                 document.getElementById('arena-bet-input').value = val;
             }
         }
@@ -474,7 +479,7 @@
         });
 
         socket.on('game_tick', (state) => {
-            if (isAnimating) return; // Не прерываем анимацию шарика
+            if (isAnimating) return; 
 
             arenaBank = state.bank;
             arenaPlayers = state.players;
@@ -489,18 +494,27 @@
             if (state.status === "PAUSE") {
                 arenaState = "PAUSE";
                 timerEl.style.display = 'flex';
-                timerEl.innerHTML = `<span style="font-size:11px; color:var(--neon-cyan);">ОЖИДАНИЕ</span><span style="font-size:12px;">ИГРОКОВ</span>`;
+                timerEl.innerHTML = `<span style="font-size:10px; color:var(--neon-cyan);">ОЖИДАНИЕ</span><span style="font-size:11px;">ИГРОКОВ</span>`;
                 document.getElementById('arena-overlay').style.display = 'none';
-                actionBtn.classList.add('disabled');
-                actionBtn.innerText = 'ПАУЗА';
-                betInput.disabled = true;
-                betInput.value = '';
-                hasUserBet = false;
-                ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                ctx.fillStyle = '#1A2235';
-                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                document.getElementById('arena-avatars-layer').innerHTML = '';
-                document.getElementById('arena-players-list').innerHTML = '';
+                
+                let myBet = arenaPlayers.find(p => p.id === userId);
+                if (myBet) {
+                    hasUserBet = true;
+                    userBetAmount = myBet.bet;
+                    actionBtn.innerText = 'ОТМЕНИТЬ СТАВКУ';
+                    actionBtn.classList.add('cancel');
+                    actionBtn.classList.remove('disabled');
+                    betInput.disabled = true;
+                    betInput.value = myBet.bet;
+                } else {
+                    hasUserBet = false;
+                    userBetAmount = 0;
+                    actionBtn.innerText = 'ПОСТАВИТЬ';
+                    actionBtn.classList.remove('cancel', 'disabled');
+                    betInput.disabled = false;
+                }
+
+                recalculateSectors();
                 return;
             }
 
@@ -540,7 +554,7 @@
         });
 
         function handleBetAction() {
-            if (arenaState !== 'WAITING') return;
+            if (arenaState !== 'WAITING' && arenaState !== 'PAUSE') return;
 
             const actionBtn = document.getElementById('arena-action-btn');
             
@@ -561,7 +575,8 @@
                 
                 socket.emit('place_bet', {
                     id: userId,
-                    name: "Деня",
+                    name: userName,
+                    avatar: userAvatar,
                     amount: inputVal
                 });
 
@@ -571,9 +586,16 @@
         }
 
         function recalculateSectors() {
-            if (arenaPlayers.length === 0) return;
+            if (arenaPlayers.length === 0) {
+                ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                ctx.fillStyle = '#1A2235';
+                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                document.getElementById('arena-avatars-layer').innerHTML = '';
+                document.getElementById('arena-players-list').innerHTML = '';
+                return;
+            }
+
             let currentAngle = -Math.PI / 2; 
-            
             const avatarsContainer = document.getElementById('arena-avatars-layer');
             avatarsContainer.innerHTML = ''; 
             const listContainer = document.getElementById('arena-players-list');
@@ -594,7 +616,7 @@
                 ava.style.left = `${x}%`; 
                 ava.style.top = `${y}%`; 
                 ava.style.borderColor = p.color;
-                ava.innerHTML = `<img src="${p.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces'}" alt="ava">`;
+                ava.innerHTML = `<img src="${p.avatar}" alt="ava">`;
                 avatarsContainer.appendChild(ava);
 
                 currentAngle += sliceAngle;
@@ -604,7 +626,7 @@
                 row.innerHTML = `
                     <div class="b-player-left">
                         <div class="b-player-ava" style="border-color: ${p.color};">
-                            <img src="${p.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces'}" alt="ava">
+                            <img src="${p.avatar}" alt="ava">
                         </div>
                         <div class="b-player-info">
                             <h4>${p.name} <span style="color:var(--neon-cyan);">${((p.bet / arenaBank)*100).toFixed(1)}%</span></h4>
@@ -651,14 +673,14 @@
             }
         }
 
-        // Стабильный 7-секундный полет шарика без исчезновений
+        // Стабильный полет шарика ровно 7 секунд
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
             ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 7000; // 7 секунд
+            let flightDuration = 7000;
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -699,7 +721,7 @@
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл +${bankAmount} ⭐! Поздравляем тебя!</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Поздравляем тебя!</div>`;
             } else {
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
             }
