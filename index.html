@@ -106,9 +106,10 @@
 
         .board-timer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 54px; height: 54px; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(5px); 
-            border-radius: 50%; border: 2px solid var(--glass-border); display: flex; justify-content: center; 
-            align-items: center; font-size: 20px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
+            width: 70px; height: 70px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px); 
+            border-radius: 50%; border: 2px solid var(--glass-border); display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; font-size: 18px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
+            text-align: center; padding: 4px;
         }
 
         .board-overlay-result {
@@ -433,7 +434,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И СТАБИЛЬНЫЙ 7-СЕКУНДНЫЙ ШАРИК
+        // СОКЕТЫ И АРЕНА (ОБРАБОТКА СТАТУСА PAUSE И ОЖИДАНИЯ)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -473,19 +474,39 @@
         });
 
         socket.on('game_tick', (state) => {
-            if (isAnimating) return; // Не прерываем анимацию шарика тиками
+            if (isAnimating) return; // Не прерываем анимацию шарика
 
             arenaBank = state.bank;
             arenaPlayers = state.players;
             arenaTimeLeft = state.time_left;
             
-            document.getElementById('arena-timer').innerText = arenaTimeLeft;
-            document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
-            
-            let myBet = arenaPlayers.find(p => p.id === userId);
+            const timerEl = document.getElementById('arena-timer');
             const actionBtn = document.getElementById('arena-action-btn');
             const betInput = document.getElementById('arena-bet-input');
+            
+            document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
+            
+            if (state.status === "PAUSE") {
+                arenaState = "PAUSE";
+                timerEl.style.display = 'flex';
+                timerEl.innerHTML = `<span style="font-size:11px; color:var(--neon-cyan);">ОЖИДАНИЕ</span><span style="font-size:12px;">ИГРОКОВ</span>`;
+                document.getElementById('arena-overlay').style.display = 'none';
+                actionBtn.classList.add('disabled');
+                actionBtn.innerText = 'ПАУЗА';
+                betInput.disabled = true;
+                betInput.value = '';
+                hasUserBet = false;
+                ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                ctx.fillStyle = '#1A2235';
+                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                document.getElementById('arena-avatars-layer').innerHTML = '';
+                document.getElementById('arena-players-list').innerHTML = '';
+                return;
+            }
 
+            timerEl.innerText = arenaTimeLeft;
+
+            let myBet = arenaPlayers.find(p => p.id === userId);
             if (myBet) {
                 hasUserBet = true;
                 userBetAmount = myBet.bet;
@@ -500,12 +521,11 @@
                 actionBtn.innerText = 'ПОСТАВИТЬ';
                 actionBtn.classList.remove('cancel', 'disabled');
                 betInput.disabled = false;
-                betInput.value = '';
             }
 
             if (state.status === "WAITING") {
                 arenaState = "WAITING";
-                document.getElementById('arena-timer').style.display = 'flex';
+                timerEl.style.display = 'flex';
                 document.getElementById('arena-overlay').style.display = 'none';
                 recalculateSectors();
             }
@@ -525,14 +545,12 @@
             const actionBtn = document.getElementById('arena-action-btn');
             
             if (hasUserBet) {
-                // Отмена ставки
                 socket.emit('cancel_bet', { id: userId });
                 userBalance += userBetAmount;
                 updateBalanceDisplay();
                 hasUserBet = false;
                 userBetAmount = 0;
             } else {
-                // Поставить ставку
                 const inputVal = parseFloat(document.getElementById('arena-bet-input').value);
                 if (!inputVal || inputVal <= 0) return alert('Введите сумму!');
                 if (userBalance < inputVal) return alert('Недостаточно средств!');
@@ -633,14 +651,14 @@
             }
         }
 
-        // Железобетонная 7-секундная анимация полета шарика
+        // Стабильный 7-секундный полет шарика без исчезновений
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 7000; // Ровно 7 секунд
+            let flightDuration = 7000; // 7 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -678,7 +696,6 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Автоматическое зачисление баланса победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
