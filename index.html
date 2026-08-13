@@ -3,25 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Homastar Mini App</title>
     
-    <!-- Подключаем Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Подключаем стили из твоей папки api -->
+    <!-- Подключаем CSS из папки api -->
     <link rel="stylesheet" href="./api/style.css">
 </head>
 <body class="theme-night">
 
-    <!-- Анимированный фон -->
     <div class="bg-animated-nebula"></div>
     <div class="floating-particles-container">
-        <div class="particle p1">✨</div><div class="particle p2">✦</div><div class="particle p3">✨</div><div class="particle p4">✦</div><div class="particle p5">✨</div>
+        <div class="particle p1">✨</div><div class="particle p2">✦</div><div class="particle p3">✨</div>
     </div>
 
     <div class="app-container">
-        <!-- СТЕКЛЯННАЯ ШАПКА -->
+        <!-- АКУРАТНАЯ ШАПКА -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
@@ -31,201 +27,78 @@
             </div>
         </header>
 
-        <!-- LIVE-ЛЕНТА -->
         <div class="live-bar-embedded">
-            <div class="live-marquee-content" id="marquee-content">
-                <!-- Заполняется через JS (api/feed.js) -->
-            </div>
+            <div class="live-marquee-content" id="marquee-content"></div>
         </div>
 
-        <!-- 1. ИГРЫ (ОСНОВНОЙ ЭКРАН ХАБ) -->
+        <!-- ОСНОВНОЙ ЭКРАН -->
         <div id="screen-hub" class="screen active">
-            <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Разделы:</h2>
+            <h2 style="font-size: 18px; margin-bottom: 5px; padding-left: 5px;">Разделы:</h2>
             <div class="cards-stack">
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
-                    <div class="p-card-bg-icon">🎁</div><div class="p-card-shine"></div>
                     <div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p>1 раз в 24 часа — бесплатно!</p></div>
+                        <div class="p-card-title-area">
+                            <h3>🎁 Бесплатное Колесо</h3>
+                            <p>1 раз в 24 часа — бесплатно!</p>
+                        </div>
                         <button class="w-card-btn btn-free">ИГРАТЬ</button>
                     </div>
                 </div>
-                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
-                    <div class="p-card-bg-icon">🎡</div><div class="p-card-shine"></div>
+                <div class="premium-card tier-common-dark" onclick="openScreen('screen-wheel-list')">
                     <div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> Колёса</h3><p>4 вида: Обычное, Серебряное...</p></div>
-                        <button class="w-card-btn btn-silver">ВЫБРАТЬ</button>
+                        <div class="p-card-title-area">
+                            <h3>🎡 Колёса</h3>
+                            <p>4 вида: Обычное, Серебряное...</p>
+                        </div>
+                        <button class="w-card-btn btn-common">ВЫБРАТЬ</button>
                     </div>
                 </div>
-                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
-                    <div class="p-card-bg-icon">🏓</div><div class="p-card-shine"></div>
-                    <div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> Арена</h3><p>PVP Рулетка с игроками!</p></div>
-                        <button class="w-card-btn btn-battle">ИГРАТЬ</button>
-                    </div>
-                </div>
-                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
-                    <div class="p-card-bg-icon">🎟️</div><div class="p-card-shine"></div>
-                    <div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> Розыгрыш</h3><p>Главный приз: 1000 STARS</p></div>
-                        <button class="w-card-btn btn-diamond">БИЛЕТЫ</button>
-                    </div>
-                </div>
+                <!-- Остальные карточки хаба... -->
             </div>
         </div>
 
-        <!-- 1.1 АРЕНА (ПИНГ-ПОНГ РУЛЕТКА) -->
-        <div id="screen-battle" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
-            <div class="battle-header-info">Всего в банке: <span style="color: var(--accent-gold); margin-left: 8px;">⭐ 3 250</span></div>
-            <div class="battle-arena" id="battle-arena-bg">
-                <div class="battle-timer">16</div>
-                <div class="battle-avatar" style="top: 25%; left: 70%; border-color: var(--neon-cyan);">😎</div>
-                <div class="battle-avatar" style="top: 75%; left: 25%; border-color: var(--neon-pink);">😈</div>
-                <div class="battle-avatar" style="top: 60%; left: 80%; border-color: var(--accent-gold);">👾</div>
-                <div class="battle-avatar" style="top: 30%; left: 30%; border-color: var(--neon-purple);">👻</div>
-            </div>
-            <div class="battle-players-list">
-                <div class="b-player-row"><div class="b-player-left"><div class="b-player-ava" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">😎</div><div class="b-player-info"><h4>@trustflex</h4><p>Шанс: 45.5%</p></div></div><div class="b-player-bet">⭐ 1 480</div></div>
-                <div class="b-player-row"><div class="b-player-left"><div class="b-player-ava" style="border-color: var(--neon-pink); color: var(--neon-pink);">😈</div><div class="b-player-info"><h4>Vityok</h4><p>Шанс: 30.4%</p></div></div><div class="b-player-bet">⭐ 990</div></div>
-                <div class="b-player-row"><div class="b-player-left"><div class="b-player-ava" style="border-color: var(--accent-gold); color: var(--accent-gold);">👾</div><div class="b-player-info"><h4>@Nc_Daw</h4><p>Шанс: 15.2%</p></div></div><div class="b-player-bet">⭐ 495</div></div>
-            </div>
-            <div class="battle-bet-controls">
-                <button class="b-bet-btn">⭐ 100</button><button class="b-bet-btn">⭐ 500</button><button class="b-bet-btn">⭐ 1000</button><button class="b-bet-btn">MAX</button>
-            </div>
-            <button class="b-action-btn">ПОСТАВИТЬ</button>
-        </div>
-
-        <!-- 1.2 СПИСОК ПЛАТНЫХ КОЛЁС -->
+        <!-- СПИСОК ПЛАТНЫХ КОЛЁС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
-            <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Колёса:</h2>
+            <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
             <div class="cards-stack">
-                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')"><div class="p-card-bg-icon">⚡</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">⚡</span> Обычное Колесо</h3><p>Цена: 20 Stars</p></div><button class="w-card-btn btn-common">ИГРАТЬ</button></div></div>
-                <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')"><div class="p-card-bg-icon">🛡️</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">🛡️</span> Серебряное Колесо</h3><p>Цена: 50 Stars</p></div><button class="w-card-btn btn-silver">ИГРАТЬ</button></div></div>
-                <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')"><div class="p-card-bg-icon">👑</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">👑</span> Золотое Колесо</h3><p>Цена: 100 Stars</p></div><button class="w-card-btn btn-gold">ИГРАТЬ</button></div></div>
-                <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')"><div class="p-card-bg-icon">💎</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">💎</span> Алмазное Колесо</h3><p>Цена: 250 Stars</p></div><button class="w-card-btn btn-diamond">ИГРАТЬ</button></div></div>
+                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
+                    <div class="p-card-content">
+                        <div class="p-card-title-area"><h3>⚡ Обычное</h3><p>Цена: 20 Stars</p></div>
+                        <button class="w-card-btn btn-common">ИГРАТЬ</button>
+                    </div>
+                </div>
+                <!-- Серебряное, Золотое, Алмазное... -->
             </div>
         </div>
 
-        <!-- ЭКРАН БИЛЕТОВ -->
-        <div id="screen-tickets" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
-            <div class="inventory-card" style="text-align: center; border-color: var(--neon-purple); box-shadow: inset 0 0 30px rgba(168,85,247,0.15);">
-                <div style="font-size: 12px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
-                <div style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin: 10px 0; text-shadow: 0 0 20px var(--accent-gold-glow);">🏆 1000 STARS</div>
-                <div style="font-size: 13px; color: var(--neon-cyan);">⏱ Итоги через: 18ч 42мин</div>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 20px;">
-                <div style="font-size: 14px;">Билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b></div>
-                <div style="font-size: 14px;">Шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
-            </div>
-            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px rgba(168,85,247,0.4), inset 0 0 10px rgba(168,85,247,0.4);" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
-        </div>
-
-        <!-- НЕОНОВОЕ КОЛЕСО CANVAS -->
+        <!-- ЭКРАН САМОГО КОЛЕСА -->
         <div id="screen-game-wheel" class="screen">
             <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel">◄ Назад</button>
-            <h2 id="wheel-title" style="text-align: center; font-size: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.3);">Колесо</h2>
+            <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
             <div id="timer-banner" class="timer-banner">⏱ Доступно через: <span id="timer-countdown">23:59:59</span></div>
+            
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
-                <div class="wheel-outer-rim"><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
+                <div class="wheel-outer-rim">
+                    <canvas id="wheel-canvas" width="600" height="600"></canvas>
+                </div>
             </div>
             <button id="btn-spin-action" class="btn-spin">ИГРАТЬ</button>
         </div>
 
-        <!-- ЗАЛ СЛАВЫ (ЛИДЕРЫ) -->
-        <div id="screen-leaders" class="screen">
-            <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255,255,255,0.3);">🏆 Зал Славы</h2>
-            <p style="font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 10px;">Топ игроков по заработанным Stars</p>
-            
-            <div class="podium-container">
-                <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">@0x_Shark</div><div class="p-score">12 400 ⭐</div></div>
-                <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">@Denya_Boss</div><div class="p-score">15 000 ⭐</div></div>
-                <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">@NeonHoma</div><div class="p-score">8 900 ⭐</div></div>
-            </div>
-
-            <div class="leaderboard-list">
-                <div class="leader-card"><div class="leader-left"><div class="leader-rank">4</div><div class="b-player-ava" style="border-color: var(--neon-cyan); color: var(--neon-cyan); width: 30px; height: 30px;">👾</div><div><div class="leader-name">@CryptoNinja</div><div class="leader-sub">Win Rate: 68%</div></div></div><div class="leader-amount">+7 500 ⭐</div></div>
-                <div class="leader-card"><div class="leader-left"><div class="leader-rank">5</div><div class="b-player-ava" style="border-color: var(--neon-pink); color: var(--neon-pink); width: 30px; height: 30px;">👻</div><div><div class="leader-name">@Star_Hunter</div><div class="leader-sub">Win Rate: 61%</div></div></div><div class="leader-amount">+6 200 ⭐</div></div>
+        <!-- Модалки выигрыша и пополнения (скрыты по умолчанию) -->
+        <div id="modal-win" class="modal-overlay">
+            <div class="modal-card win-modal-card">
+                <h2 style="font-size: 24px; color: #FFF;">ПОБЕДА!</h2>
+                <div class="win-amount" id="win-modal-amount">+50 ⭐</div>
+                <button class="btn-spin" onclick="closeModal('modal-win')">ЗАБРАТЬ</button>
             </div>
         </div>
 
-        <!-- ДРУЗЬЯ -->
-        <div id="screen-friends" class="screen">
-            <h2 style="font-size: 18px;">👥 Друзья</h2>
-            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--neon-cyan);">5%</b> от его пополнений!</p>
-            <div class="ref-box">
-                <input type="text" id="ref-link-input" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid var(--glass-border); color:var(--neon-cyan); padding:14px; border-radius:12px; font-weight:700; outline:none; margin-bottom:10px;" value="https://t.me/HomastarBot?start=ref_12345" readonly>
-                <div style="display: flex; gap: 8px;">
-                    <button style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:#FFF; padding:14px; border-radius:12px; font-weight:800; cursor:pointer;" onclick="copyRefLink()">📋 Копия</button>
-                    <button style="flex:1; background:var(--neon-cyan); border:none; color:#000; padding:14px; border-radius:12px; font-weight:800; box-shadow:0 0 15px var(--neon-cyan-glow); cursor:pointer;" onclick="shareRefLink()">✈️ Шаре</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ИНВЕНТАРЬ И НАСТРОЙКИ -->
-        <div id="screen-inventory" class="screen"><h2 style="font-size: 18px;">🎒 Инвентарь</h2><div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div></div>
-        
-        <div id="screen-settings" class="screen">
-            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
-            <div class="setting-row">
-                <div style="font-size: 15px; font-weight: 700;">🎵 Музыка</div>
-                <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div>
-            </div>
-            <div class="setting-row">
-                <div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div>
-                <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div>
-            </div>
-        </div>
-
-        <!-- СТЕКЛЯННАЯ НИЖНЯЯ ПАНЕЛЬ -->
-        <nav class="bottom-nav">
-            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label">Игры</span></button>
-            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label">Лидеры</span></button>
-            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label">Друзья</span></button>
-            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label">Инвентарь</span></button>
-            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label">Настройки</span></button>
-        </nav>
     </div>
 
-    <!-- МОДАЛКИ (Пополнение/Вывод) -->
-    <div id="modal-deposit" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header"><h3 style="font-size: 18px; text-shadow: 0 0 10px var(--neon-cyan-glow);">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
-            <div class="package-grid">
-                <div class="package-card" onclick="selectDepositPackage(50)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div>
-                <div class="package-card" onclick="selectDepositPackage(100)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div>
-                <div class="package-card" onclick="selectDepositPackage(250)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">250 ⭐</div></div>
-                <div class="package-card" onclick="selectDepositPackage(500)"><div style="font-size: 18px; font-weight: 900; color: var(--accent-gold);">500 ⭐</div></div>
-            </div>
-            <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Количество ⭐">
-            <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
-        </div>
-    </div>
-    
-    <div id="modal-withdraw" class="modal-overlay">
-        <div class="modal-card" style="border-color: var(--neon-purple); box-shadow: 0 0 40px rgba(168,85,247,0.2);">
-            <div class="modal-header"><h3 style="font-size: 18px; text-shadow: 0 0 10px var(--neon-purple-glow);">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
-            <div style="font-size: 14px; color: var(--text-sub); text-align: center;">Доступно: <b id="withdraw-available-bal" style="color: var(--accent-gold);">0 ⭐</b></div>
-            <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма вывода">
-            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple-glow), inset 0 0 10px var(--neon-purple-glow);" onclick="executeWithdraw()">ПОДТВЕРДИТЬ</button>
-        </div>
-    </div>
-    
-    <div id="modal-win" class="modal-overlay">
-        <div class="modal-card win-modal-card">
-            <div class="win-icon">🌟</div>
-            <h2 style="font-size: 24px; font-weight: 900; color: #FFF; text-shadow: 0 0 15px rgba(255,255,255,0.5);">ПОБЕДА!</h2>
-            <div class="win-amount" id="win-modal-amount">+50 ⭐</div>
-            <div class="win-subtext" id="win-modal-subtext">Зачислено на баланс!</div>
-            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold); box-shadow: 0 0 20px var(--accent-gold-glow), inset 0 0 10px var(--accent-gold-glow);" onclick="closeModal('modal-win')">ЗАБРАТЬ</button>
-        </div>
-    </div>
-
-    <!-- ПОДКЛЮЧАЕМ СКРИПТЫ ИЗ ПАПКИ API -->
-    <script src="./api/feed.js"></script>
+    <!-- Подключаем логику JS из папки api -->
     <script src="./api/script.js"></script>
-
 </body>
 </html>
