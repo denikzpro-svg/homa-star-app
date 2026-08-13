@@ -292,7 +292,7 @@
             </div>
         </div>
 
-        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД С БОТАМИ И ТАЙМЕРОМ НА 10 ЧАСОВ) -->
+        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: 20⭐, 1 БИЛЕТ НА РУКИ, ТАЙМЕР 10 ЧАСОВ, МЕЖДУНАРОДНЫЕ НИКИ, 99% БОТЫ / 1% ЧЕЛОВЕК) -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
@@ -301,14 +301,14 @@
                 <div style="font-size: 13px; color: var(--neon-cyan);">⏱ Итоги через: <span id="giveaway-timer">10:00:00</span></div>
             </div>
             <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 12px;">
-                <div>Твои билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b> / 5 макс</div>
+                <div>Твой билет: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b> / 1 макс</div>
                 <div>Твой шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
             </div>
-            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()">КУПИТЬ БИЛЕТ (50 ⭐)</button>
+            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
             
             <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;">Участники розыгрыша:</div>
             <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;">
-                <!-- Динамический список участников и ботов -->
+                <!-- Список участников -->
             </div>
         </div>
 
@@ -377,7 +377,7 @@
 
     <script>
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '1040');
-        let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
+        let userHasTicket = localStorage.getItem('homastar_has_ticket') === 'true';
         let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
         
         function updateBalanceDisplay() {
@@ -423,59 +423,108 @@
         }
 
         // ==========================================
-        // ЛОГИКА РОЗЫГРЫША (1000 ЗВЁЗД, 10 ЧАСОВ, БОТЫ И МАКС 5 БИЛЕТОВ)
+        // ЛОГИКА РОЗЫГРЫША (1000 ЗВЁЗД, 20⭐, 1 БИЛЕТ, БОТЫ 99% / ЧЕЛОВЕК 1%)
         // ==========================================
-        let giveawayParticipants = [
-            { name: "Alexander", tickets: 3, avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Maxim", tickets: 2, avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Dmitriy", tickets: 4, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Sergey", tickets: 2, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" }
+        let giveawayParticipants = [];
+        let giveawaySecondsLeft = 36000; // 10 часов
+
+        const availableBots = [
+            { name: "Илья", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" },
+            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Лёха Жми на газ", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Malik", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Sanek_777", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" },
+            { name: "John", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&crop=faces" }
         ];
 
-        let giveawaySecondsLeft = 36000; // 10 часов в секундах
+        function maybeAddBot() {
+            if (giveawayParticipants.length < 12 && Math.random() < 0.4) {
+                let randomBot = availableBots[Math.floor(Math.random() * availableBots.length)];
+                if (!giveawayParticipants.some(p => p.name === randomBot.name)) {
+                    giveawayParticipants.push(randomBot);
+                    updateTicketUI();
+                }
+            }
+        }
+        setInterval(maybeAddBot, 45000);
 
         function updateGiveawayTimer() {
             let h = Math.floor(giveawaySecondsLeft / 3600);
             let m = Math.floor((giveawaySecondsLeft % 3600) / 60);
             let s = giveawaySecondsLeft % 60;
-            document.getElementById('giveaway-timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            let timerEl = document.getElementById('giveaway-timer');
+            if (timerEl) {
+                timerEl.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }
             
             if (giveawaySecondsLeft > 0) {
                 giveawaySecondsLeft--;
             } else {
-                // Таймер дошел до конца — розыгрыш завершается (побеждает бот в 99% случаев)
                 giveawaySecondsLeft = 36000;
-                userTickets = 0;
-                localStorage.setItem('homastar_tickets', '0');
-                alert("Тираж завершен! Победителем стал участник Alexander (выиграл 1000 Stars). Новый тираж запущен!");
+                
+                // Шанс 99% на победу бота, 1% на победу реального человека
+                let isUserWinner = false;
+                if (userHasTicket && Math.random() < 0.01) {
+                    isUserWinner = true;
+                }
+
+                if (isUserWinner) {
+                    userBalance += 1000;
+                    updateBalanceDisplay();
+                    showWinPopup("+1000 ⭐", "ЛЕГЕНДАРНЫЙ ЗАНОС!");
+                } else {
+                    let winnerBot = availableBots[Math.floor(Math.random() * availableBots.length)].name;
+                    alert(`Тираж завершен! Победителем стал ${winnerBot} (забрал 1000 Stars). Новый тираж запущен, места свободны!`);
+                }
+
+                userHasTicket = false;
+                localStorage.setItem('homastar_has_ticket', 'false');
+                giveawayParticipants = []; 
                 updateTicketUI();
             }
         }
         setInterval(updateGiveawayTimer, 1000);
 
         function buyTicket() {
-            if (userTickets >= 5) return alert("Максимум можно купить 5 билетов на один розыгрыш!");
-            if (userBalance < 50) return openModal('modal-deposit');
+            if (userHasTicket) return alert("У тебя уже есть 1 билет на этот тираж! Больше нельзя.");
+            if (userBalance < 20) return openModal('modal-deposit');
 
-            userBalance -= 50;
-            userTickets++;
+            userBalance -= 20;
+            userHasTicket = true;
             updateBalanceDisplay();
-            localStorage.setItem('homastar_tickets', userTickets.toString());
+            localStorage.setItem('homastar_has_ticket', 'true');
             updateTicketUI();
-            alert("Билет успешно куплен за 50 ⭐!");
+            alert("Билет успешно куплен за 20 ⭐!");
         }
 
         function updateTicketUI() {
-            document.getElementById('user-tickets-count').innerText = userTickets;
-            let totalTicketsPool = userTickets + giveawayParticipants.reduce((sum, p) => sum + p.tickets, 0);
-            let chance = totalTicketsPool > 0 ? ((userTickets / totalTicketsPool) * 100).toFixed(1) : 0;
-            document.getElementById('user-win-chance').innerText = `${chance}%`;
+            let countEl = document.getElementById('user-tickets-count');
+            let chanceEl = document.getElementById('user-win-chance');
+            let btnEl = document.getElementById('btn-buy-ticket');
+            
+            if (countEl) countEl.innerText = userHasTicket ? "1" : "0";
+            
+            let totalPlayers = (userHasTicket ? 1 : 0) + giveawayParticipants.length;
+            let chance = totalPlayers > 0 ? ((1 / totalPlayers) * 100).toFixed(1) : 0;
+            if (chanceEl) chanceEl.innerText = `${userHasTicket ? chance : 0}%`;
+
+            if (btnEl) {
+                if (userHasTicket) {
+                    btnEl.innerText = "БИЛЕТ КУПЛЕН (ЖДИ ИТОГОВ)";
+                    btnEl.classList.add('disabled');
+                } else {
+                    btnEl.innerText = "КУПИТЬ БИЛЕТ (20 ⭐)";
+                    btnEl.classList.remove('disabled');
+                }
+            }
 
             let listEl = document.getElementById('giveaway-participants-list');
+            if (!listEl) return;
             listEl.innerHTML = '';
             
-            // Добавляем реального игрока в список, если у него есть билеты
-            if (userTickets > 0) {
+            if (userHasTicket) {
                 let userRow = document.createElement('div');
                 userRow.className = 'b-player-row';
                 userRow.innerHTML = `
@@ -487,12 +536,11 @@
                             <h4 style="color:var(--accent-gold);">${userName} (Ты)</h4>
                         </div>
                     </div>
-                    <div class="b-player-bet">${userTickets} билет(а)</div>
+                    <div class="b-player-bet">1 билет</div>
                 `;
                 listEl.appendChild(userRow);
             }
 
-            // Добавляем ботов
             giveawayParticipants.forEach(p => {
                 let row = document.createElement('div');
                 row.className = 'b-player-row';
@@ -505,7 +553,7 @@
                             <h4>${p.name}</h4>
                         </div>
                     </div>
-                    <div class="b-player-bet" style="color:var(--text-sub);">${p.tickets} билет(а)</div>
+                    <div class="b-player-bet" style="color:var(--text-sub);">1 билет</div>
                 `;
                 listEl.appendChild(row);
             });
@@ -527,6 +575,10 @@
             transports: ['websocket', 'polling']
         });
         const userId = 'user_' + Math.floor(Math.random() * 100000);
+
+        let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
+        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces";
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
@@ -971,6 +1023,7 @@
         window.onload = function() {
             updateBalanceDisplay();
             initLiveTicker();
+            updateTicketUI();
             if (window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }
         };
     </script>
