@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <!-- ПРЕМИАЛЬНЫЙ HOMASTAR APP v2.0 -->
-    <!-- ПОЛНЫЙ ИСХОДНЫЙ КОД -->
+    <!-- ПОЛНЫЙ ИСХОДНЫЙ КОД С ИНТЕГРАЦИЕЙ ВИБРАЦИИ И ЗАЩИТЫ -->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <meta charset="UTF-8">
@@ -37,6 +37,9 @@
             /* Цвета для инвентаря */
             --inv-bg-dark: rgba(8, 12, 20, 0.9);
             --inv-border-accent: rgba(255, 215, 0, 0.3);
+            --inv-text-ready: #FFD700;
+            --inv-text-locked: #556B8D;
+            --haptic-btn-bg: rgba(255, 255, 255, 0.1);
         }
 
         /* ==========================================================================
@@ -1631,16 +1634,16 @@
         let currentSlideIndex = 0;
 
         function checkOnboarding() {
-            // Новый уникальный ключ v3, чтобы слайд-шоу ТОЧНО сработало заново при перезагрузке
-            const isSeen = localStorage.getItem('homastar_onboarding_seen_v3_' + userId);
+            // Новый уникальный ключ v4, чтобы слайд-шоу ТОЧНО сработало заново при перезагрузке для проверки
+            const isSeen = localStorage.getItem('homastar_onboarding_seen_v4_' + userId);
             
             if (!isSeen) {
                 document.getElementById('modal-onboarding').style.display = 'flex';
                 currentSlideIndex = 0;
                 renderSlide();
             } else {
-                // Страховочный чек на бонус
-                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v3_' + userId);
+                // Страховочный чек на бонус, если игрок закрыл аппку до нажатия ЗАБРАТЬ
+                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v4_' + userId);
                 if (!isBonusGiven) {
                     document.getElementById('modal-welcome-bonus').style.display = 'flex';
                 }
@@ -1679,10 +1682,10 @@
             } else {
                 // Конец онбординга
                 document.getElementById('modal-onboarding').style.display = 'none';
-                localStorage.setItem('homastar_onboarding_seen_v3_' + userId, 'true');
+                localStorage.setItem('homastar_onboarding_seen_v4_' + userId, 'true');
 
                 // Показываем экран получения бонуса 50 звезд
-                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v3_' + userId);
+                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v4_' + userId);
                 if (!isBonusGiven) {
                     document.getElementById('modal-welcome-bonus').style.display = 'flex';
                 } else {
@@ -1695,7 +1698,7 @@
             haptic('heavy');
             // Выдаем 50 звезд в инвентарь
             addInventoryItem(50, "Стартовый бонус");
-            localStorage.setItem('homastar_start_bonus_given_v3_' + userId, 'true');
+            localStorage.setItem('homastar_start_bonus_given_v4_' + userId, 'true');
             
             document.getElementById('modal-welcome-bonus').style.display = 'none';
             openScreen('screen-inventory');
@@ -1841,8 +1844,15 @@
         }
 
         // --- 9. ИГРА: КОЛЕСО ФОРТУНЫ ---
+        // ХИТРАЯ МАТЕМАТИКА: 6 секторов (1, 5, 10, 20, 30, 50). Шанс на 1 звезду = 95%.
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
+            free: { 
+                title: '🎁 Бесплатное Колесо', 
+                price: 0, 
+                prizes: [1, 5, 10, 20, 30, 50], 
+                weights: [95, 3, 1, 0.6, 0.3, 0.1], // Хитрая вероятность, где 1 звезда падает в 95% случаев
+                icons: ['⭐', '✨', '💰', '💎', '👑', '🚀'] 
+            },
             common: { title: '⚡ Обычное Колесо', price: 20, prizes: [5, 10, 20, 50, 70, 100, 120], weights: [50, 30, 10, 5, 3, 1, 1], icons: ['⭐', '⭐', '✨', '💰', '💎', '👑', '🔥'] },
             silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [20, 30, 50, 70, 100, 150, 200], weights: [40, 25, 15, 10, 5, 3, 2], icons: ['⭐', '✨', '💰', '💰', '💎', '💎', '👑'] },
             gold: { title: '👑 Золотое Колесо', price: 100, prizes: [20, 50, 70, 100, 120, 150, 200, 250, 350], weights: [30, 25, 15, 10, 8, 5, 4, 2, 1], icons: ['⭐', '✨', '💰', '💰', '💎', '💎', '👑', '👑', '🏆'] },
