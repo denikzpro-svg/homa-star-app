@@ -637,14 +637,14 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА
+        // ЛОГИКА КОЛЕСА (БЕЗ НУЛЕЙ, С МИНИМАЛЬНЫМ ПРИЗОМ)
         // ==========================================
         const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 0, 100, 50, 10, 5, 0], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
-            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 5, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 15, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
+            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 20, 10, 5, 100, 50, 20, 10, 5], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
+            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 10, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 20, 10], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
         };
 
         let currentWheelType = 'free';
@@ -666,7 +666,7 @@
                 ctx.save(); ctx.translate(radius, radius); ctx.rotate(angle + arc / 2);
                 ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#FFFFFF'; ctx.fillText(config.icons[i], radius - 80, 0);
                 ctx.font = '900 20px -apple-system, sans-serif'; ctx.textAlign = 'right'; 
-                let textVal = config.prizes[i] > 0 ? `+${config.prizes[i]}` : '0'; ctx.fillText(textVal, radius - 115, 0); ctx.restore();
+                let textVal = `+${config.prizes[i]}`; ctx.fillText(textVal, radius - 115, 0); ctx.restore();
             }
             ctx.beginPath(); ctx.fillStyle = '#0B0E17'; ctx.arc(radius, radius, 50, 0, 2 * Math.PI); ctx.fill();
             ctx.strokeStyle = '#00F3FF'; ctx.lineWidth = 4; ctx.stroke();
@@ -718,13 +718,9 @@
                 btn.innerText = 'ИГРАТЬ';
 
                 const prize = config.prizes[winningIndex];
-                if (prize > 0) {
-                    userBalance += prize;
-                    updateBalanceDisplay();
-                    showWinPopup(`+${prize} ⭐`, "ПОБЕДА!");
-                } else {
-                    alert("В этот раз не повезло!");
-                }
+                userBalance += prize;
+                updateBalanceDisplay();
+                showWinPopup(`+${prize} ⭐`, "ПОБЕДА!");
             }, 6000);
         }
 
