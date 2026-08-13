@@ -148,13 +148,14 @@
         .custom-bet-submit.cancel { background: #FF4444; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
         .custom-bet-submit.disabled { background: var(--glass-bg); color: var(--text-sub); box-shadow: none; pointer-events: none; border: 1px solid var(--glass-border); }
 
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 30px; }
+        /* Подиум Зала Славы (Скорректирован по высоте, чтобы Лев не перекрывал шапку) */
+        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 45px; }
         .podium-step { display: flex; flex-direction: column; align-items: center; background: var(--glass-bg); border-radius: 20px 20px 8px 8px; border: 1px solid var(--glass-border); padding: 12px 6px; width: 30%; text-align: center; position: relative; }
-        .podium-1 { height: 150px; border-color: var(--accent-gold); z-index: 2; transform: translateY(-15px); }
-        .podium-2 { height: 120px; border-color: #C0C0C0; }
-        .podium-3 { height: 100px; border-color: #CD7F32; }
-        .p-ava { font-size: 32px; margin-bottom: 10px; } .podium-1 .p-ava { font-size: 44px; margin-top: -35px; }
-        .p-crown { position: absolute; top: -50px; font-size: 32px; filter: drop-shadow(0 0 15px var(--accent-gold)); }
+        .podium-1 { height: 130px; border-color: var(--accent-gold); z-index: 2; transform: translateY(-10px); }
+        .podium-2 { height: 110px; border-color: #C0C0C0; }
+        .podium-3 { height: 95px; border-color: #CD7F32; }
+        .p-ava { font-size: 30px; margin-bottom: 6px; } .podium-1 .p-ava { font-size: 38px; margin-top: -25px; }
+        .p-crown { position: absolute; top: -40px; font-size: 28px; filter: drop-shadow(0 0 12px var(--accent-gold)); }
         .p-name { font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; width: 100%; white-space: nowrap; }
         .p-score { font-size: 13px; font-weight: 900; color: var(--accent-gold); }
 
@@ -187,15 +188,18 @@
         .ref-btn.copy { background: rgba(255,255,255,0.1); color: #FFF; border: 1px solid var(--glass-border); }
         .ref-btn.share { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan-glow); }
 
-        /* Слайд-шоу и инвентарь бонуса */
-        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 17, 0.95); backdrop-filter: blur(10px); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .onboarding-card { background: rgba(15, 20, 35, 0.95); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 30px var(--neon-cyan-glow); display: flex; flex-direction: column; align-items: center; gap: 16px; }
-        .slide-icon { font-size: 64px; margin-bottom: 5px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
-        .slide-title { font-size: 22px; font-weight: 900; color: #FFF; letter-spacing: 1px; }
-        .slide-desc { font-size: 14px; color: var(--text-sub); line-height: 1.4; padding: 0 10px; }
-        .slide-dots { display: flex; gap: 6px; margin: 10px 0; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
-        .dot.active { background: var(--neon-cyan); width: 24px; border-radius: 4px; box-shadow: 0 0 10px var(--neon-cyan); }
+        /* Полноэкранное Слайд-шоу с верхними индикаторами */
+        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 17, 0.98); backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; justify-content: space-between; padding: 24px 20px; }
+        .onboarding-progress-container { display: flex; gap: 6px; width: 100%; margin-bottom: 20px; }
+        .onboarding-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; transition: 0.3s; }
+        .onboarding-bar .fill { width: 0%; height: 100%; background: var(--neon-cyan); transition: width 0.4s ease; box-shadow: 0 0 10px var(--neon-cyan); }
+        .onboarding-bar.active .fill { width: 100%; }
+        .onboarding-bar.passed .fill { width: 100%; }
+        
+        .onboarding-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex: 1; gap: 20px; }
+        .slide-icon { font-size: 80px; filter: drop-shadow(0 0 20px var(--neon-cyan-glow)); }
+        .slide-title { font-size: 26px; font-weight: 900; color: #FFF; letter-spacing: 1px; }
+        .slide-desc { font-size: 15px; color: var(--text-sub); line-height: 1.5; padding: 0 10px; }
     </style>
 </head>
 <body class="theme-night">
@@ -219,30 +223,30 @@
 
         <!-- 1. ХАБ -->
         <div id="screen-hub" class="screen active">
-            <h2 style="font-size: 18px; margin-bottom: 5px;">Разделы:</h2>
+            <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="sections">Разделы:</h2>
             <div class="cards-stack">
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
                     <div class="p-card-bg-icon">🎁</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p>1 раз в 24 часа — бесплатно!</p></div>
-                        <button class="w-card-btn btn-free">ИГРАТЬ</button>
+                        <div class="p-card-title-area"><h3 data-tr="card_free_title"><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p data-tr="card_free_desc">1 раз в 24 часа — бесплатно!</p></div>
+                        <button class="w-card-btn btn-free" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
                     <div class="p-card-bg-icon">🎡</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> Колёса</h3><p>4 вида: Обычное, Серебряное...</p></div>
-                        <button class="w-card-btn btn-silver">ВЫБРАТЬ</button>
+                        <div class="p-card-title-area"><h3 data-tr="card_wheels_title"><span class="t-icon">🎡</span> Колёса</h3><p data-tr="card_wheels_desc">4 вида: Обычное, Серебряное...</p></div>
+                        <button class="w-card-btn btn-silver" data-tr="btn_select">ВЫБРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
                     <div class="p-card-bg-icon">🏓</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> Арена</h3><p>PVP Рулетка с игроками!</p></div>
-                        <button class="w-card-btn btn-battle">ИГРАТЬ</button>
+                        <div class="p-card-title-area"><h3 data-tr="card_arena_title"><span class="t-icon">🏓</span> Арена</h3><p data-tr="card_arena_desc">PVP Рулетка с игроками!</p></div>
+                        <button class="w-card-btn btn-battle" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
                     <div class="p-card-bg-icon">🎟️</div><div class="p-card-content">
-                        <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> Розыгрыш</h3><p>Главный приз: 1000 STARS</p></div>
-                        <button class="w-card-btn btn-diamond">БИЛЕТЫ</button>
+                        <div class="p-card-title-area"><h3 data-tr="card_giveaway_title"><span class="t-icon">🎟️</span> Розыгрыш</h3><p data-tr="card_giveaway_desc">Главный приз: 1000 STARS</p></div>
+                        <button class="w-card-btn btn-diamond" data-tr="btn_tickets">БИЛЕТЫ</button>
                     </div>
                 </div>
             </div>
@@ -250,27 +254,27 @@
 
         <!-- 2. СПИСОК КОЛЁС -->
         <div id="screen-wheel-list" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
-            <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
+            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="card_wheels_title">Колёса:</h2>
             <div class="cards-stack">
                 <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
-                    <div class="p-card-content"><div class="p-card-title-area"><h3>⚡ Обычное</h3><p>Цена: 20 Stars</p></div><button class="w-card-btn btn-common">ИГРАТЬ</button></div>
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>⚡ Обычное</h3><p>Цена: 20 Stars</p></div><button class="w-card-btn btn-common" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
                 <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
-                    <div class="p-card-content"><div class="p-card-title-area"><h3>🛡️ Серебряное</h3><p>Цена: 50 Stars</p></div><button class="w-card-btn btn-silver">ИГРАТЬ</button></div>
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>🛡️ Серебряное</h3><p>Цена: 50 Stars</p></div><button class="w-card-btn btn-silver" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
                 <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
-                    <div class="p-card-content"><div class="p-card-title-area"><h3>👑 Золотое</h3><p>Цена: 100 Stars</p></div><button class="w-card-btn btn-gold">ИГРАТЬ</button></div>
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>👑 Золотое</h3><p>Цена: 100 Stars</p></div><button class="w-card-btn btn-gold" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
                 <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
-                    <div class="p-card-content"><div class="p-card-title-area"><h3>💎 Алмазное</h3><p>Цена: 250 Stars</p></div><button class="w-card-btn btn-diamond">ИГРАТЬ</button></div>
+                    <div class="p-card-content"><div class="p-card-title-area"><h3>💎 Алмазное</h3><p>Цена: 250 Stars</p></div><button class="w-card-btn btn-diamond" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
             </div>
         </div>
 
         <!-- 3. ИГРОВОЕ КОЛЕСО -->
         <div id="screen-game-wheel" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel" data-tr="btn_back">◄ Назад</button>
             <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
@@ -281,9 +285,9 @@
 
         <!-- 4. АРЕНА -->
         <div id="screen-battle" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
             <div class="battle-header-info">
-                <span style="color: var(--text-sub); font-size:13px;">Общий Банк:</span>
+                <span style="color: var(--text-sub); font-size:13px;" data-tr="total_bank">Общий Банк:</span>
                 <span id="arena-total-bank" style="color: var(--accent-gold); font-size: 16px;">⭐ 0</span>
             </div>
             
@@ -307,97 +311,108 @@
 
             <div class="custom-bet-row">
                 <input type="number" id="arena-bet-input" class="custom-bet-input" placeholder="Сумма ⭐">
-                <button class="custom-bet-submit" id="arena-action-btn" onclick="handleBetAction()">ПОСТАВИТЬ</button>
+                <button class="custom-bet-submit" id="arena-action-btn" onclick="handleBetAction()" data-tr="btn_bet">ПОСТАВИТЬ</button>
             </div>
         </div>
 
         <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД) -->
         <div id="screen-tickets" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
-                <div style="font-size: 12px; color: var(--text-sub);">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
+                <div style="font-size: 12px; color: var(--text-sub);" data-tr="giveaway_main_prize">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin: 10px 0;">🏆 1000 STARS</div>
-                <div style="font-size: 13px; color: var(--neon-cyan);">⏱ Итоги через: <span id="giveaway-timer">10:00:00</span></div>
+                <div style="font-size: 13px; color: var(--neon-cyan);" data-tr="giveaway_timer_label">⏱ Итоги через: <span id="giveaway-timer">10:00:00</span></div>
             </div>
             <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 12px;">
-                <div>Твой билет: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b> / 1 макс</div>
-                <div>Твой шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
+                <div data-tr="my_ticket">Твой билет: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b> / 1 макс</div>
+                <div data-tr="my_chance">Твой шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
             </div>
-            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
+            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()" data-tr="btn_buy_ticket">КУПИТЬ БИЛЕТ (20 ⭐)</button>
             
-            <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;">Участники розыгрыша:</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;" data-tr="participants">Участники розыгрыша:</div>
             <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;"></div>
         </div>
 
-        <!-- 6. ЗАЛ СЛАВЫ -->
+        <!-- 6. ЗАЛ СЛАВЫ (Лидеры с исправленным подиумом и солидными никами) -->
         <div id="screen-leaders" class="screen">
-            <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px;">🏆 Зал Славы</h2>
+            <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px;" data-tr="hall_of_fame">🏆 Зал Славы</h2>
             <div class="podium-container">
-                <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">@0x_Shark</div><div class="p-score">12 400 ⭐</div></div>
-                <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">@Denya_Boss</div><div class="p-score">15 000 ⭐</div></div>
-                <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">@NeonHoma</div><div class="p-score">8 900 ⭐</div></div>
+                <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">Alexander</div><div class="p-score">12 400 ⭐</div></div>
+                <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">Maksim</div><div class="p-score">15 000 ⭐</div></div>
+                <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">Dmitriy</div><div class="p-score">8 900 ⭐</div></div>
             </div>
         </div>
 
         <!-- 7. ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
             <div class="friends-hero">
                 <div style="font-size: 38px; margin-bottom: 8px;">🤝</div>
-                <h3>Приглашай друзей</h3>
-                <p>Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого приглашенного друга и пожизненные <b style="color: var(--neon-cyan);">5%</b> от всех его пополнений баланса!</p>
+                <h3 data-tr="ref_title">Приглашай друзей</h3>
+                <p data-tr="ref_desc">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого приглашенного друга и пожизненные <b style="color: var(--neon-cyan);">5%</b> от всех его пополнений баланса!</p>
             </div>
             <div class="ref-box-big">
-                <div style="font-size: 12px; color: var(--text-sub); text-align: center; font-weight: 800;">ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА</div>
+                <div style="font-size: 12px; color: var(--text-sub); text-align: center; font-weight: 800;" data-tr="ref_link_title">ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА</div>
                 <input type="text" id="ref-link-input" class="ref-link-field" value="https://t.me/HomastarBot?start=ref_123" readonly>
                 <div class="ref-actions">
-                    <button class="ref-btn copy" onclick="copyRefLink()">📋 Копировать</button>
-                    <button class="ref-btn share" onclick="shareRefLink()">✈️ Пригласить</button>
+                    <button class="ref-btn copy" onclick="copyRefLink()" data-tr="btn_copy">📋 Копировать</button>
+                    <button class="ref-btn share" onclick="shareRefLink()" data-tr="btn_share">✈️ Пригласить</button>
                 </div>
             </div>
             <div class="card-box" style="text-align: center; padding: 14px;">
-                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 4px;">ПРИГЛАШЕНО ДРУЗЕЙ</div>
-                <div style="font-size: 22px; font-weight: 900; color: var(--accent-gold);">0 челов</div>
+                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 4px;" data-tr="ref_invited">ПРИГЛАШЕНО ДРУЗЕЙ</div>
+                <div style="font-size: 22px; font-weight: 900; color: var(--accent-gold);" data-tr="ref_zero_friends">0 челов</div>
             </div>
         </div>
 
         <!-- 8. ИНВЕНТАРЬ (СЕЙФ С БОНУСОМ НА 21 ДЕНЬ) -->
         <div id="screen-inventory" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
-            <h2 style="font-size: 18px; margin-bottom: 12px;">🎒 Инвентарь</h2>
+            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь</h2>
             
             <div class="card-box" style="border-color: var(--accent-gold); background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(12,16,28,0.8));">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
                     <div style="font-size: 36px;">🎁</div>
                     <div>
-                        <h3 style="font-size: 15px; font-weight: 900; color: #FFF;">Стартовый бонус</h3>
-                        <p style="font-size: 13px; color: var(--accent-gold); font-weight: 800;">50 ⭐ в сейфе</p>
+                        <h3 style="font-size: 15px; font-weight: 900; color: #FFF;" data-tr="bonus_title">Стартовый бонус</h3>
+                        <p style="font-size: 13px; color: var(--accent-gold); font-weight: 800;" data-tr="bonus_amount">50 ⭐ в сейфе</p>
                     </div>
                 </div>
-                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4;">Приветственный бонус размораживается через 21 день. Следите за таймером!</p>
+                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4;" data-tr="bonus_desc">Приветственный бонус размораживается через 21 день. Следите за таймером!</p>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--glass-border);">
-                    <span style="font-size: 12px; color: var(--text-sub);">До разморозки:</span>
+                    <span style="font-size: 12px; color: var(--text-sub);" data-tr="bonus_timer_label">До разморозки:</span>
                     <span id="inv-bonus-countdown" style="font-size: 13px; font-weight: 900; color: var(--neon-cyan);">21д 00ч 00м 00с</span>
                 </div>
 
-                <button id="inv-btn-claim" class="btn-spin disabled" style="margin-top: 0; padding: 12px; font-size: 14px;" onclick="claimWelcomeBonus()">ЗАБРАТЬ</button>
+                <button id="inv-btn-claim" class="btn-spin disabled" style="margin-top: 0; padding: 12px; font-size: 14px;" onclick="claimWelcomeBonus()" data-tr="btn_claim">ЗАБРАТЬ</button>
             </div>
         </div>
 
+        <!-- НАСТРОЙКИ (С ПЕРЕКЛЮЧАТЕЛЕМ ЯЗЫКОВ) -->
         <div id="screen-settings" class="screen">
-            <h2 style="font-size: 18px; margin-bottom: 15px;">⚙️ Настройки аудио</h2>
-            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-size: 18px; margin-bottom: 15px;" data-tr="nav_settings">⚙️ Настройки</h2>
+            
+            <!-- ЯЗЫК -->
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                 <div>
-                    <div style="font-size: 15px; font-weight: 700;">🎵 Фоновая музыка</div>
-                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Спокойный релакс на фоне</div>
+                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_lang">🌐 Язык / Language</div>
+                </div>
+                <select id="language-select" onchange="changeLanguage(this.value)" style="background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 8px 12px; border-radius: 12px; font-weight: 700; outline: none;">
+                    <option value="ru" selected>Русский</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                <div>
+                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_music">🎵 Фоновая музыка</div>
                 </div>
                 <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div>
             </div>
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size: 15px; font-weight: 700;">🔊 Игровые звуки</div>
-                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Колесо, пинг-понг арены, заносы</div>
+                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_sfx">🔊 Игровые звуки</div>
                 </div>
                 <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div>
             </div>
@@ -405,60 +420,181 @@
 
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
-            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label">Игры</span></button>
-            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label">Лидеры</span></button>
-            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label">Друзья</span></button>
-            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label">Инвентарь</span></button>
-            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label">Настройки</span></button>
+            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span></button>
+            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label" data-tr="nav_leaders">Лидеры</span></button>
+            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span></button>
+            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label" data-tr="nav_inventory">Инвентарь</span></button>
+            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label" data-tr="nav_settings">Настройки</span></button>
         </nav>
     </div>
 
-    <!-- МОДАЛКА ОНБОРДИНГА С СОЧНЫМ МАРКЕТИНГОМ -->
+    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ С ЭЛИТНЫМИ ТЕКСТАМИ И ИНДИКАТОРОМ СВЕРХУ) -->
     <div id="modal-onboarding" class="onboarding-overlay">
-        <div class="onboarding-card">
-            <div id="slide-icon" class="slide-icon">🎁</div>
-            <h2 id="slide-title" class="slide-title">Добро пожаловать в Homastar!</h2>
-            <p id="slide-desc" class="slide-desc">Забудь про копейки. Здесь ты можешь поднять реальное состояние за секунды!</p>
-            
-            <div class="slide-dots">
-                <div class="dot active" id="dot-0"></div>
-                <div class="dot" id="dot-1"></div>
-                <div class="dot" id="dot-2"></div>
-                <div class="dot" id="dot-3"></div>
-            </div>
-
-            <button class="btn-spin" id="slide-btn" onclick="nextSlide()">ДАЛЕЕ</button>
+        <div class="onboarding-progress-container" id="onboarding-bars">
+            <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
+            <div class="onboarding-bar" id="bar-1"><div class="fill"></div></div>
+            <div class="onboarding-bar" id="bar-2"><div class="fill"></div></div>
+            <div class="onboarding-bar" id="bar-3"><div class="fill"></div></div>
         </div>
+
+        <div class="onboarding-content">
+            <div id="slide-icon" class="slide-icon">🎁</div>
+            <h2 id="slide-title" class="slide-title">ЕЖЕДНЕВНЫЕ НАГРАДЫ</h2>
+            <p id="slide-desc" class="slide-desc">Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков.</p>
+        </div>
+
+        <button class="btn-spin" id="slide-btn" onclick="nextSlide()">ДАЛЕЕ</button>
     </div>
 
-    <!-- МОДАЛКА СТАНДАРТНАЯ -->
+    <!-- МОДАЛКИ СТАНДАРТНЫЕ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_deposit">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
             <div class="package-grid"><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 50"><div style="font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 100"><div style="font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div></div>
             <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Сумма ⭐">
-            <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
+            <button class="btn-spin" onclick="executeDeposit()" data-tr="btn_deposit">ПОПОЛНИТЬ</button>
         </div>
     </div>
     <div id="modal-withdraw" class="modal-overlay">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
-            <div style="font-size: 14px; color: var(--text-sub); text-align: center; margin-top:10px;">Доступно: <b id="withdraw-available-bal" style="color: var(--accent-gold);">1040 ⭐</b></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_withdraw">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
+            <div style="font-size: 14px; color: var(--text-sub); text-align: center; margin-top:10px;"><span data-tr="available_bal">Доступно:</span> <b id="withdraw-available-bal" style="color: var(--accent-gold);">1040 ⭐</b></div>
             <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма ⭐">
-            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="executeWithdraw()">ВЫВЕСТИ</button>
+            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="executeWithdraw()" data-tr="btn_withdraw">ВЫВЕСТИ</button>
         </div>
     </div>
     <div id="modal-win" class="modal-overlay">
         <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
             <div style="font-size: 70px;">🌟</div><h2 id="win-modal-title" style="font-size: 24px; font-weight: 900; color: #FFF;">ПОБЕДА!</h2>
             <div id="win-modal-amount" style="font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">+50 ⭐</div>
-            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win')">ЗАБРАТЬ</button>
+            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win')" data-tr="btn_claim_win">ЗАБРАТЬ</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // АУДИО СИНТЕЗАТОР И ЗВУКОВЫЕ ЭФФЕКТЫ
+        // ЯЗЫКОВОЙ СЛОВАРЬ (РУССКИЙ / АНГЛИЙСКИЙ)
+        // ==========================================
+        const translations = {
+            ru: {
+                sections: "Разделы:",
+                card_free_title: "🎁 Бесплатное Колесо",
+                card_free_desc: "1 раз в 24 часа — бесплатно!",
+                card_wheels_title: "Колёса:",
+                card_wheels_desc: "4 вида: Обычное, Серебряное...",
+                card_arena_title: "Арена",
+                card_arena_desc: "PVP Рулетка с игроками!",
+                card_giveaway_title: "Розыгрыш",
+                card_giveaway_desc: "Главный приз: 1000 STARS",
+                btn_play: "ИГРАТЬ",
+                btn_select: "ВЫБРАТЬ",
+                btn_tickets: "БИЛЕТЫ",
+                btn_back: "◄ Назад",
+                total_bank: "Общий Банк:",
+                btn_bet: "ПОСТАВИТЬ",
+                giveaway_main_prize: "ГЛАВНЫЙ ПРИЗ ТИРАЖА",
+                giveaway_timer_label: "⏱ Итоги через:",
+                my_ticket: "Твой билет:",
+                my_chance: "Твой шанс:",
+                btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)",
+                participants: "Участники розыгрыша:",
+                hall_of_fame: "🏆 Зал Славы",
+                ref_title: "Приглашай друзей",
+                ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого приглашенного друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений баланса!",
+                ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА",
+                btn_copy: "📋 Копировать",
+                btn_share: "✈️ Пригласить",
+                ref_invited: "ПРИГЛАШЕНО ДРУЗЕЙ",
+                ref_zero_friends: "0 челов",
+                bonus_title: "Стартовый бонус",
+                bonus_amount: "50 ⭐ в сейфе",
+                bonus_desc: "Приветственный бонус размораживается через 21 день. Следите за таймером!",
+                bonus_timer_label: "До разморозки:",
+                btn_claim: "ЗАБРАТЬ",
+                settings_lang: "🌐 Язык / Language",
+                settings_music: "🎵 Фоновая музыка",
+                settings_sfx: "🔊 Игровые звуки",
+                nav_games: "Игры",
+                nav_leaders: "Лидеры",
+                nav_friends: "Друзья",
+                nav_inventory: "Инвентарь",
+                nav_settings: "Настройки",
+                modal_deposit: "💳 Пополнить",
+                btn_deposit: "ПОПОЛНИТЬ",
+                modal_withdraw: "📤 Вывод",
+                available_bal: "Доступно:",
+                btn_withdraw: "ВЫВЕСТИ",
+                btn_claim_win: "ЗАБРАТЬ"
+            },
+            en: {
+                sections: "Sections:",
+                card_free_title: "🎁 Free Wheel",
+                card_free_desc: "Once every 24 hours — free!",
+                card_wheels_title: "Wheels:",
+                card_wheels_desc: "4 types: Common, Silver...",
+                card_arena_title: "Arena",
+                card_arena_desc: "PVP Roulette with players!",
+                card_giveaway_title: "Giveaway",
+                card_giveaway_desc: "Grand prize: 1000 STARS",
+                btn_play: "PLAY",
+                btn_select: "SELECT",
+                btn_tickets: "TICKETS",
+                btn_back: "◄ Back",
+                total_bank: "Total Bank:",
+                btn_bet: "PLACE BET",
+                giveaway_main_prize: "MAIN PRIZE",
+                giveaway_timer_label: "⏱ Results in:",
+                my_ticket: "Your ticket:",
+                my_chance: "Your chance:",
+                btn_buy_ticket: "BUY TICKET (20 ⭐)",
+                participants: "Participants:",
+                hall_of_fame: "🏆 Hall of Fame",
+                ref_title: "Invite Friends",
+                ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each invited friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from all their deposits!",
+                ref_link_title: "YOUR REFERRAL LINK",
+                btn_copy: "📋 Copy",
+                btn_share: "✈️ Share",
+                ref_invited: "INVITED FRIENDS",
+                ref_zero_friends: "0 friends",
+                bonus_title: "Starting Bonus",
+                bonus_amount: "50 ⭐ in safe",
+                bonus_desc: "The welcome bonus unlocks in 21 days. Keep track of the timer!",
+                bonus_timer_label: "Time left:",
+                btn_claim: "CLAIM",
+                settings_lang: "🌐 Language",
+                settings_music: "🎵 Background Music",
+                settings_sfx: "🔊 Game Sounds",
+                nav_games: "Games",
+                nav_leaders: "Leaders",
+                nav_friends: "Friends",
+                nav_inventory: "Inventory",
+                nav_settings: "Settings",
+                modal_deposit: "💳 Deposit",
+                btn_deposit: "DEPOSIT",
+                modal_withdraw: "📤 Withdraw",
+                available_bal: "Available:",
+                btn_withdraw: "WITHDRAW",
+                btn_claim_win: "CLAIM"
+            }
+        };
+
+        let currentLang = localStorage.getItem('homastar_lang') || 'ru';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('homastar_lang', lang);
+            document.getElementById('language-select').value = lang;
+            
+            document.querySelectorAll('[data-tr]').forEach(el => {
+                const key = el.getAttribute('data-tr');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+        }
+
+        // ==========================================
+        // АУДИО СИНТЕЗАТОР (БЕЗ ЗВУКОВ КЛИКОВ)
         // ==========================================
         let audioCtx = null;
 
@@ -516,24 +652,6 @@
             } catch(e) {}
         }
 
-        function playPingSound() {
-            if (!settings.sfx) return;
-            initAudio();
-            try {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.08);
-            } catch(e) {}
-        }
-
         function playWinSound() {
             if (!settings.sfx) return;
             initAudio();
@@ -567,7 +685,7 @@
             localStorage.setItem('homastar_user_id', userId);
         }
 
-        let userName = tgUser && tgUser.first_name ? tgUser.first_name : (localStorage.getItem('homastar_username') || "Деня");
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : (localStorage.getItem('homastar_username') || "Maksim");
         localStorage.setItem('homastar_username', userName);
 
         let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : (localStorage.getItem('homastar_avatar') || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces");
@@ -619,13 +737,13 @@
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ И ИНВЕНТАРЯ (БОНУС 21 ДЕНЬ)
+        // ЛОГИКА СЛАЙД-ШОУ С ВЕРХНИМИ ИНДИКАТОРАМИ И ЭЛИТНЫМ КОНТЕКСТОМ
         // ==========================================
         const onboardingSlides = [
-            { icon: "🎁", title: "Бесплатное Колесо", desc: "Каждые 24 часа крути колесо абсолютно без риска и забирай свои стартовые звёзды на халяву!" },
-            { icon: "🎡", title: "Колёса на Звёзды", desc: "Рискуй по-взрослому! От Обычного до Алмазного колеса — преврати копейки в миллионы за секунду!" },
-            { icon: "🏓", title: "PvP Арена", desc: "Эпичные сражения с реальными игроками в реальном времени. Шарик решит, чей кошелек станет толще!" },
-            { icon: "🏆", title: "Розыгрыш 100 000 ⭐", desc: "Каждые 10 часов разыгрывается безумный куш! Залетай, покупай билет и стань миллионером прямо сейчас!" }
+            { icon: "🎁", title: "ЕЖЕДНЕВНЫЕ НАГРАДЫ", desc: "Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков." },
+            { icon: "🎡", title: "ФЛАГМАНСКИЕ ИГРОВЫЕ КОЛЁСА", desc: "Широкий выбор игровых сеток от классики до эксклюзива. Рискуй, побеждай и забирай заслуженные звёзды на свой счёт." },
+            { icon: "🏓", title: "PvP АРЕНА", desc: "Участвуй в эксклюзивных матчах на PvP арене, демонстрируй своё превосходство, зарабатывай звёзды и становись успешным вместе с нами." },
+            { icon: "🏆", title: "ГЛОБАЛЬНЫЙ РОЗЫГРЫШ", desc: "Стань частью элиты. Принимай участие в масштабных розыгрышах на 1000 звезд каждые 10 часов и достигай новых вершин финансовой независимости." }
         ];
 
         let currentSlideIndex = 0;
@@ -645,11 +763,17 @@
             document.getElementById('slide-title').innerText = slide.title;
             document.getElementById('slide-desc').innerText = slide.desc;
 
+            // Обновляем верхние полоски-индикаторы
             for (let i = 0; i < onboardingSlides.length; i++) {
-                const dot = document.getElementById(`dot-${i}`);
-                if (dot) {
-                    if (i === currentSlideIndex) dot.classList.add('active');
-                    else dot.classList.remove('active');
+                const bar = document.getElementById(`bar-${i}`);
+                if (bar) {
+                    if (i < currentSlideIndex) {
+                        bar.className = 'onboarding-bar passed';
+                    } else if (i === currentSlideIndex) {
+                        bar.className = 'onboarding-bar active';
+                    } else {
+                        bar.className = 'onboarding-bar';
+                    }
                 }
             }
 
@@ -739,7 +863,7 @@
             alert('Реферальная ссылка скопирована!'); 
         }
         function shareRefLink() { 
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, стань миллионером вместе со мной!`, '_blank'); 
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, стань успешным вместе со мной!`, '_blank'); 
         }
         
         function toggleSetting(type) { 
@@ -759,24 +883,22 @@
         // ЛОГИКА РОЗЫГРЫША
         // ==========================================
         let giveawayParticipants = [
-            { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
-            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Alexander", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Maksim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Dmitriy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
             { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" }
         ];
         let giveawaySecondsLeft = 36000;
 
         const availableBots = [
-            { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
-            { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Alexander", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Maksim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Dmitriy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
             { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Лёха Жми на газ", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=faces" },
+            { name: "Artyom", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=faces" },
             { name: "Malik", avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Sanek_777", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&h=100&fit=crop&crop=faces" },
-            { name: "John", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Анимешник 228", avatar: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Мемный король", avatar: "https://images.unsplash.com/photo-1563089145-599997674d42?w=100&h=100&fit=crop&crop=faces" }
+            { name: "Evgeny", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&h=100&fit=crop&crop=faces" },
+            { name: "John", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces" }
         ];
 
         function maybeAddBot() {
@@ -821,8 +943,8 @@
                 userHasTicket = false;
                 localStorage.setItem('homastar_has_ticket_' + userId, 'false');
                 giveawayParticipants = [
-                    { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
-                    { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" }
+                    { name: "Alexander", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
+                    { name: "Maksim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" }
                 ]; 
                 updateTicketUI();
             }
@@ -1366,6 +1488,7 @@
             initLiveTicker();
             updateTicketUI();
             checkOnboarding();
+            changeLanguage(currentLang);
             
             if (settings.music) {
                 startBgMusic();
