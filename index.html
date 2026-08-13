@@ -93,8 +93,8 @@
             flex-shrink: 0;
         }
 
-        #arena-canvas { width: 100%; height: 100%; display: block; }
-        #arena-avatars-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #arena-canvas { width: 100%; height: 100%; display: block; z-index: 1; position: relative; }
+        #arena-avatars-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
         .board-avatar {
             position: absolute; width: 32px; height: 32px; border-radius: 50%; 
             border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; 
@@ -108,7 +108,7 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 75px; height: 75px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px); 
             border-radius: 50%; border: 2px solid var(--glass-border); display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; font-size: 18px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
+            align-items: center; font-size: 18px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 15;
             text-align: center; padding: 4px;
         }
 
@@ -434,14 +434,14 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И ПОДТЯГИВАНИЕ РЕАЛЬНОГО ФОТО ИЗ TELEGRAM
+        // СОКЕТЫ И СТАБИЛЬНЫЙ ШАРИК ПОВЕРХ ВСЕГО (5 СЕКУНД)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
         });
         const userId = 'user_' + Math.floor(Math.random() * 100000);
 
-        // Получаем реальные данные пользователя из Telegram WebApp (если открыто в боте)
+        // Реальное фото и имя из Telegram
         let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
         let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
         let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces";
@@ -662,25 +662,26 @@
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
+            // ШАРИК РИСУЕТСЯ СТРОГО ПОСЛЕДНИМ — ПОВЕРХ ВСЕГО
             if (arenaState === 'PLAYING') {
                 ctx.beginPath();
                 ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = '#FFFFFF';
                 ctx.shadowColor = '#00F3FF';
-                ctx.shadowBlur = 25;
+                ctx.shadowBlur = 30;
                 ctx.fill();
                 ctx.shadowBlur = 0; 
             }
         }
 
-        // Стабильный полет шарика ровно 7 секунд
+        // Стабильный полет шарика ровно 5 секунд с моментальным зачислением
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 7000;
+            let flightDuration = 5000; // Ровно 5 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -695,13 +696,13 @@
                     let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
                     let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
                     
-                    ballX += (targetX - ballX) * 0.08;
-                    ballY += (targetY - ballY) * 0.08;
+                    ballX += (targetX - ballX) * 0.1;
+                    ballY += (targetY - ballY) * 0.1;
 
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
                         drawCanvasFrame();
-                        setTimeout(() => showArenaResult(winner, bankAmount), 400);
+                        setTimeout(() => showArenaResult(winner, bankAmount), 300);
                         return;
                     }
                 }
@@ -718,6 +719,7 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
+            // Моментальное зачисление победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
