@@ -360,7 +360,7 @@
     </div>
 
     <!-- =========================================
-         ПОЛНЫЙ JAVASCRIPT КОД С ЛОГИКОЙ
+         ПОЛНЫЙ JAVASCRIPT КОД С ЛОГИКОЙ И МАТЕМАТИКОЙ
     ========================================= -->
     <script>
         // БАЗОВЫЕ ПЕРЕМЕННЫЕ
@@ -373,13 +373,13 @@
         let userSpinCounts = JSON.parse(localStorage.getItem('homastar_spin_counts') || '{}');
         let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
 
-        // КОНФИГИ ВСЕХ 4 КОЛЁС + БЕСПЛАТНОЕ
+        // КОНФИГИ ВСЕХ 4 КОЛЁС + БЕСПЛАТНОЕ (БЕЗ НУЛЕЙ, С МЕЛКИМИ ВЫИГРЫШАМИ!)
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
-            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 0, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '❌', '❌'] },
-            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 0, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '❌', '❌'] },
-            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 0, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '❌', '❌'] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 0, 0], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '❌', '❌'] }
+            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 5, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [1000, 250, 125, 75, 60, 50, 35, 25, 15, 10], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [2500, 500, 250, 150, 120, 100, 75, 50, 30, 20], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
+            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [5000, 1000, 600, 400, 300, 250, 200, 100, 75, 50], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] }
         };
 
         function updateBalanceDisplay() {
@@ -438,7 +438,7 @@
             if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active'); 
         }
 
-        // ОТРИСОВКА БАРАБАНА (РАБОТАЕТ ДЛЯ ВСЕХ 4 КОЛЕС)
+        // ОТРИСОВКА БАРАБАНА
         function renderWheelDisc(type) {
             const canvas = document.getElementById('wheel-canvas');
             if (!canvas) return;
@@ -516,21 +516,30 @@
             openScreen('screen-game-wheel'); 
         }
 
-        // ХИТРАЯ МАТЕМАТИКА
+        // ХИТРАЯ МАТЕМАТИКА КОЭФФИЦИЕНТОВ (БЕЗ НУЛЕЙ + КАМБЭК)
         function calculatePrizeIndex(type) {
             const count = userSpinCounts[type] || 0; 
-            userSpinCounts[type] = count + 1; localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts)); 
+            userSpinCounts[type] = count + 1; 
+            localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts)); 
+            
             const rand = Math.random() * 100;
             
             if (type !== 'free') { 
-                if (count === 0) return 2; // Honeymoon: Первый раз дает сектор с индексом 2 (крупный куш)
-                // Акулий режим (медленный слив)
-                if (rand < 10) return 8; // Сектор 0
-                if (rand < 45) return 7; // Слив
-                if (rand < 80) return 6; // Слив
-                if (rand < 90) return 5; // В ноль
-                if (rand < 95) return 4; 
-                return 3; 
+                // 1. Honeymoon: Самая первая крутка - крупный куш (индекс 2)
+                if (count === 0) return 2; 
+
+                // 2. Второе дыхание (Камбэк): На 5-й или 6-й крутке даем хороший плюс!
+                if (count === 4 || count === 5) {
+                    return Math.random() > 0.5 ? 3 : 4; // Индекс 3 или 4 (хороший плюс)
+                }
+                
+                // 3. Акулий режим (слив баланса, но БЕЗ НУЛЕЙ, везде мелкие выплаты)
+                if (rand < 20) return 9; // Самая мелкая выплата (индекс 9)
+                if (rand < 45) return 8; // Мелкая выплата (индекс 8)
+                if (rand < 75) return 7; // Возврат половины (индекс 7)
+                if (rand < 90) return 6; // Почти в ноль (индекс 6)
+                if (rand < 97) return 5; // В ноль (индекс 5)
+                return 4; // Редкий мелкий плюс (индекс 4)
             }
             return 0;
         }
@@ -544,7 +553,7 @@
                 if (userBalance < config.price) return openModal('modal-deposit');
                 userBalance -= config.price; updateBalanceDisplay();
             } else {
-                // Если крутанул бесплатное, записываем время СЕЙЧАС, чтобы пошел таймер 24ч
+                // Запуск таймера 24 часа для бесплатного колеса
                 localStorage.setItem('homastar_last_free_spin', Date.now().toString());
             }
             
