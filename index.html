@@ -5,203 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Homastar Mini App</title>
+    
+    <!-- Подключаем Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* --- ПРЕМИУМ WEB3 ПАЛИТРА --- */
-        :root {
-            --bg-color: #050711;
-            --glass-bg: rgba(12, 16, 28, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --text-color: #FFFFFF;
-            --text-sub: #8B9BB4;
-            --neon-cyan: #00F3FF;
-            --neon-cyan-glow: rgba(0, 243, 255, 0.4);
-            --neon-purple: #A855F7;
-            --neon-purple-glow: rgba(168, 85, 247, 0.4);
-            --neon-pink: #FF2E93;
-            --neon-pink-glow: rgba(255, 46, 147, 0.4);
-            --accent-gold: #FFD700;
-            --accent-gold-glow: rgba(255, 215, 0, 0.4);
-        }
-
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-color); color: var(--text-color);
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow: hidden; position: relative;
-        }
-
-        /* --- ГЛУБОКИЙ КОСМОС И ЗВЕЗДЫ --- */
-        .bg-animated-nebula {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;
-            background: radial-gradient(circle at 15% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
-            animation: nebulaPulse 15s ease-in-out infinite alternate;
-        }
-        @keyframes nebulaPulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
-
-        .floating-particles-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
-        .particle { position: absolute; opacity: 0.4; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); animation: floatAround 20s infinite linear; }
-        .particle.p1 { top: 10%; left: 15%; font-size: 14px; animation-duration: 25s; }
-        .particle.p2 { top: 60%; left: 85%; font-size: 10px; animation-duration: 18s; animation-delay: -5s; }
-        .particle.p3 { top: 35%; left: 80%; font-size: 16px; animation-duration: 30s; animation-delay: -10s; }
-        .particle.p4 { top: 80%; left: 20%; font-size: 18px; animation-duration: 22s; animation-delay: -2s; }
-        .particle.p5 { top: 20%; left: 70%; font-size: 12px; animation-duration: 15s; animation-delay: -7s; }
-        @keyframes floatAround { 0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; } 50% { transform: translateY(-40px) rotate(180deg); opacity: 0.6; } 100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; } }
-
-        .app-container {
-            width: 100%; max-width: 420px; height: 100vh; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 16px; position: relative; z-index: 2;
-        }
-
-        /* --- ОБНОВЛЕННАЯ СТЕКЛЯННАЯ ШАПКА --- */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 16px 0; z-index: 10; position: relative; }
-        .logo { font-weight: 900; font-size: 20px; letter-spacing: 2px; background: linear-gradient(90deg, #FFFFFF, var(--neon-cyan), #FFFFFF, var(--neon-purple), #FFFFFF); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientText 5s linear infinite; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-        @keyframes gradientText { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
-
-        .balance-group { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 8px 6px 16px; border-radius: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
-        .balance-value { font-size: 15px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold-glow); letter-spacing: 0.5px; }
-        .btn-bal-action { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-color); font-size: 14px; font-weight: 900; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .btn-bal-action.pay { background: var(--neon-cyan); color: #000; border: none; box-shadow: 0 0 15px var(--neon-cyan-glow); }
-
-        /* --- ВСТРОЕННАЯ МЕДЛЕННАЯ LIVE-ЛЕНТА --- */
-        .live-bar-embedded { width: 100%; display: flex; align-items: center; margin-bottom: 12px; height: 50px; overflow: hidden; position: relative; z-index: 10; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
-        .live-marquee-content { display: flex; gap: 20px; animation: scrollMarquee 900s linear infinite; padding-left: 20px; }
-        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .live-pill { display: flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 30px; font-weight: 800; font-size: 14px; color: #FFFFFF; white-space: nowrap; background: rgba(10, 15, 30, 0.6); backdrop-filter: blur(10px); border: 1px solid; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .live-pill span { color: var(--text-sub); font-size: 11px; font-weight: 600; margin-left: 4px; }
-        .neon-cyan { border-color: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan-glow), inset 0 0 8px var(--neon-cyan-glow); }
-        .neon-purple { border-color: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple-glow), inset 0 0 8px var(--neon-purple-glow); }
-        .neon-pink { border-color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink-glow), inset 0 0 8px var(--neon-pink-glow); }
-
-        /* --- СТЕКЛЯННЫЕ ЭКРАНЫ --- */
-        .screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding: 4px 0; z-index: 5; position: relative; }
-        .screen::-webkit-scrollbar { display: none; }
-        @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        .screen.active { display: flex; animation: fadeSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        
-        .cards-stack { display: flex; flex-direction: column; padding-top: 5px; padding-bottom: 20px; }
-        .premium-card { height: 160px; border-radius: 24px; position: relative; margin-top: -65px; border: 1px solid rgba(255,255,255,0.05); border-top: 2px solid rgba(255,255,255,0.15); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; padding: 24px 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); overflow: hidden; }
-        .premium-card:first-child { margin-top: 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
-        .premium-card:active { transform: translateY(-10px) scale(0.98); }
-        .p-card-bg-icon { position: absolute; right: -10px; top: 20px; font-size: 110px; opacity: 0.04; transform: rotate(15deg); pointer-events: none; z-index: 0; filter: blur(2px); }
-        .p-card-content { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; height: 100%; }
-        .p-card-title-area h3 { font-size: 18px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .t-icon { font-size: 20px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-        .p-card-title-area p { font-size: 13px; color: var(--text-sub); font-weight: 600; padding-left: 30px; }
-        .w-card-btn { padding: 10px 20px; border-radius: 14px; font-weight: 900; font-size: 12px; letter-spacing: 0.5px; border: none; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-transform: uppercase; margin-top: 4px; cursor: pointer; }
-        
-        .p-card-shine { position: absolute; top: 0; left: -100%; width: 40%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent); transform: skewX(-30deg); animation: shinePass 6s infinite ease-in-out; z-index: 1; pointer-events: none; }
-        @keyframes shinePass { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-        .cards-stack .premium-card:nth-child(1) .p-card-shine { animation-delay: 0s; }
-        .cards-stack .premium-card:nth-child(2) .p-card-shine { animation-delay: 1.2s; }
-        .cards-stack .premium-card:nth-child(3) .p-card-shine { animation-delay: 2.4s; }
-        .cards-stack .premium-card:nth-child(4) .p-card-shine { animation-delay: 3.6s; }
-
-        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)), repeating-linear-gradient(45deg, rgba(0, 243, 255, 0.02) 0px, rgba(0, 243, 255, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--neon-cyan); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-cyan-glow); }
-        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)), repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 12px); border-top-color: #8B9BB4; box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px rgba(139,155,180,0.3); }
-        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)), repeating-linear-gradient(-45deg, rgba(226, 232, 240, 0.02) 0px, rgba(226, 232, 240, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: #E2E8F0; box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px rgba(226,232,240,0.4); }
-        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)), repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--accent-gold); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--accent-gold-glow); }
-        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)), repeating-radial-gradient(circle at 0 0, transparent 0, rgba(168, 85, 247, 0.03) 10px, transparent 20px); border-top-color: var(--neon-purple); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-purple-glow); }
-        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)), repeating-linear-gradient(90deg, rgba(255, 46, 147, 0.02) 0px, rgba(255, 46, 147, 0.02) 1px, transparent 1px, transparent 12px); border-top-color: var(--neon-pink); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-pink-glow); }
-
-        .btn-free { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan-glow); }
-        .btn-common { background: #8B9BB4; color: #FFF; }
-        .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); }
-        .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); box-shadow: 0 0 15px var(--accent-gold-glow); }
-        .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; box-shadow: 0 0 15px var(--neon-purple-glow); }
-        .btn-battle { background: var(--neon-pink); color: #FFF; box-shadow: 0 0 15px var(--neon-pink-glow); }
-
-        /* --- PVP BATTLE СТИЛИ --- */
-        .battle-header-info { display: flex; justify-content: center; align-items: center; background: var(--glass-bg); padding: 12px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 16px; font-weight: 800; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .battle-arena { width: 100%; aspect-ratio: 1 / 1; border-radius: 32px; position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.8); margin-bottom: 16px; background: conic-gradient(from 0deg, var(--neon-pink) 0 35%, var(--neon-cyan) 35% 70%, var(--accent-gold) 70% 85%, var(--neon-purple) 85% 100%); border: 2px solid rgba(255,255,255,0.05); }
-        .battle-arena::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10, 15, 30, 0.4); backdrop-filter: blur(2px); pointer-events: none; }
-        .battle-timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(12, 16, 28, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 10; }
-        .battle-avatar { position: absolute; width: 44px; height: 44px; border-radius: 50%; background: #1A2235; border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 5; transform: translate(-50%, -50%); }
-        .battle-players-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-        .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--glass-border); }
-        .b-player-left { display: flex; align-items: center; gap: 12px; }
-        .b-player-ava { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; border: 2px solid; }
-        .b-player-info h4 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
-        .b-player-info p { font-size: 11px; color: var(--text-sub); }
-        .b-player-bet { font-size: 14px; font-weight: 900; color: var(--accent-gold); }
-        .battle-bet-controls { display: flex; gap: 8px; margin-bottom: 16px; }
-        .b-bet-btn { flex: 1; padding: 12px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 14px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; }
-        .b-bet-btn:active { background: rgba(255,255,255,0.1); }
-        .b-action-btn { width: 100%; padding: 16px; background: var(--neon-pink); color: #FFF; font-weight: 900; font-size: 16px; border: none; border-radius: 16px; box-shadow: 0 0 20px var(--neon-pink-glow); cursor: pointer; text-transform: uppercase; }
-
-        /* --- КОЛЕСО CANVAS (МЕДЛЕННЫЙ СПИН) --- */
-        .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-color); font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; align-self: flex-start; backdrop-filter: blur(10px); margin-bottom: 10px; }
-        .timer-banner { background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--accent-gold); padding: 10px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 800; margin-bottom: 10px; display: none; backdrop-filter: blur(10px); }
-        .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
-        .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); position: relative; }
-        .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; position: relative; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
-        
-        /* 10 секунд натяжения струны! */
-        #wheel-canvas { 
-            width: 300px; height: 300px; 
-            transition: transform 10s cubic-bezier(0.4, 0.0, 0.1, 1.0); 
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); 
-        }
-
-        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 20px var(--neon-cyan-glow), inset 0 0 10px var(--neon-cyan-glow); cursor: pointer; transition: all 0.2s; margin-top: 20px; backdrop-filter: blur(10px); }
-        .btn-spin:active { transform: scale(0.96); box-shadow: 0 0 30px var(--neon-cyan-glow), inset 0 0 20px var(--neon-cyan-glow); }
-        .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); box-shadow: none; cursor: not-allowed; }
-
-        /* --- ЗАЛ СЛАВЫ --- */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 30px; }
-        .podium-step { display: flex; flex-direction: column; align-items: center; background: var(--glass-bg); border-radius: 20px 20px 8px 8px; border: 1px solid var(--glass-border); padding: 12px 6px; width: 30%; text-align: center; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.4); backdrop-filter: blur(10px); }
-        .podium-1 { height: 150px; border-color: var(--accent-gold); box-shadow: 0 0 25px rgba(255,215,0,0.2), inset 0 10px 20px rgba(255,215,0,0.15); z-index: 2; transform: translateY(-15px); }
-        .podium-2 { height: 120px; border-color: #C0C0C0; box-shadow: 0 0 15px rgba(192,192,192,0.2), inset 0 10px 20px rgba(192,192,192,0.1); }
-        .podium-3 { height: 100px; border-color: #CD7F32; box-shadow: 0 0 15px rgba(205,127,50,0.2), inset 0 10px 20px rgba(205,127,50,0.1); }
-        .p-ava { font-size: 32px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); margin-bottom: 10px; }
-        .podium-1 .p-ava { font-size: 44px; margin-top: -35px; }
-        .p-crown { position: absolute; top: -50px; font-size: 32px; filter: drop-shadow(0 0 15px var(--accent-gold)); }
-        .p-name { font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; width: 100%; white-space: nowrap; letter-spacing: 0.5px;}
-        .p-score { font-size: 13px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
-
-        /* --- ОБЩИЕ ЭЛЕМЕНТЫ --- */
-        .leader-card, .inventory-card, .ref-box, .setting-row { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 10px; }
-        .leader-left { display: flex; align-items: center; gap: 14px; }
-        .leader-rank { font-size: 16px; font-weight: 900; width: 30px; text-align: center; color: var(--text-sub); }
-        .leader-name { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
-        .leader-sub { font-size: 11px; color: var(--text-sub); }
-        .leader-amount { font-size: 15px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
-
-        .bottom-nav { display: flex; justify-content: space-between; background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 28px; position: relative; z-index: 10; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
-        .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 20px; color: var(--text-sub); opacity: 0.5; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex: 1; }
-        .nav-label { font-size: 10px; font-weight: 800; }
-        .nav-item.active { opacity: 1; color: var(--neon-cyan); transform: translateY(-4px); filter: drop-shadow(0 0 10px var(--neon-cyan-glow)); }
-
-        /* --- МОДАЛКИ --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); z-index: 999; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-card { background: rgba(15, 20, 35, 0.8); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 0 40px rgba(0, 243, 255, 0.2); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; }
-        .btn-close-modal { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-sub); width: 32px; height: 32px; border-radius: 50%; font-size: 14px; cursor: pointer; }
-        .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .package-card:active { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.1); }
-        .input-stars { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); color: var(--accent-gold); padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 900; outline: none; text-align: center; }
-        .win-modal-card { text-align: center; border-color: var(--accent-gold); box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
-        .win-icon { font-size: 70px; margin: 10px 0; filter: drop-shadow(0 0 20px var(--accent-gold)); }
-        .win-amount { font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 4px; text-shadow: 0 0 20px var(--accent-gold-glow); }
-        .win-subtext { font-size: 14px; color: var(--text-sub); margin-bottom: 16px; }
-    </style>
+    
+    <!-- Подключаем стили из твоей папки api -->
+    <link rel="stylesheet" href="./api/style.css">
 </head>
 <body class="theme-night">
 
+    <!-- Анимированный фон -->
     <div class="bg-animated-nebula"></div>
     <div class="floating-particles-container">
         <div class="particle p1">✨</div><div class="particle p2">✦</div><div class="particle p3">✨</div><div class="particle p4">✦</div><div class="particle p5">✨</div>
     </div>
 
     <div class="app-container">
-        <!-- ОБНОВЛЕННАЯ СТЕКЛЯННАЯ ШАПКА -->
+        <!-- СТЕКЛЯННАЯ ШАПКА -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
@@ -211,10 +31,10 @@
             </div>
         </header>
 
-        <!-- ПЛАВНАЯ НЕОНОВАЯ LIVE-ЛЕНТА -->
+        <!-- LIVE-ЛЕНТА -->
         <div class="live-bar-embedded">
             <div class="live-marquee-content" id="marquee-content">
-                <!-- Заполняется через JS -->
+                <!-- Заполняется через JS (api/feed.js) -->
             </div>
         </div>
 
@@ -222,10 +42,34 @@
         <div id="screen-hub" class="screen active">
             <h2 style="font-size: 18px; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin-bottom: 5px; padding-left: 5px;">Разделы:</h2>
             <div class="cards-stack">
-                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()"><div class="p-card-bg-icon">🎁</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p>1 раз в 24 часа — бесплатно!</p></div><button class="w-card-btn btn-free">ИГРАТЬ</button></div></div>
-                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')"><div class="p-card-bg-icon">🎡</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">🎡</span> Колёса</h3><p>4 вида: Обычное, Серебряное...</p></div><button class="w-card-btn btn-silver">ВЫБРАТЬ</button></div></div>
-                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')"><div class="p-card-bg-icon">🏓</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">🏓</span> Арена</h3><p>PVP Рулетка с игроками!</p></div><button class="w-card-btn btn-battle">ИГРАТЬ</button></div></div>
-                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')"><div class="p-card-bg-icon">🎟️</div><div class="p-card-shine"></div><div class="p-card-content"><div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> Розыгрыш</h3><p>Главный приз: 1000 STARS</p></div><button class="w-card-btn btn-diamond">БИЛЕТЫ</button></div></div>
+                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
+                    <div class="p-card-bg-icon">🎁</div><div class="p-card-shine"></div>
+                    <div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> Бесплатное Колесо</h3><p>1 раз в 24 часа — бесплатно!</p></div>
+                        <button class="w-card-btn btn-free">ИГРАТЬ</button>
+                    </div>
+                </div>
+                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
+                    <div class="p-card-bg-icon">🎡</div><div class="p-card-shine"></div>
+                    <div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> Колёса</h3><p>4 вида: Обычное, Серебряное...</p></div>
+                        <button class="w-card-btn btn-silver">ВЫБРАТЬ</button>
+                    </div>
+                </div>
+                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
+                    <div class="p-card-bg-icon">🏓</div><div class="p-card-shine"></div>
+                    <div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> Арена</h3><p>PVP Рулетка с игроками!</p></div>
+                        <button class="w-card-btn btn-battle">ИГРАТЬ</button>
+                    </div>
+                </div>
+                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
+                    <div class="p-card-bg-icon">🎟️</div><div class="p-card-shine"></div>
+                    <div class="p-card-content">
+                        <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> Розыгрыш</h3><p>Главный приз: 1000 STARS</p></div>
+                        <button class="w-card-btn btn-diamond">БИЛЕТЫ</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -245,7 +89,9 @@
                 <div class="b-player-row"><div class="b-player-left"><div class="b-player-ava" style="border-color: var(--neon-pink); color: var(--neon-pink);">😈</div><div class="b-player-info"><h4>Vityok</h4><p>Шанс: 30.4%</p></div></div><div class="b-player-bet">⭐ 990</div></div>
                 <div class="b-player-row"><div class="b-player-left"><div class="b-player-ava" style="border-color: var(--accent-gold); color: var(--accent-gold);">👾</div><div class="b-player-info"><h4>@Nc_Daw</h4><p>Шанс: 15.2%</p></div></div><div class="b-player-bet">⭐ 495</div></div>
             </div>
-            <div class="battle-bet-controls"><button class="b-bet-btn">⭐ 100</button><button class="b-bet-btn">⭐ 500</button><button class="b-bet-btn">⭐ 1000</button><button class="b-bet-btn">MAX</button></div>
+            <div class="battle-bet-controls">
+                <button class="b-bet-btn">⭐ 100</button><button class="b-bet-btn">⭐ 500</button><button class="b-bet-btn">⭐ 1000</button><button class="b-bet-btn">MAX</button>
+            </div>
             <button class="b-action-btn">ПОСТАВИТЬ</button>
         </div>
 
@@ -269,7 +115,10 @@
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin: 10px 0; text-shadow: 0 0 20px var(--accent-gold-glow);">🏆 1000 STARS</div>
                 <div style="font-size: 13px; color: var(--neon-cyan);">⏱ Итоги через: 18ч 42мин</div>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 20px;"><div style="font-size: 14px;">Билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b></div><div style="font-size: 14px;">Шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div></div>
+            <div style="display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 20px;">
+                <div style="font-size: 14px;">Билеты: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b></div>
+                <div style="font-size: 14px;">Шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
+            </div>
             <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px rgba(168,85,247,0.4), inset 0 0 10px rgba(168,85,247,0.4);" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
         </div>
 
@@ -289,11 +138,13 @@
         <div id="screen-leaders" class="screen">
             <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255,255,255,0.3);">🏆 Зал Славы</h2>
             <p style="font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 10px;">Топ игроков по заработанным Stars</p>
+            
             <div class="podium-container">
                 <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">@0x_Shark</div><div class="p-score">12 400 ⭐</div></div>
                 <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">@Denya_Boss</div><div class="p-score">15 000 ⭐</div></div>
                 <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">@NeonHoma</div><div class="p-score">8 900 ⭐</div></div>
             </div>
+
             <div class="leaderboard-list">
                 <div class="leader-card"><div class="leader-left"><div class="leader-rank">4</div><div class="b-player-ava" style="border-color: var(--neon-cyan); color: var(--neon-cyan); width: 30px; height: 30px;">👾</div><div><div class="leader-name">@CryptoNinja</div><div class="leader-sub">Win Rate: 68%</div></div></div><div class="leader-amount">+7 500 ⭐</div></div>
                 <div class="leader-card"><div class="leader-left"><div class="leader-rank">5</div><div class="b-player-ava" style="border-color: var(--neon-pink); color: var(--neon-pink); width: 30px; height: 30px;">👻</div><div><div class="leader-name">@Star_Hunter</div><div class="leader-sub">Win Rate: 61%</div></div></div><div class="leader-amount">+6 200 ⭐</div></div>
@@ -315,7 +166,18 @@
 
         <!-- ИНВЕНТАРЬ И НАСТРОЙКИ -->
         <div id="screen-inventory" class="screen"><h2 style="font-size: 18px;">🎒 Инвентарь</h2><div id="inventory-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div></div>
-        <div id="screen-settings" class="screen"><h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2><div class="setting-row"><div style="font-size: 15px; font-weight: 700;">🎵 Музыка</div><div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div></div><div class="setting-row"><div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div><div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div></div></div>
+        
+        <div id="screen-settings" class="screen">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
+            <div class="setting-row">
+                <div style="font-size: 15px; font-weight: 700;">🎵 Музыка</div>
+                <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div>
+            </div>
+            <div class="setting-row">
+                <div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div>
+                <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div>
+            </div>
+        </div>
 
         <!-- СТЕКЛЯННАЯ НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
@@ -327,7 +189,7 @@
         </nav>
     </div>
 
-    <!-- МОДАЛКИ -->
+    <!-- МОДАЛКИ (Пополнение/Вывод) -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header"><h3 style="font-size: 18px; text-shadow: 0 0 10px var(--neon-cyan-glow);">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
@@ -341,6 +203,7 @@
             <button class="btn-spin" onclick="executeDeposit()">ПОПОЛНИТЬ</button>
         </div>
     </div>
+    
     <div id="modal-withdraw" class="modal-overlay">
         <div class="modal-card" style="border-color: var(--neon-purple); box-shadow: 0 0 40px rgba(168,85,247,0.2);">
             <div class="modal-header"><h3 style="font-size: 18px; text-shadow: 0 0 10px var(--neon-purple-glow);">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
@@ -349,6 +212,7 @@
             <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple-glow), inset 0 0 10px var(--neon-purple-glow);" onclick="executeWithdraw()">ПОДТВЕРДИТЬ</button>
         </div>
     </div>
+    
     <div id="modal-win" class="modal-overlay">
         <div class="modal-card win-modal-card">
             <div class="win-icon">🌟</div>
@@ -359,167 +223,9 @@
         </div>
     </div>
 
-    <!-- ВЕСЬ JS КОД -->
-    <script>
-        let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '0');
-        let timerInterval = null;
-        let isSpinning = false;
-        let currentWheelRotation = 0;
-        let activeWheelType = 'free';
-        let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
-        let userSpinCounts = JSON.parse(localStorage.getItem('homastar_spin_counts') || '{}');
-        let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
+    <!-- ПОДКЛЮЧАЕМ СКРИПТЫ ИЗ ПАПКИ API -->
+    <script src="./api/feed.js"></script>
+    <script src="./api/script.js"></script>
 
-        // Сектора с бесплатным колесом: 100, 50, 10, 5, 1
-        const WHEEL_CONFIGS = {
-            free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
-            common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], icons: ['💎', '✨', '💰', '❌', '⭐', '💰', '✨', '💎', '⭐', '⭐'] },
-            silver: { title: '🛡️ Серебряное Колесо', price: 50, prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], icons: ['💎', '✨', '💰', '❌', '⭐', '💰', '✨', '💎', '⭐', '⭐'] },
-            gold: { title: '👑 Золотое Колесо', price: 100, prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], icons: ['💎', '✨', '💰', '❌', '⭐', '💰', '✨', '💎', '⭐', '⭐'] },
-            diamond: { title: '💎 Алмазное Колесо', price: 250, prizes: [500, 100, 20, 0, 10, 20, 100, 50, 20, 10], icons: ['💎', '✨', '💰', '❌', '⭐', '💰', '✨', '💎', '⭐', '⭐'] }
-        };
-
-        let inventoryItems = JSON.parse(localStorage.getItem('homastar_inventory') || '[]');
-        function saveInventory() { localStorage.setItem('homastar_inventory', JSON.stringify(inventoryItems)); }
-
-        function updateBalanceDisplay() {
-            document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
-            document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
-            localStorage.setItem('homastar_main_balance', userBalance.toString());
-        }
-
-        function openScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(screenId);
-            if (target) target.classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            let navTargetId = screenId;
-            if (['screen-game-wheel', 'screen-tickets', 'screen-wheel-list', 'screen-battle'].includes(screenId)) navTargetId = 'screen-hub'; 
-            const activeNavBtn = document.getElementById(`nav-${navTargetId}`);
-            if (activeNavBtn) activeNavBtn.classList.add('active');
-            if (screenId === 'screen-inventory') renderInventory();
-            updateTicketUI();
-        }
-
-        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-        function showWinPopup(amountText, subtext) { document.getElementById('win-modal-amount').innerText = amountText; document.getElementById('win-modal-subtext').innerText = subtext; openModal('modal-win'); }
-        function selectDepositPackage(amount) { document.getElementById('custom-deposit-input').value = amount; }
-        function executeDeposit() { const val = parseFloat(document.getElementById('custom-deposit-input').value); if (!val || val <= 0) return alert('Введи сумму Stars!'); userBalance += val; updateBalanceDisplay(); closeModal('modal-deposit'); showWinPopup(`+${val} ⭐`, 'Пополнение прошло успешно!'); }
-        function executeWithdraw() { const val = parseFloat(document.getElementById('withdraw-amount-input').value); if (!val || val <= 0) return alert('Введи сумму вывода!'); if (val > userBalance) return alert('Недостаточно баланса!'); userBalance -= val; updateBalanceDisplay(); closeModal('modal-withdraw'); alert('🎉 Заявка принята!'); }
-        function renderInventory() { /* базовая логика */ }
-        function withdrawItem(itemId, starsValue) { /* ... */ }
-        function toggleSetting(type) { settings[type] = !settings[type]; localStorage.setItem(`homastar_${type}`, settings[type]); const toggle = document.getElementById(`toggle-${type}`); if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active'); }
-        function copyRefLink() { document.getElementById('ref-link-input').select(); document.execCommand('copy'); alert('📋 Ссылка скопирована!'); }
-        function shareRefLink() { window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Homastar!`, '_blank'); }
-        function buyTicket() { if (userBalance < 20) return openModal('modal-deposit'); userBalance -= 20; userTickets++; updateBalanceDisplay(); localStorage.setItem('homastar_tickets', userTickets.toString()); updateTicketUI(); showWinPopup('🎟️ 1 Билет', 'Успешно куплен!'); }
-        function updateTicketUI() { document.getElementById('user-tickets-count').innerText = `${userTickets} шт.`; document.getElementById('user-win-chance').innerText = `${userTickets * 4.5 > 100 ? 100 : (userTickets * 4.5).toFixed(1)}%`; }
-
-        function renderWheelDisc(type) {
-            const canvas = document.getElementById('wheel-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            currentWheelRotation = 0; canvas.style.transform = 'rotate(0deg)';
-            const config = WHEEL_CONFIGS[type]; const prizes = config.prizes; const icons = config.icons;
-            const numSlices = prizes.length; const arc = (2 * Math.PI) / numSlices; const radius = canvas.width / 2;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const NEON_COLORS = ['rgba(0, 243, 255, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 215, 0, 0.2)', 'rgba(0, 255, 136, 0.2)', 'rgba(255, 46, 147, 0.2)', 'rgba(0, 243, 255, 0.2)', 'rgba(168, 85, 247, 0.2)', 'rgba(255, 102, 0, 0.2)', 'rgba(0, 153, 255, 0.2)'];
-            const BORDER_COLORS = ['#00F3FF', '#FF2E93', '#A855F7', '#FFD700', '#00FF88', '#FF2E93', '#00F3FF', '#A855F7', '#FF6600', '#0099FF'];
-            const discRadius = radius - 20;
-
-            for (let i = 0; i < numSlices; i++) {
-                const angle = i * arc - Math.PI / 2;
-                ctx.beginPath(); ctx.fillStyle = NEON_COLORS[i]; ctx.moveTo(radius, radius); ctx.arc(radius, radius, discRadius, angle, angle + arc); ctx.lineTo(radius, radius); ctx.fill();
-                ctx.strokeStyle = BORDER_COLORS[i]; ctx.lineWidth = 3; ctx.shadowColor = BORDER_COLORS[i]; ctx.shadowBlur = 15; ctx.stroke(); ctx.shadowBlur = 0;
-                ctx.save(); ctx.translate(radius, radius); ctx.rotate(angle + arc / 2);
-                ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.shadowColor = 'rgba(255, 255, 255, 0.5)'; ctx.shadowBlur = 10; ctx.fillText(icons[i], discRadius - 60, 0);
-                ctx.fillStyle = '#FFFFFF'; ctx.font = '900 20px -apple-system, sans-serif'; ctx.textAlign = 'right'; ctx.shadowColor = BORDER_COLORS[i]; ctx.shadowBlur = 12; let textVal = prizes[i] > 0 ? `+${prizes[i]}` : 'TRY'; ctx.fillText(textVal, discRadius - 95, 0);
-                ctx.restore();
-            }
-            const hubRadius = 50;
-            ctx.beginPath(); ctx.fillStyle = '#0B0E17'; ctx.arc(radius, radius, hubRadius, 0, 2 * Math.PI); ctx.fill();
-            ctx.strokeStyle = '#00F3FF'; ctx.lineWidth = 4; ctx.shadowColor = '#00F3FF'; ctx.shadowBlur = 20; ctx.stroke();
-            ctx.fillStyle = '#FFFFFF'; ctx.shadowBlur = 0; ctx.font = '30px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('⭐', radius, radius);
-        }
-
-        function openFreeWheelScreen() { activeWheelType = 'free'; document.getElementById('wheel-title').innerText = WHEEL_CONFIGS.free.title; document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-hub'); renderWheelDisc('free'); checkFreeSpinState(); openScreen('screen-game-wheel'); }
-        function openPlayWheel(type) { activeWheelType = type; const config = WHEEL_CONFIGS[type]; document.getElementById('wheel-title').innerText = config.title; clearInterval(timerInterval); document.getElementById('timer-banner').style.display = 'none'; document.getElementById('btn-back-from-wheel').onclick = () => openScreen('screen-wheel-list'); renderWheelDisc(type); const btn = document.getElementById('btn-spin-action'); btn.classList.remove('disabled'); btn.innerText = `ИГРАТЬ (${config.price} ⭐)`; btn.onclick = () => startSpin(type); openScreen('screen-game-wheel'); }
-
-        function checkFreeSpinState() {
-            clearInterval(timerInterval); const lastSpinTimestamp = parseInt(localStorage.getItem('homastar_last_free_spin') || '0'); const btn = document.getElementById('btn-spin-action'); const timerBanner = document.getElementById('timer-banner'); const timerText = document.getElementById('timer-countdown'); const twentyFourHoursMs = 24 * 60 * 60 * 1000;
-            function updateTimerLogic() {
-                const timeLeft = twentyFourHoursMs - (Date.now() - lastSpinTimestamp);
-                if (timeLeft > 0) {
-                    timerBanner.style.display = 'block'; btn.classList.add('disabled'); btn.innerText = 'ОЖИДАНИЕ'; btn.onclick = null;
-                    const h = Math.floor(timeLeft / (1000 * 60 * 60)), m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)), s = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    timerText.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                } else {
-                    clearInterval(timerInterval); timerBanner.style.display = 'none'; btn.classList.remove('disabled'); btn.innerText = 'ИГРАТЬ БЕСПЛАТНО'; btn.onclick = () => startSpin('free');
-                }
-            }
-            if (lastSpinTimestamp > 0) { updateTimerLogic(); timerInterval = setInterval(updateTimerLogic, 1000); } else { timerBanner.style.display = 'none'; btn.classList.remove('disabled'); btn.innerText = 'ИГРАТЬ БЕСПЛАТНО'; btn.onclick = () => startSpin('free'); }
-        }
-
-        function calculatePrizeIndex(type) {
-            const count = userSpinCounts[type] || 0; userSpinCounts[type] = count + 1; localStorage.setItem('homastar_spin_counts', JSON.stringify(userSpinCounts)); 
-            const rand = Math.random() * 100;
-            if (count === 0 && type !== 'free') return 1; // Honeymoon: первый спин дает куш
-            if (type === 'common') { if (rand < 10) return 3; if (rand < 45) return 4; if (rand < 80) return 2; return 8; } // Shark mode
-            return 3;
-        }
-
-        function startSpin(type) {
-            if (isSpinning) return; const config = WHEEL_CONFIGS[type];
-            if (type !== 'free' && userBalance < config.price) return openModal('modal-deposit');
-            if (type !== 'free') { userBalance -= config.price; updateBalanceDisplay(); } else { localStorage.setItem('homastar_last_free_spin', Date.now().toString()); }
-            
-            isSpinning = true; const btn = document.getElementById('btn-spin-action'); btn.classList.add('disabled');
-            
-            // Near-Miss логика: Бесплатное колесо ВСЕГДА дает 1 Звезду (индекс 4 или 9)
-            let prizeIndex;
-            if (type === 'free') { prizeIndex = Math.random() > 0.5 ? 4 : 9; } 
-            else { prizeIndex = calculatePrizeIndex(type); }
-            
-            const prizeValue = config.prizes[prizeIndex];
-            const arc = 360 / 10; const targetAngle = 360 - (prizeIndex + 0.5) * arc;
-            const currentModulo = currentWheelRotation % 360; let distance = targetAngle - currentModulo; if (distance <= 0) distance += 360;
-            
-            currentWheelRotation += distance + (10 * 360); // 10 оборотов для 10 секунд
-            const canvas = document.getElementById('wheel-canvas'); canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
-            
-            // Ждем 10000 мс (10 секунд) до выдачи приза
-            setTimeout(() => {
-                isSpinning = false; userBalance += prizeValue; updateBalanceDisplay();
-                if (type === 'free') { showWinPopup(prizeValue > 0 ? `+${prizeValue} ⭐` : 'TRY AGAIN', prizeValue > 0 ? 'Зачислено!' : ''); checkFreeSpinState(); } 
-                else { showWinPopup(prizeValue > 0 ? `+${prizeValue} ⭐` : 'TRY AGAIN', prizeValue > 0 ? 'Зачислено!' : ''); btn.classList.remove('disabled'); }
-            }, 10000);
-        }
-
-        function initLiveTicker() {
-            const marquee = document.getElementById('marquee-content');
-            if (!marquee) return;
-            const colors = ['neon-cyan', 'neon-purple', 'neon-pink'];
-            const users = ['@crypto_***', '@homa***', '@den***', '@star***', '@user_99***', '@alex***'];
-            let html = '';
-            for(let i = 0; i < 30; i++) {
-                let color = colors[Math.floor(Math.random() * colors.length)];
-                let rand = Math.random();
-                let amt = '10';
-                if (rand < 0.5) amt = ['10', '20'][Math.floor(Math.random() * 2)];
-                else if (rand < 0.85) amt = ['50', '70'][Math.floor(Math.random() * 2)];
-                else if (rand < 0.98) amt = ['200', '300', '500'][Math.floor(Math.random() * 3)];
-                else amt = '1 000';
-                let user = users[Math.floor(Math.random() * users.length)];
-                html += `<div class="live-pill ${color}">⭐ ${amt} <span style="display:none;">${user}</span></div>`; 
-            }
-            marquee.innerHTML = html + html;
-        }
-
-        window.onload = function() {
-            updateBalanceDisplay();
-            initLiveTicker();
-            if (window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }
-        };
-    </script>
 </body>
 </html>
