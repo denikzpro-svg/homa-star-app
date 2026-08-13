@@ -75,19 +75,20 @@
 
         .btn-free { background: var(--neon-cyan); } .btn-common { background: #8B9BB4; color: #FFF; } .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); } .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; } .btn-battle { background: var(--neon-pink); color: #FFF; }
 
-        .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 13px; padding: 8px 16px; border-radius: 14px; cursor: pointer; align-self: flex-start; margin-bottom: 10px; }
+        .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 13px; padding: 8px 16px; border-radius: 14px; cursor: pointer; align-self: flex-start; margin-bottom: 8px; }
         .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
         .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); }
         .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
         #wheel-canvas { width: 300px; height: 300px; transition: transform 6s cubic-bezier(0.15, 0.9, 0.2, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; }
+        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; }
         .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); pointer-events: none; opacity: 0.5; }
 
-        .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 10px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 8px; font-weight: 800; }
+        .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
         
-        .arena-container-center { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; }
+        /* Прямоугольная удлиненная арена вместо квадрата */
+        .arena-container-center { display: flex; justify-content: center; width: 100%; margin-bottom: 6px; }
         .arena-wrapper {
-            position: relative; width: 100%; max-width: 240px; aspect-ratio: 1/1;
+            position: relative; width: 100%; max-width: 340px; aspect-ratio: 4/3;
             border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             background: #0B0E17; border: 2px solid var(--glass-border); overflow: hidden;
             flex-shrink: 0;
@@ -96,44 +97,45 @@
         #arena-canvas { width: 100%; height: 100%; display: block; }
         #arena-avatars-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         .board-avatar {
-            position: absolute; width: 34px; height: 34px; border-radius: 50%; 
+            position: absolute; width: 32px; height: 32px; border-radius: 50%; 
             border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; 
-            font-size: 13px; font-weight: bold; overflow: hidden;
+            font-size: 12px; font-weight: bold; overflow: hidden; background: #111;
             transform: translate(-50%, -50%); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             transition: all 0.5s ease;
         }
 
         .board-timer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60px; height: 60px; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(5px); 
+            width: 54px; height: 54px; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(5px); 
             border-radius: 50%; border: 2px solid var(--glass-border); display: flex; justify-content: center; 
-            align-items: center; font-size: 22px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
+            align-items: center; font-size: 20px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10;
         }
 
         .board-overlay-result {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 20;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 20;
             display: none; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; animation: fadeInResult 0.3s ease-out; padding: 10px;
         }
         @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        .b-players-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; max-height: 100px; overflow-y: auto; padding-right: 4px; }
+        /* Фиксированный блок списка игроков без дерганий */
+        .b-players-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; height: 85px; overflow-y: auto; padding-right: 4px; }
         .b-players-list::-webkit-scrollbar { width: 3px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-        .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 6px 10px; border-radius: 12px; border: 1px solid var(--glass-border); animation: fadeSlideIn 0.3s ease-out forwards; }
+        .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 5px 10px; border-radius: 10px; border: 1px solid var(--glass-border); flex-shrink: 0; }
         .b-player-left { display: flex; align-items: center; gap: 8px; }
-        .b-player-ava { width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; overflow: hidden; border: 2px solid; }
+        .b-player-ava { width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; overflow: hidden; border: 2px solid; background: #111; }
         .b-player-info h4 { font-size: 11px; font-weight: 800; margin-bottom: 0px; display:flex; align-items:center; gap:4px; }
         .b-player-bet { font-size: 12px; font-weight: 900; color: var(--accent-gold); }
 
         .b-bet-controls { display: flex; gap: 6px; margin-bottom: 6px; }
-        .b-quick-btn { flex: 1; padding: 8px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: #FFF; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .b-quick-btn { flex: 1; padding: 7px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: #FFF; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 12px; }
         
         .custom-bet-row { display: flex; gap: 6px; margin-top: auto; }
         .custom-bet-input { 
             flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); 
-            border-radius: 12px; padding: 10px 12px; color: var(--accent-gold); font-size: 14px; 
+            border-radius: 12px; padding: 9px 12px; color: var(--accent-gold); font-size: 14px; 
             font-weight: 900; text-align: center;
         }
         .custom-bet-submit { 
@@ -224,7 +226,7 @@
             </div>
         </div>
 
-        <!-- 2. СПИСОК КОЛЁС (С ЦЕНАМИ) -->
+        <!-- 2. СПИСОК КОЛЁС -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
@@ -255,7 +257,7 @@
             <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ</button>
         </div>
 
-        <!-- 4. АРЕНА -->
+        <!-- 4. АРЕНА (Прямоугольная удлиненная) -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="battle-header-info">
@@ -265,7 +267,7 @@
             
             <div class="arena-container-center">
                 <div class="arena-wrapper" id="arena-wrapper">
-                    <canvas id="arena-canvas" width="600" height="600"></canvas>
+                    <canvas id="arena-canvas" width="800" height="600"></canvas>
                     <div id="arena-avatars-layer"></div>
                     <div class="board-timer" id="arena-timer">20</div>
                     <div class="board-overlay-result" id="arena-overlay"></div>
@@ -430,7 +432,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА
+        // СОКЕТЫ И АРЕНА (ИСПРАВЛЕНЫ АВАТАРКИ, ШАРИК И ИМЯ ПОБЕДИТЕЛЯ)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -439,8 +441,10 @@
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
-        const CANVAS_SIZE = 600; 
-        const CENTER = CANVAS_SIZE / 2;
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 600;
+        const CENTER_X = CANVAS_WIDTH / 2;
+        const CENTER_Y = CANVAS_HEIGHT / 2;
 
         let arenaPlayers = [];
         let arenaBank = 0;
@@ -448,8 +452,8 @@
         let arenaState = 'WAITING';
 
         let animFrameId = null;
-        let ballX = CENTER;
-        let ballY = CENTER;
+        let ballX = CENTER_X;
+        let ballY = CENTER_Y;
         let ballRadius = 14;
         let ballSpeedX = 0;
         let ballSpeedY = 0;
@@ -521,18 +525,22 @@
                 p.endRad = currentAngle + sliceAngle;
                 p.midRad = currentAngle + (sliceAngle / 2);
                 
-                let radiusOffset = 32; 
+                let radiusOffset = 30; 
                 let x = 50 + radiusOffset * Math.cos(p.midRad);
                 let y = 50 + radiusOffset * Math.sin(p.midRad);
 
+                // Возвращаем аватарки на арену
                 let ava = document.createElement('div');
                 ava.className = 'board-avatar';
-                ava.style.left = `${x}%`; ava.style.top = `${y}%`; ava.style.borderColor = p.color;
-                ava.innerHTML = p.avatarHtml || `<div style="width:100%; height:100%; background:${p.color};"></div>`;
+                ava.style.left = `${x}%`; 
+                ava.style.top = `${y}%`; 
+                ava.style.borderColor = p.color;
+                ava.innerHTML = p.isUser ? ' Д ' : `🤖`;
                 avatarsContainer.appendChild(ava);
 
                 currentAngle += sliceAngle;
 
+                // Заполняем список игроков без пересоздания всей верстки дерганья
                 const row = document.createElement('div');
                 row.className = 'b-player-row';
                 row.innerHTML = `
@@ -544,32 +552,32 @@
                     </div>
                     <div class="b-player-bet">⭐ ${p.bet}</div>
                 `;
-                listContainer.prepend(row);
+                listContainer.appendChild(row);
             });
 
             drawCanvasFrame(); 
         }
 
         function drawCanvasFrame() {
-            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             if (arenaPlayers.length > 0) {
                 arenaPlayers.forEach(p => {
                     ctx.beginPath();
-                    ctx.moveTo(CENTER, CENTER);
-                    ctx.arc(CENTER, CENTER, CENTER, p.startRad, p.endRad);
+                    ctx.moveTo(CENTER_X, CENTER_Y);
+                    ctx.arc(CENTER_X, CENTER_Y, Math.max(CANVAS_WIDTH, CANVAS_HEIGHT), p.startRad, p.endRad);
                     ctx.fillStyle = p.color;
                     ctx.fill();
                     
                     ctx.beginPath();
-                    ctx.moveTo(CENTER, CENTER);
-                    ctx.lineTo(CENTER + Math.cos(p.endRad) * CENTER, CENTER + Math.sin(p.endRad) * CENTER);
+                    ctx.moveTo(CENTER_X, CENTER_Y);
+                    ctx.lineTo(CENTER_X + Math.cos(p.endRad) * 500, CENTER_Y + Math.sin(p.endRad) * 500);
                     ctx.lineWidth = 4;
                     ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
                     ctx.stroke();
                 });
             } else {
                 ctx.fillStyle = '#1A2235';
-                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
             if (arenaState === 'PLAYING') {
@@ -584,9 +592,9 @@
         }
 
         function animateBallToServerWinner(winner, bankAmount) {
-            ballX = CENTER; ballY = CENTER;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.random() * 4);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.random() * 4);
+            ballX = CENTER_X; ballY = CENTER_Y;
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 5);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 5);
             let startTime = null;
             let bouncePhase = true; 
 
@@ -597,13 +605,14 @@
                 if (bouncePhase) {
                     ballX += ballSpeedX;
                     ballY += ballSpeedY;
-                    if (ballX <= ballRadius || ballX >= CANVAS_SIZE - ballRadius) ballSpeedX *= -1;
-                    if (ballY <= ballRadius || ballY >= CANVAS_SIZE - ballRadius) ballSpeedY *= -1;
+                    if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
+                    if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
 
-                    if (progress > 2500) bouncePhase = false;
+                    // Увеличили время отскоков шарика, чтобы он не пропадал мгновенно
+                    if (progress > 3500) bouncePhase = false;
                 } else {
-                    let targetX = CENTER + Math.cos(winner.midRad) * (CENTER * 0.64);
-                    let targetY = CENTER + Math.sin(winner.midRad) * (CENTER * 0.64);
+                    let targetX = CENTER_X + Math.cos(winner.midRad) * 120;
+                    let targetY = CENTER_Y + Math.sin(winner.midRad) * 90;
                     
                     ballX += (targetX - ballX) * 0.08;
                     ballY += (targetY - ballY) * 0.08;
@@ -627,17 +636,18 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
+            // Четко показываем кто победил
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ТВОЙ БАНК!</h3><div style="font-size:18px; font-weight:900;">+${bankAmount} ⭐</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:20px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:4px;">+${bankAmount} ⭐</div>`;
             } else {
-                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">Победил ${winner.name}</h3><div style="font-size:15px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
+                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:18px; color:var(--neon-cyan); font-weight:900; margin:4px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
             }
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА (ТОЛЬКО ПРИЗЫ, НУЛЕЙ НЕТ)
+        // ЛОГИКА КОЛЕСА
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 20, 10, 5, 100, 50, 20, 10, 5], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
