@@ -434,7 +434,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ФИНАЛЬНЫЙ АБСОЛЮТНО СТАБИЛЬНЫЙ КОД)
+        // СОКЕТЫ И АРЕНА (ОБРАБОТКА ЗАВИСАНИЙ АНИМАЦИИ)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -672,14 +672,14 @@
             }
         }
 
-        // 5 секунд полета шарика с гарантированным срабатыванием финала
+        // Жесткий таймер на 5 секунд без шансов на зависание
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 5000; // 5 секунд
+            let flightDuration = 5000; // Ровно 5 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -690,18 +690,17 @@
                     ballY += ballSpeedY;
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
                     if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
-                } else {
-                    // Принудительно завершаем полет ровно по таймеру 5 секунд без зависаний координат
-                    cancelAnimationFrame(animFrameId);
-                    ballX = CENTER_X + Math.cos(winner.midRad) * 100;
-                    ballY = CENTER_Y + Math.sin(winner.midRad) * 70;
-                    drawCanvasFrame();
-                    setTimeout(() => showArenaResult(winner, bankAmount), 100);
-                    return;
-                }
 
-                drawCanvasFrame();
-                animFrameId = requestAnimationFrame(animate);
+                    drawCanvasFrame();
+                    animFrameId = requestAnimationFrame(animate);
+                } else {
+                    // Анимация завершилась ровно через 5 секунд — гарантированно показываем результат
+                    cancelAnimationFrame(animFrameId);
+                    ballX = CENTER_X + Math.cos(winner.midRad) * 120;
+                    ballY = CENTER_Y + Math.sin(winner.midRad) * 90;
+                    drawCanvasFrame();
+                    showArenaResult(winner, bankAmount);
+                }
             }
             animFrameId = requestAnimationFrame(animate);
         }
@@ -712,7 +711,7 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Автоматическое мгновенное зачисление звезд победителю
+            // Автоматическое зачисление звезд победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
@@ -769,7 +768,7 @@
             currentWheelType = type;
             const config = WHEEL_CONFIGS[type]; 
             document.getElementById('wheel-title').innerText = config.title; 
-            renderWheelDisc(type); 
+            renderWheelDisc('type); 
             openScreen('screen-game-wheel'); 
         }
 
