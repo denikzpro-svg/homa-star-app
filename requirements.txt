@@ -3,3 +3,8 @@ aiohttp
 motor
 pymongo
 dnspython
+flask
+flask-socketio
+gunicorn
+gevent
+gevent-websocket
