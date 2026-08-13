@@ -85,7 +85,7 @@
 
         .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
         
-        /* Прямоугольная удлиненная арена вместо квадрата */
+        /* Удлиненная прямоугольная арена */
         .arena-container-center { display: flex; justify-content: center; width: 100%; margin-bottom: 6px; }
         .arena-wrapper {
             position: relative; width: 100%; max-width: 340px; aspect-ratio: 4/3;
@@ -119,7 +119,7 @@
         }
         @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* Фиксированный блок списка игроков без дерганий */
+        /* Список игроков без дерганий */
         .b-players-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; height: 85px; overflow-y: auto; padding-right: 4px; }
         .b-players-list::-webkit-scrollbar { width: 3px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
@@ -257,7 +257,7 @@
             <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ</button>
         </div>
 
-        <!-- 4. АРЕНА (Прямоугольная удлиненная) -->
+        <!-- 4. АРЕНА (Прямоугольная) -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="battle-header-info">
@@ -432,7 +432,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ИСПРАВЛЕНЫ АВАТАРКИ, ШАРИК И ИМЯ ПОБЕДИТЕЛЯ)
+        // СОКЕТЫ И ПЛАВНАЯ 10-СЕКУНДНАЯ АНИМАЦИЯ ШАРИКА
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -529,23 +529,21 @@
                 let x = 50 + radiusOffset * Math.cos(p.midRad);
                 let y = 50 + radiusOffset * Math.sin(p.midRad);
 
-                // Возвращаем аватарки на арену
                 let ava = document.createElement('div');
                 ava.className = 'board-avatar';
                 ava.style.left = `${x}%`; 
                 ava.style.top = `${y}%`; 
                 ava.style.borderColor = p.color;
-                ava.innerHTML = p.isUser ? ' Д ' : `🤖`;
+                ava.innerHTML = p.isUser ? 'Д' : p.name.charAt(0);
                 avatarsContainer.appendChild(ava);
 
                 currentAngle += sliceAngle;
 
-                // Заполняем список игроков без пересоздания всей верстки дерганья
                 const row = document.createElement('div');
                 row.className = 'b-player-row';
                 row.innerHTML = `
                     <div class="b-player-left">
-                        <div class="b-player-ava" style="border-color: ${p.color};">${p.isUser ? 'Д' : '🤖'}</div>
+                        <div class="b-player-ava" style="border-color: ${p.color};">${p.isUser ? 'Д' : p.name.charAt(0)}</div>
                         <div class="b-player-info">
                             <h4>${p.name} <span style="color:var(--neon-cyan);">${((p.bet / arenaBank)*100).toFixed(1)}%</span></h4>
                         </div>
@@ -564,13 +562,13 @@
                 arenaPlayers.forEach(p => {
                     ctx.beginPath();
                     ctx.moveTo(CENTER_X, CENTER_Y);
-                    ctx.arc(CENTER_X, CENTER_Y, Math.max(CANVAS_WIDTH, CANVAS_HEIGHT), p.startRad, p.endRad);
+                    ctx.arc(CENTER_X, CENTER_Y, 1000, p.startRad, p.endRad);
                     ctx.fillStyle = p.color;
                     ctx.fill();
                     
                     ctx.beginPath();
                     ctx.moveTo(CENTER_X, CENTER_Y);
-                    ctx.lineTo(CENTER_X + Math.cos(p.endRad) * 500, CENTER_Y + Math.sin(p.endRad) * 500);
+                    ctx.lineTo(CENTER_X + Math.cos(p.endRad) * 1000, CENTER_Y + Math.sin(p.endRad) * 1000);
                     ctx.lineWidth = 4;
                     ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
                     ctx.stroke();
@@ -585,42 +583,41 @@
                 ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = '#FFFFFF';
                 ctx.shadowColor = '#00F3FF';
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 25;
                 ctx.fill();
                 ctx.shadowBlur = 0; 
             }
         }
 
+        // Плавная 10-секундная анимация шарика
         function animateBallToServerWinner(winner, bankAmount) {
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 5);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 5);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             let startTime = null;
-            let bouncePhase = true; 
+            let flightDuration = 10000; // Ровно 10 секунд полета
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
                 let progress = timestamp - startTime;
 
-                if (bouncePhase) {
+                if (progress < flightDuration) {
                     ballX += ballSpeedX;
                     ballY += ballSpeedY;
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
                     if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
-
-                    // Увеличили время отскоков шарика, чтобы он не пропадал мгновенно
-                    if (progress > 3500) bouncePhase = false;
                 } else {
-                    let targetX = CENTER_X + Math.cos(winner.midRad) * 120;
-                    let targetY = CENTER_Y + Math.sin(winner.midRad) * 90;
+                    // Последние секунды плавно примагничиваем к победителю
+                    let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
+                    let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
                     
-                    ballX += (targetX - ballX) * 0.08;
-                    ballY += (targetY - ballY) * 0.08;
+                    ballX += (targetX - ballX) * 0.05;
+                    ballY += (targetY - ballY) * 0.05;
 
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
                         drawCanvasFrame();
-                        setTimeout(() => showArenaResult(winner, bankAmount), 400);
+                        setTimeout(() => showArenaResult(winner, bankAmount), 500);
                         return;
                     }
                 }
@@ -636,13 +633,14 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Четко показываем кто победил
+            // Автоматическое зачисление баланса без кликов
+            userBalance += bankAmount; 
+            updateBalanceDisplay();
+
             if (winner.id === userId) {
-                userBalance += bankAmount; 
-                updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:20px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:4px;">+${bankAmount} ⭐</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">+${bankAmount} ⭐ зачислено на баланс</div>`;
             } else {
-                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:18px; color:var(--neon-cyan); font-weight:900; margin:4px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
+                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
             }
         }
 
