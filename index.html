@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HOMASTAR ELITE</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #050711; --cyan: #00F3FF; --gold: #FFD700; --pink: #FF2E93; --glass: rgba(12, 16, 28, 0.8); }
-        body { background: var(--bg); color: #fff; margin: 0; font-family: sans-serif; display: flex; justify-content: center; overflow: hidden; }
+        :root { --bg: #050711; --cyan: #00F3FF; --gold: #FFD700; --pink: #FF2E93; --glass: rgba(12, 16, 28, 0.8); --sub: #8B9BB4; }
+        body { background: var(--bg); color: #fff; margin: 0; font-family: sans-serif; display: flex; justify-content: center; }
         .app { width: 100%; max-width: 420px; height: 100vh; padding: 20px; display: flex; flex-direction: column; }
         .bal { font-size: 28px; font-weight: 900; color: var(--gold); text-align: center; margin-bottom: 20px; }
-        .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; margin-bottom: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: 80px; }
+        .screen.active { display: flex; }
+        .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; margin-bottom: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .btn { padding: 15px; border-radius: 15px; border: none; background: var(--cyan); font-weight: 900; width: 100%; cursor: pointer; margin-top: 10px; }
-        .screen { display: none; flex-direction: column; flex: 1; }
-        .active { display: flex; }
-        #canvas-wrap { width: 100%; aspect-ratio: 4/3; background: #0b0e17; border-radius: 20px; position: relative; overflow: hidden; }
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        #canvas-wrap { width: 100%; aspect-ratio: 4/3; background: #0b0e17; border-radius: 20px; position: relative; overflow: hidden; margin-top: 10px; }
         .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:none; justify-content:center; align-items:center; background:rgba(0,0,0,0.9); z-index:100; text-align:center; padding:20px; font-weight:bold; }
     </style>
 </head>
@@ -23,13 +24,13 @@
 <div class="app">
     <div class="bal" id="bal">1040 ⭐</div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <!-- Экраны -->
     <div id="screen-hub" class="screen active">
         <div class="card" onclick="openScreen('screen-wheels')"><h3>🎡 Колёса</h3><p>Удача и риск</p></div>
         <div class="card" onclick="openScreen('screen-arena')"><h3>🏓 Арена</h3><p>PVP Рулетка</p></div>
+        <div class="card"><h3>🏆 Зал славы</h3><p>Лучшие игроки</p></div>
     </div>
 
-    <!-- ВЫБОР КОЛЕС -->
     <div id="screen-wheels" class="screen">
         <button class="btn" onclick="openScreen('screen-hub')">Назад</button>
         <div class="card" onclick="playWheel('free')"><h3>🎁 Бесплатное</h3><p>Цена: 0 ⭐</p></div>
@@ -39,31 +40,32 @@
         <div class="card" onclick="playWheel('diamond')"><h3>💎 Алмазное</h3><p>Цена: 250 ⭐</p></div>
     </div>
 
-    <!-- АРЕНА -->
     <div id="screen-arena" class="screen">
         <button class="btn" onclick="openScreen('screen-hub')">Назад</button>
         <div id="canvas-wrap">
             <canvas id="arena-canvas"></canvas>
             <div id="overlay" class="overlay"></div>
         </div>
-        <input type="number" id="bet-input" style="padding:15px; border-radius:10px; margin-top:10px;" placeholder="Ставка...">
+        <input type="number" id="bet-input" style="padding:15px; border-radius:10px; margin-top:10px; background:#111; color:#fff; border:1px solid #333;" placeholder="Ставка...">
         <button class="btn" onclick="placeBet()">ПОСТАВИТЬ</button>
+    </div>
+
+    <!-- Нижняя навигация -->
+    <div class="nav">
+        <div onclick="openScreen('screen-hub')">🎮 Игры</div>
+        <div onclick="openScreen('screen-hub')">🏆 Лидеры</div>
+        <div onclick="openScreen('screen-hub')">⚙️ Настройки</div>
     </div>
 </div>
 
 <script>
     let balance = parseFloat(localStorage.getItem('homa_bal') || '1040');
     function updateBal(amt) { balance += amt; localStorage.setItem('homa_bal', balance); document.getElementById('bal').innerText = Math.floor(balance) + " ⭐"; }
-    updateBal(0);
+    function openScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    function openScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    // ЛОГИКА КОЛЕС
+    // Математика колес
     const WHEEL_CONFIGS = {
-        free: { prizes: [1, 5, 10], weights: [90, 9.9, 0.1] },
+        free: { price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1] },
         common: { price: 20, prizes: [5, 10, 20, 50, 70, 100, 120], weights: [50, 30, 10, 5, 3, 1, 1] },
         silver: { price: 50, prizes: [20, 30, 50, 70, 100, 150, 200], weights: [40, 25, 15, 10, 5, 3, 2] },
         gold: { price: 100, prizes: [20, 50, 70, 100, 120, 150, 200, 250, 350], weights: [30, 25, 15, 10, 8, 5, 4, 2, 1] },
@@ -72,9 +74,8 @@
 
     function playWheel(type) {
         let conf = WHEEL_CONFIGS[type];
-        if(conf.price && balance < conf.price) return alert("Мало звёзд!");
-        if(conf.price) updateBal(-conf.price);
-        
+        if(balance < conf.price) return alert("Мало звёзд!");
+        updateBal(-conf.price);
         let random = Math.random() * conf.weights.reduce((a,b)=>a+b, 0);
         let win = 0;
         for(let i=0; i<conf.prizes.length; i++) {
@@ -85,7 +86,7 @@
         alert("Вы выиграли: " + win + " ⭐");
     }
 
-    // ЛОГИКА АРЕНЫ
+    // Арена
     const socket = io('https://homastar-server.onrender.com');
     const userId = 'user_' + Math.floor(Math.random() * 100000);
     const canvas = document.getElementById('arena-canvas');
@@ -101,7 +102,7 @@
     socket.on('game_over', (data) => {
         let overlay = document.getElementById('overlay');
         overlay.style.display = 'flex';
-        overlay.innerText = `Победил: ${data.winner.name}! Выигрыш: ${data.bank} ⭐`;
+        overlay.innerText = `Победил: ${data.winner.name}! Забрал: ${data.bank} ⭐`;
         if(data.winner.id === userId) updateBal(data.bank);
         setTimeout(() => overlay.style.display = 'none', 3000);
     });
