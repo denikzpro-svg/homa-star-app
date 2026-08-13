@@ -434,7 +434,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И ФИНАЛЬНАЯ СТАБИЛЬНАЯ АРЕНА
+        // СОКЕТЫ И АРЕНА (ФИНАЛЬНЫЙ АБСОЛЮТНО СТАБИЛЬНЫЙ КОД)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -661,7 +661,6 @@
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
-            // Шарик всегда рисуется последним — поверх аватарок и линий
             if (arenaState === 'PLAYING') {
                 ctx.beginPath();
                 ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
@@ -673,7 +672,7 @@
             }
         }
 
-        // Полет шарика ровно 5 секунд с гарантированным показом победителя
+        // 5 секунд полета шарика с гарантированным срабатыванием финала
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
@@ -692,18 +691,13 @@
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
                     if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
                 } else {
-                    let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
-                    let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
-                    
-                    ballX += (targetX - ballX) * 0.12;
-                    ballY += (targetY - ballY) * 0.12;
-
-                    if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
-                        cancelAnimationFrame(animFrameId);
-                        drawCanvasFrame();
-                        setTimeout(() => showArenaResult(winner, bankAmount), 200);
-                        return;
-                    }
+                    // Принудительно завершаем полет ровно по таймеру 5 секунд без зависаний координат
+                    cancelAnimationFrame(animFrameId);
+                    ballX = CENTER_X + Math.cos(winner.midRad) * 100;
+                    ballY = CENTER_Y + Math.sin(winner.midRad) * 70;
+                    drawCanvasFrame();
+                    setTimeout(() => showArenaResult(winner, bankAmount), 100);
+                    return;
                 }
 
                 drawCanvasFrame();
@@ -718,11 +712,11 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Моментальное автоматическое зачисление денег победителю
+            // Автоматическое мгновенное зачисление звезд победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Зачислено на ваш баланс. Поздравляем!</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Зачислено на ваш баланс. Поздравляем тебя!</div>`;
             } else {
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
             }
