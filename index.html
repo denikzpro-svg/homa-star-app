@@ -444,7 +444,7 @@
 
     <script>
         // ==========================================
-        // ТАКТИЛЬНЫЙ ОТКЛИК (ВИБРАЦИЯ ВЕЗДЕ)
+        // МОЩНЫЙ УНИВЕРСАЛЬНЫЙ ТАКТИЛЬНЫЙ ОТКЛИК
         // ==========================================
         let hapticEnabled = localStorage.getItem('homastar_haptic') !== 'false';
 
@@ -456,8 +456,15 @@
                     else if (type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
                     else if (type === 'heavy') window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
                     else if (type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                } else if (navigator.vibrate) {
-                    navigator.vibrate(type === 'heavy' ? 40 : (type === 'medium' ? 25 : 10));
+                }
+            } catch(e) {}
+
+            try {
+                if (navigator.vibrate) {
+                    if (type === 'heavy') navigator.vibrate(40);
+                    else if (type === 'medium') navigator.vibrate(25);
+                    else if (type === 'success') navigator.vibrate([30, 50, 30]);
+                    else navigator.vibrate(12);
                 }
             } catch(e) {}
         }
@@ -468,6 +475,7 @@
             const toggle = document.getElementById('toggle-haptic');
             if (hapticEnabled) toggle.classList.add('active');
             else toggle.classList.remove('active');
+            haptic('medium');
         }
 
         // ==========================================
@@ -615,6 +623,7 @@
         }
 
         function openScreen(screenId) {
+            haptic('light');
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
             
@@ -627,8 +636,9 @@
             if(screenId === 'screen-tickets') updateTicketUI();
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id) { haptic('light'); document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { haptic('light'); document.getElementById(id).style.display = 'none'; }
+        
         function showWinPopup(amount, title="ПОБЕДА!") { 
             haptic('success');
             document.getElementById('win-modal-title').innerText = title;
@@ -698,6 +708,7 @@
         }
 
         function nextSlide() {
+            haptic('medium');
             currentSlideIndex++;
             if (currentSlideIndex < onboardingSlides.length) {
                 renderSlide();
@@ -769,12 +780,14 @@
         // РЕФЕРАЛЬНАЯ СИСТЕМА
         // ==========================================
         function copyRefLink() { 
+            haptic('light');
             const input = document.getElementById('ref-link-input');
             input.select(); 
             document.execCommand('copy'); 
             alert('Реферальная ссылка скопирована!'); 
         }
         function shareRefLink() { 
+            haptic('medium');
             window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, стань успешным вместе со мной!`, '_blank'); 
         }
 
@@ -851,6 +864,7 @@
         setInterval(updateGiveawayTimer, 1000);
 
         function buyTicket() {
+            haptic('heavy');
             if (userHasTicket) return alert("У тебя уже есть 1 билет на этот тираж! Больше нельзя.");
             if (userBalance < 20) return openModal('modal-deposit');
 
@@ -923,7 +937,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ВИБРАЦИЯ ПРИ ОТСКОКАХ)
+        // СОКЕТЫ И АРЕНА
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -952,6 +966,7 @@
         let isAnimating = false;
 
         function setQuickBet(val) {
+            haptic('light');
             if (!hasUserBet && (arenaState === 'WAITING' || arenaState === 'PAUSE')) {
                 document.getElementById('arena-bet-input').value = val;
             }
@@ -1037,6 +1052,7 @@
         });
 
         function handleBetAction() {
+            haptic('heavy');
             if (arenaState !== 'WAITING' && arenaState !== 'PAUSE') return;
 
             const actionBtn = document.getElementById('arena-action-btn');
@@ -1212,7 +1228,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА (ВИБРАЦИЯ В ТАКТ ТРЕЩОТКЕ)
+        // ЛОГИКА КОЛЕСА (ЧАСТАЯ ТРЕЩОТКА ВИБРАЦИЕЙ)
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
@@ -1314,6 +1330,7 @@
         }
 
         function spinWheel() {
+            haptic('heavy');
             if (isSpinning) return;
             const config = WHEEL_CONFIGS[currentWheelType];
 
@@ -1355,10 +1372,10 @@
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-            // Вибрация трещоткой в такт вращению колеса
+            // Частая вибрация-трещотка во время вращения колеса
             let tickInterval = setInterval(() => {
                 haptic('light');
-            }, 120);
+            }, 100);
 
             setTimeout(() => {
                 clearInterval(tickInterval);
