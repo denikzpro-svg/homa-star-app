@@ -82,7 +82,7 @@
         #wheel-canvas { width: 300px; height: 300px; transition: transform 6s cubic-bezier(0.15, 0.9, 0.2, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
         
         .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; box-shadow: 0 0 15px var(--neon-cyan-glow); }
-        .btn-spin.disabled { border-color: #FF4444; color: #FF4444; pointer-events: none; opacity: 0.7; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
+        .btn-spin.disabled { border-color: #555; color: #777; pointer-events: none; opacity: 0.7; box-shadow: none; background: rgba(255,255,255,0.02); }
 
         .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
         
@@ -176,7 +176,7 @@
         .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; }
 
-        /* Масштабная вкладка «Друзья» */
+        /* Вкладка «Друзья» */
         .friends-hero { background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid var(--neon-cyan); border-radius: 24px; padding: 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 25px rgba(0,243,255,0.15); }
         .friends-hero h3 { font-size: 20px; font-weight: 900; color: #FFF; margin-bottom: 6px; }
         .friends-hero p { font-size: 13px; color: var(--text-sub); line-height: 1.4; }
@@ -187,7 +187,7 @@
         .ref-btn.copy { background: rgba(255,255,255,0.1); color: #FFF; border: 1px solid var(--glass-border); }
         .ref-btn.share { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan-glow); }
 
-        /* Слайд-шоу и бонусный экран */
+        /* Слайд-шоу и инвентарь бонуса */
         .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 17, 0.95); backdrop-filter: blur(10px); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
         .onboarding-card { background: rgba(15, 20, 35, 0.95); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 30px var(--neon-cyan-glow); display: flex; flex-direction: column; align-items: center; gap: 16px; }
         .slide-icon { font-size: 64px; margin-bottom: 5px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
@@ -339,7 +339,7 @@
             </div>
         </div>
 
-        <!-- 7. ДРУЗЬЯ (МАСШТАБНАЯ И КРАСИВАЯ РЕФЕРАЛЬНАЯ СИСТЕМА) -->
+        <!-- 7. ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="friends-hero">
@@ -361,8 +361,30 @@
             </div>
         </div>
 
-        <!-- 8. ИНВЕНТАРЬ И НАСТРОЙКИ -->
-        <div id="screen-inventory" class="screen"><h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Инвентарь</h2><div class="card-box" style="text-align: center; color: var(--text-sub);">Пока здесь пусто. Выигрывай призы на колесе!</div></div>
+        <!-- 8. ИНВЕНТАРЬ (СЕЙФ С БОНУСОМ НА 21 ДЕНЬ) -->
+        <div id="screen-inventory" class="screen">
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <h2 style="font-size: 18px; margin-bottom: 12px;">🎒 Инвентарь</h2>
+            
+            <div class="card-box" style="border-color: var(--accent-gold); background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(12,16,28,0.8));">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                    <div style="font-size: 36px;">🎁</div>
+                    <div>
+                        <h3 style="font-size: 15px; font-weight: 900; color: #FFF;">Стартовый бонус</h3>
+                        <p style="font-size: 13px; color: var(--accent-gold); font-weight: 800;">50 ⭐ в сейфе</p>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4;">Приветственный бонус размораживается через 21 день. Следите за таймером!</p>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--glass-border);">
+                    <span style="font-size: 12px; color: var(--text-sub);">До разморозки:</span>
+                    <span id="inv-bonus-countdown" style="font-size: 13px; font-weight: 900; color: var(--neon-cyan);">21д 00ч 00м 00с</span>
+                </div>
+
+                <button id="inv-btn-claim" class="btn-spin disabled" style="margin-top: 0; padding: 12px; font-size: 14px;" onclick="claimWelcomeBonus()">ЗАБРАТЬ</button>
+            </div>
+        </div>
+
         <div id="screen-settings" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 15px;">⚙️ Настройки аудио</h2>
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
@@ -391,12 +413,12 @@
         </nav>
     </div>
 
-    <!-- МОДАЛКА ОНБОРДИНГА (СЛАЙД-ШОУ) -->
+    <!-- МОДАЛКА ОНБОРДИНГА С СОЧНЫМ МАРКЕТИНГОМ -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-card">
             <div id="slide-icon" class="slide-icon">🎁</div>
-            <h2 id="slide-title" class="slide-title">Бесплатное Колесо</h2>
-            <p id="slide-desc" class="slide-desc">Заходи каждые 24 часа, крути колесо абсолютно бесплатно и забирай свои звезды без риска!</p>
+            <h2 id="slide-title" class="slide-title">Добро пожаловать в Homastar!</h2>
+            <p id="slide-desc" class="slide-desc">Забудь про копейки. Здесь ты можешь поднять реальное состояние за секунды!</p>
             
             <div class="slide-dots">
                 <div class="dot active" id="dot-0"></div>
@@ -409,24 +431,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА БОНУСА НА 21 ДЕНЬ С ЖИВЫМ ТАЙМЕРОМ -->
-    <div id="modal-welcome-bonus" class="modal-overlay">
-        <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
-            <div style="font-size: 70px;">🎁</div>
-            <h2 style="font-size: 22px; font-weight: 900; color: #FFF;">СТАРТОВЫЙ БОНУС!</h2>
-            <div style="font-size: 36px; font-weight: 900; color: var(--accent-gold); margin: 5px 0;">+50 ⭐</div>
-            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">Приветственные 50 звезд успешно начислены в сейф! Забрать их на основной баланс можно будет по истечении таймера (21 день).</p>
-            
-            <div id="bonus-timer-box" style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; font-size: 14px; font-weight: 900; color: var(--neon-cyan);">
-                До разморозки: <span id="bonus-countdown" style="color: #FFF;">21д 00ч 00м 00с</span>
-            </div>
-
-            <button id="btn-claim-bonus" class="btn-spin disabled" style="border-color: #555; color: #888;" onclick="claimWelcomeBonus()">ЗАБРАТЬ НА БАЛАНС</button>
-            <button class="btn-back" style="width: 100%; margin-top: -8px;" onclick="closeModal('modal-welcome-bonus')">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- МОДАЛКИ СТАНДАРТНЫЕ -->
+    <!-- МОДАЛКА СТАНДАРТНАЯ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
@@ -453,7 +458,7 @@
 
     <script>
         // ==========================================
-        // АУДИО СИНТЕЗАТОР И ЗВУКОВЫЕ ЭФФЕКТЫ (Web Audio API)
+        // АУДИО СИНТЕЗАТОР И ЗВУКОВЫЕ ЭФФЕКТЫ
         // ==========================================
         let audioCtx = null;
 
@@ -463,12 +468,11 @@
             }
         }
 
-        // Фоновая релакс музыка (мягкий эмбиентный синтез)
         let bgMusicInterval = null;
         function startBgMusic() {
             if (bgMusicInterval || !settings.music) return;
             initAudio();
-            const chords = [261.63, 329.63, 392.00, 523.25]; // C major
+            const chords = [261.63, 329.63, 392.00, 523.25];
             bgMusicInterval = setInterval(() => {
                 if (!settings.music || !audioCtx) return;
                 try {
@@ -494,7 +498,6 @@
             }
         }
 
-        // Звук вращения колеса (трещотка)
         function playWheelTickSound() {
             if (!settings.sfx) return;
             initAudio();
@@ -513,7 +516,6 @@
             } catch(e) {}
         }
 
-        // Звук пинг-понга арены (чинь-чинь)
         function playPingSound() {
             if (!settings.sfx) return;
             initAudio();
@@ -532,7 +534,6 @@
             } catch(e) {}
         }
 
-        // Призовой победный джингл
         function playWinSound() {
             if (!settings.sfx) return;
             initAudio();
@@ -554,7 +555,7 @@
         }
 
         // ==========================================
-        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ И НАСТРОЙКИ
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
         // ==========================================
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '1040');
         let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
@@ -618,17 +619,17 @@
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ И БОНУСА НА 21 ДЕНЬ С ТАЙМЕРОМ
+        // ЛОГИКА СЛАЙД-ШОУ И ИНВЕНТАРЯ (БОНУС 21 ДЕНЬ)
         // ==========================================
         const onboardingSlides = [
-            { icon: "🎁", title: "Бесплатное Колесо", desc: "Заходи каждые 24 часа, крути колесо абсолютно бесплатно и забирай свои звезды без риска!" },
-            { icon: "🎡", title: "Колёса на Звёзды", desc: "Испытай удачу на платных колесах: от Обычного до Алмазного. Рискуй и умножай баланс!" },
-            { icon: "🏓", title: "PvP Арена", desc: "Сражайся с другими игроками в режиме реального времени. Шарик решит, кто заберет весь банк!" },
-            { icon: "🎟️", title: "Розыгрыш 1000 ⭐", desc: "Покупай билет за 20 звезд в разделе розыгрыша и выигрывай главный куш проекта!" }
+            { icon: "🎁", title: "Бесплатное Колесо", desc: "Каждые 24 часа крути колесо абсолютно без риска и забирай свои стартовые звёзды на халяву!" },
+            { icon: "🎡", title: "Колёса на Звёзды", desc: "Рискуй по-взрослому! От Обычного до Алмазного колеса — преврати копейки в миллионы за секунду!" },
+            { icon: "🏓", title: "PvP Арена", desc: "Эпичные сражения с реальными игроками в реальном времени. Шарик решит, чей кошелек станет толще!" },
+            { icon: "🏆", title: "Розыгрыш 100 000 ⭐", desc: "Каждые 10 часов разыгрывается безумный куш! Залетай, покупай билет и стань миллионером прямо сейчас!" }
         ];
 
         let currentSlideIndex = 0;
-        const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день в миллисекундах
+        const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день
 
         function checkOnboarding() {
             const isSeen = localStorage.getItem('homastar_onboarding_seen_' + userId);
@@ -654,7 +655,7 @@
 
             const btn = document.getElementById('slide-btn');
             if (currentSlideIndex === onboardingSlides.length - 1) {
-                btn.innerText = "ЗАБРАТЬ 50 ЗВЁЗД И ИГРАТЬ!";
+                btn.innerText = "ЗАБРАТЬ 50 ЗВЁЗД В ИНВЕНТАРЬ!";
             } else {
                 btn.innerText = "ДАЛЕЕ";
             }
@@ -668,11 +669,10 @@
                 document.getElementById('modal-onboarding').style.display = 'none';
                 localStorage.setItem('homastar_onboarding_seen_' + userId, 'true');
                 
-                // Инициализируем таймер бонуса если еще не создан
                 if (!localStorage.getItem('homastar_bonus_time_' + userId)) {
                     localStorage.setItem('homastar_bonus_time_' + userId, Date.now().toString());
                 }
-                openModal('modal-welcome-bonus');
+                openScreen('screen-inventory');
                 updateBonusTimerUI();
             }
         }
@@ -681,26 +681,27 @@
             let bonusTime = parseInt(localStorage.getItem('homastar_bonus_time_' + userId) || Date.now().toString());
             let bonusClaimed = localStorage.getItem('homastar_bonus_claimed_' + userId) === 'true';
             
-            const btnClaim = document.getElementById('btn-claim-bonus');
-            const countdownEl = document.getElementById('bonus-countdown');
-            const timerBox = document.getElementById('bonus-timer-box');
+            const btnClaim = document.getElementById('inv-btn-claim');
+            const countdownEl = document.getElementById('inv-bonus-countdown');
 
             if (bonusClaimed) {
-                timerBox.innerHTML = `<span style="color: var(--accent-gold);">Бонус уже получен на баланс!</span>`;
-                btnClaim.style.display = 'none';
+                countdownEl.innerText = "Уже на балансе!";
+                btnClaim.innerText = "ПОЛУЧЕНО";
+                btnClaim.classList.add('disabled');
                 return;
             }
 
             let timeLeft = (bonusTime + BONUS_DURATION_MS) - Date.now();
 
             if (timeLeft <= 0) {
-                countdownEl.innerText = "ГОТОВО К ПОЛУЧЕНИЮ!";
-                timerBox.style.borderColor = "var(--accent-gold)";
+                countdownEl.innerText = "ДОСТУПНО К ЗАЧИСЛЕНИЮ!";
+                countdownEl.style.color = "var(--accent-gold)";
                 btnClaim.classList.remove('disabled');
                 btnClaim.style.borderColor = "var(--accent-gold)";
                 btnClaim.style.color = "var(--accent-gold)";
                 btnClaim.style.background = "rgba(255, 215, 0, 0.15)";
                 btnClaim.style.boxShadow = "0 0 15px var(--accent-gold-glow)";
+                btnClaim.innerText = "ЗАБРАТЬ НА БАЛАНС";
             } else {
                 let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                 let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -718,14 +719,14 @@
             let timeLeft = (bonusTime + BONUS_DURATION_MS) - Date.now();
 
             if (bonusClaimed) return alert("Бонус уже получен!");
-            if (timeLeft > 0) return alert("Время разморозки еще не прошло!");
+            if (timeLeft > 0) return alert("Время таймера еще не истекло! Ожидайте окончания разморозки.");
 
             userBalance += 50;
             updateBalanceDisplay();
             localStorage.setItem('homastar_bonus_claimed_' + userId, 'true');
             playWinSound();
-            alert("🎉 Успешно! 50 ⭐ зачислены на ваш основной баланс!");
-            closeModal('modal-welcome-bonus');
+            alert("🎉 Поздравляем! 50 ⭐ успешно переведены на ваш основной баланс!");
+            updateBonusTimerUI();
         }
 
         // ==========================================
@@ -738,7 +739,7 @@
             alert('Реферальная ссылка скопирована!'); 
         }
         function shareRefLink() { 
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, забирай крутые бонусы!`, '_blank'); 
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, стань миллионером вместе со мной!`, '_blank'); 
         }
         
         function toggleSetting(type) { 
@@ -755,7 +756,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА РОЗЫГРЫША (1000 ЗВЁЗД)
+        // ЛОГИКА РОЗЫГРЫША
         // ==========================================
         let giveawayParticipants = [
             { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
@@ -1150,7 +1151,6 @@
                     ballX += ballSpeedX;
                     ballY += ballSpeedY;
                     
-                    // Проверяем удары о стены с озвучкой чинь-чинь
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) {
                         ballSpeedX *= -1;
                         playPingSound();
@@ -1333,7 +1333,6 @@
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-            // Имитируем тиканье трещотки при вращении колеса
             let tickInterval = setInterval(() => {
                 playWheelTickSound();
             }, 150);
