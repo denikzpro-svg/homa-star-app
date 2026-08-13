@@ -116,7 +116,7 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 20;
             display: none; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; animation: fadeInResult 0.3s ease-out; padding: 10px;
+            text-align: center; animation: fadeInResult 0.3s ease-out; padding: 15px;
         }
         @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
@@ -434,14 +434,13 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И СТАБИЛЬНЫЙ ШАРИК ПОВЕРХ ВСЕГО (5 СЕКУНД)
+        // СОКЕТЫ И ФИНАЛЬНАЯ СТАБИЛЬНАЯ АРЕНА
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
         });
         const userId = 'user_' + Math.floor(Math.random() * 100000);
 
-        // Реальное фото и имя из Telegram
         let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
         let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
         let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces";
@@ -662,7 +661,7 @@
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
-            // ШАРИК РИСУЕТСЯ СТРОГО ПОСЛЕДНИМ — ПОВЕРХ ВСЕГО
+            // Шарик всегда рисуется последним — поверх аватарок и линий
             if (arenaState === 'PLAYING') {
                 ctx.beginPath();
                 ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
@@ -674,14 +673,14 @@
             }
         }
 
-        // Стабильный полет шарика ровно 5 секунд с моментальным зачислением
+        // Полет шарика ровно 5 секунд с гарантированным показом победителя
         function animateBallToServerWinner(winner, bankAmount) {
             isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 5000; // Ровно 5 секунд
+            let flightDuration = 5000; // 5 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -696,13 +695,13 @@
                     let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
                     let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
                     
-                    ballX += (targetX - ballX) * 0.1;
-                    ballY += (targetY - ballY) * 0.1;
+                    ballX += (targetX - ballX) * 0.12;
+                    ballY += (targetY - ballY) * 0.12;
 
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
                         drawCanvasFrame();
-                        setTimeout(() => showArenaResult(winner, bankAmount), 300);
+                        setTimeout(() => showArenaResult(winner, bankAmount), 200);
                         return;
                     }
                 }
@@ -719,11 +718,11 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Моментальное зачисление победителю
+            // Моментальное автоматическое зачисление денег победителю
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Поздравляем тебя!</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Зачислено на ваш баланс. Поздравляем!</div>`;
             } else {
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
             }
