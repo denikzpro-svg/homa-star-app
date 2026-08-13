@@ -148,17 +148,6 @@
         .custom-bet-submit.cancel { background: #FF4444; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
         .custom-bet-submit.disabled { background: var(--glass-bg); color: var(--text-sub); box-shadow: none; pointer-events: none; border: 1px solid var(--glass-border); }
 
-        /* Подиум Зала Славы (Скорректирован по высоте, чтобы Лев не перекрывал шапку) */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 45px; }
-        .podium-step { display: flex; flex-direction: column; align-items: center; background: var(--glass-bg); border-radius: 20px 20px 8px 8px; border: 1px solid var(--glass-border); padding: 12px 6px; width: 30%; text-align: center; position: relative; }
-        .podium-1 { height: 130px; border-color: var(--accent-gold); z-index: 2; transform: translateY(-10px); }
-        .podium-2 { height: 110px; border-color: #C0C0C0; }
-        .podium-3 { height: 95px; border-color: #CD7F32; }
-        .p-ava { font-size: 30px; margin-bottom: 6px; } .podium-1 .p-ava { font-size: 38px; margin-top: -25px; }
-        .p-crown { position: absolute; top: -40px; font-size: 28px; filter: drop-shadow(0 0 12px var(--accent-gold)); }
-        .p-name { font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; width: 100%; white-space: nowrap; }
-        .p-score { font-size: 13px; font-weight: 900; color: var(--accent-gold); }
-
         .card-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 10px; }
         .toggle-switch { width: 50px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
         .toggle-switch.active { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan-glow); }
@@ -333,17 +322,7 @@
             <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;"></div>
         </div>
 
-        <!-- 6. ЗАЛ СЛАВЫ (Лидеры с исправленным подиумом и солидными никами) -->
-        <div id="screen-leaders" class="screen">
-            <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px;" data-tr="hall_of_fame">🏆 Зал Славы</h2>
-            <div class="podium-container">
-                <div class="podium-step podium-2"><div class="p-ava">🐺</div><div class="p-name">Alexander</div><div class="p-score">12 400 ⭐</div></div>
-                <div class="podium-step podium-1"><div class="p-crown">👑</div><div class="p-ava">🦁</div><div class="p-name">Maksim</div><div class="p-score">15 000 ⭐</div></div>
-                <div class="podium-step podium-3"><div class="p-ava">🦊</div><div class="p-name">Dmitriy</div><div class="p-score">8 900 ⭐</div></div>
-            </div>
-        </div>
-
-        <!-- 7. ДРУЗЬЯ -->
+        <!-- 6. ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
             <div class="friends-hero">
@@ -365,7 +344,7 @@
             </div>
         </div>
 
-        <!-- 8. ИНВЕНТАРЬ (СЕЙФ С БОНУСОМ НА 21 ДЕНЬ) -->
+        <!-- 7. ИНВЕНТАРЬ (СЕЙФ С БОНУСОМ НА 21 ДЕНЬ) -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь</h2>
@@ -418,17 +397,16 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ (ЗАЛ СЛАВЫ УБРАН) -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span></button>
-            <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label" data-tr="nav_leaders">Лидеры</span></button>
             <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span></button>
             <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label" data-tr="nav_inventory">Инвентарь</span></button>
             <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label" data-tr="nav_settings">Настройки</span></button>
         </nav>
     </div>
 
-    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ С ЭЛИТНЫМИ ТЕКСТАМИ И ИНДИКАТОРОМ СВЕРХУ) -->
+    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ) -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
             <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
@@ -498,7 +476,6 @@
                 my_chance: "Твой шанс:",
                 btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)",
                 participants: "Участники розыгрыша:",
-                hall_of_fame: "🏆 Зал Славы",
                 ref_title: "Приглашай друзей",
                 ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого приглашенного друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений баланса!",
                 ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА",
@@ -515,7 +492,6 @@
                 settings_music: "🎵 Фоновая музыка",
                 settings_sfx: "🔊 Игровые звуки",
                 nav_games: "Игры",
-                nav_leaders: "Лидеры",
                 nav_friends: "Друзья",
                 nav_inventory: "Инвентарь",
                 nav_settings: "Настройки",
@@ -548,7 +524,6 @@
                 my_chance: "Your chance:",
                 btn_buy_ticket: "BUY TICKET (20 ⭐)",
                 participants: "Participants:",
-                hall_of_fame: "🏆 Hall of Fame",
                 ref_title: "Invite Friends",
                 ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each invited friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from all their deposits!",
                 ref_link_title: "YOUR REFERRAL LINK",
@@ -565,7 +540,6 @@
                 settings_music: "🎵 Background Music",
                 settings_sfx: "🔊 Game Sounds",
                 nav_games: "Games",
-                nav_leaders: "Leaders",
                 nav_friends: "Friends",
                 nav_inventory: "Inventory",
                 nav_settings: "Settings",
@@ -685,7 +659,7 @@
             localStorage.setItem('homastar_user_id', userId);
         }
 
-        let userName = tgUser && tgUser.first_name ? tgUser.first_name : (localStorage.getItem('homastar_username') || "Maksim");
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : (localStorage.getItem('homastar_username') || "Denya");
         localStorage.setItem('homastar_username', userName);
 
         let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : (localStorage.getItem('homastar_avatar') || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces");
@@ -730,14 +704,15 @@
             userBalance += val; updateBalanceDisplay(); closeModal('modal-deposit'); alert(`Успешно пополнено на ${val} ⭐`);
         }
         function executeWithdraw() { 
-            const val = parseFloat(document.getElementById('withdraw-amount-input').value); 
-            if (!val || val <= 0) return alert('Введи сумму!'); 
-            if (val > userBalance) return alert('Недостаточно баланса!'); 
-            userBalance -= val; updateBalanceDisplay(); closeModal('modal-withdraw'); alert('Заявка на вывод создана!'); 
+            const val = parseFloat(document.getElementById('custom-withdraw-input') ? document.getElementById('custom-withdraw-input').value : document.getElementById('withdraw-amount-input').value); 
+            const inputVal = parseFloat(document.getElementById('withdraw-amount-input').value);
+            if (!inputVal || inputVal <= 0) return alert('Введи сумму!'); 
+            if (inputVal > userBalance) return alert('Недостаточно баланса!'); 
+            userBalance -= inputVal; updateBalanceDisplay(); closeModal('modal-withdraw'); alert('Заявка на вывод создана!'); 
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ С ВЕРХНИМИ ИНДИКАТОРАМИ И ЭЛИТНЫМ КОНТЕКСТОМ
+        // ЛОГИКА СЛАЙД-ШОУ
         // ==========================================
         const onboardingSlides = [
             { icon: "🎁", title: "ЕЖЕДНЕВНЫЕ НАГРАДЫ", desc: "Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков." },
@@ -747,14 +722,13 @@
         ];
 
         let currentSlideIndex = 0;
-        const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день
+        const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000;
 
         function checkOnboarding() {
-            const isSeen = localStorage.getItem('homastar_onboarding_seen_' + userId);
-            if (!isSeen) {
-                document.getElementById('modal-onboarding').style.display = 'flex';
-                renderSlide();
-            }
+            // Принудительно показываем слайд-шоу при каждом старте или сбросе
+            document.getElementById('modal-onboarding').style.display = 'flex';
+            currentSlideIndex = 0;
+            renderSlide();
         }
 
         function renderSlide() {
@@ -763,7 +737,6 @@
             document.getElementById('slide-title').innerText = slide.title;
             document.getElementById('slide-desc').innerText = slide.desc;
 
-            // Обновляем верхние полоски-индикаторы
             for (let i = 0; i < onboardingSlides.length; i++) {
                 const bar = document.getElementById(`bar-${i}`);
                 if (bar) {
