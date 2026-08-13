@@ -159,10 +159,8 @@
         .p-score { font-size: 13px; font-weight: 900; color: var(--accent-gold); }
 
         .card-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 10px; }
-        .ref-box input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 14px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; outline: none; }
-        .ref-box button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; }
         .toggle-switch { width: 50px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
-        .toggle-switch.active { background: var(--neon-cyan); }
+        .toggle-switch.active { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan-glow); }
         .toggle-circle { width: 24px; height: 24px; background: #FFF; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
         .toggle-switch.active .toggle-circle { left: 24px; }
 
@@ -177,6 +175,27 @@
         .input-stars { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); color: var(--accent-gold); padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 900; text-align: center; outline: none; }
         .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; }
+
+        /* Масштабная вкладка «Друзья» */
+        .friends-hero { background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid var(--neon-cyan); border-radius: 24px; padding: 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 25px rgba(0,243,255,0.15); }
+        .friends-hero h3 { font-size: 20px; font-weight: 900; color: #FFF; margin-bottom: 6px; }
+        .friends-hero p { font-size: 13px; color: var(--text-sub); line-height: 1.4; }
+        .ref-box-big { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .ref-link-field { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; outline: none; }
+        .ref-actions { display: flex; gap: 10px; }
+        .ref-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; font-size: 13px; }
+        .ref-btn.copy { background: rgba(255,255,255,0.1); color: #FFF; border: 1px solid var(--glass-border); }
+        .ref-btn.share { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan-glow); }
+
+        /* Слайд-шоу и бонусный экран */
+        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 17, 0.95); backdrop-filter: blur(10px); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .onboarding-card { background: rgba(15, 20, 35, 0.95); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 30px var(--neon-cyan-glow); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+        .slide-icon { font-size: 64px; margin-bottom: 5px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
+        .slide-title { font-size: 22px; font-weight: 900; color: #FFF; letter-spacing: 1px; }
+        .slide-desc { font-size: 14px; color: var(--text-sub); line-height: 1.4; padding: 0 10px; }
+        .slide-dots { display: flex; gap: 6px; margin: 10px 0; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
+        .dot.active { background: var(--neon-cyan); width: 24px; border-radius: 4px; box-shadow: 0 0 10px var(--neon-cyan); }
     </style>
 </head>
 <body class="theme-night">
@@ -292,7 +311,7 @@
             </div>
         </div>
 
-        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД: ТОЛЬКО ЖИВЫЕ/МЕМНЫЕ АВАТАРКИ И ТЕЛЕГРАМ ПРОФИЛЬ) -->
+        <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД) -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
@@ -307,9 +326,7 @@
             <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
             
             <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;">Участники розыгрыша:</div>
-            <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;">
-                <!-- Список участников -->
-            </div>
+            <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;"></div>
         </div>
 
         <!-- 6. ЗАЛ СЛАВЫ -->
@@ -322,22 +339,46 @@
             </div>
         </div>
 
-        <!-- 7. ДРУЗЬЯ -->
+        <!-- 7. ДРУЗЬЯ (МАСШТАБНАЯ И КРАСИВАЯ РЕФЕРАЛЬНАЯ СИСТЕМА) -->
         <div id="screen-friends" class="screen">
-            <h2 style="font-size: 18px; margin-bottom: 10px;">👥 Друзья</h2>
-            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--neon-cyan);">5%</b> от его пополнений!</p>
-            <div class="card-box ref-box">
-                <input type="text" id="ref-link-input" value="https://t.me/HomastarBot?start=ref_123" readonly>
-                <div style="display: flex; gap: 8px;"><button style="background:rgba(255,255,255,0.05); color:#FFF;" onclick="copyRefLink()">📋 Копия</button><button style="background:var(--neon-cyan); color:#000;" onclick="shareRefLink()">✈️ Шаре</button></div>
+            <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
+            <div class="friends-hero">
+                <div style="font-size: 38px; margin-bottom: 8px;">🤝</div>
+                <h3>Приглашай друзей</h3>
+                <p>Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого приглашенного друга и пожизненные <b style="color: var(--neon-cyan);">5%</b> от всех его пополнений баланса!</p>
+            </div>
+            <div class="ref-box-big">
+                <div style="font-size: 12px; color: var(--text-sub); text-align: center; font-weight: 800;">ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА</div>
+                <input type="text" id="ref-link-input" class="ref-link-field" value="https://t.me/HomastarBot?start=ref_123" readonly>
+                <div class="ref-actions">
+                    <button class="ref-btn copy" onclick="copyRefLink()">📋 Копировать</button>
+                    <button class="ref-btn share" onclick="shareRefLink()">✈️ Пригласить</button>
+                </div>
+            </div>
+            <div class="card-box" style="text-align: center; padding: 14px;">
+                <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 4px;">ПРИГЛАШЕНО ДРУЗЕЙ</div>
+                <div style="font-size: 22px; font-weight: 900; color: var(--accent-gold);">0 челов</div>
             </div>
         </div>
 
         <!-- 8. ИНВЕНТАРЬ И НАСТРОЙКИ -->
         <div id="screen-inventory" class="screen"><h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Инвентарь</h2><div class="card-box" style="text-align: center; color: var(--text-sub);">Пока здесь пусто. Выигрывай призы на колесе!</div></div>
         <div id="screen-settings" class="screen">
-            <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
-            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size: 15px; font-weight: 700;">🎵 Музыка</div><div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div></div>
-            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div><div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div></div>
+            <h2 style="font-size: 18px; margin-bottom: 15px;">⚙️ Настройки аудио</h2>
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size: 15px; font-weight: 700;">🎵 Фоновая музыка</div>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Спокойный релакс на фоне</div>
+                </div>
+                <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div>
+            </div>
+            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size: 15px; font-weight: 700;">🔊 Игровые звуки</div>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Колесо, пинг-понг арены, заносы</div>
+                </div>
+                <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div>
+            </div>
         </div>
 
         <!-- НИЖНЯЯ ПАНЕЛЬ -->
@@ -350,7 +391,42 @@
         </nav>
     </div>
 
-    <!-- МОДАЛКИ -->
+    <!-- МОДАЛКА ОНБОРДИНГА (СЛАЙД-ШОУ) -->
+    <div id="modal-onboarding" class="onboarding-overlay">
+        <div class="onboarding-card">
+            <div id="slide-icon" class="slide-icon">🎁</div>
+            <h2 id="slide-title" class="slide-title">Бесплатное Колесо</h2>
+            <p id="slide-desc" class="slide-desc">Заходи каждые 24 часа, крути колесо абсолютно бесплатно и забирай свои звезды без риска!</p>
+            
+            <div class="slide-dots">
+                <div class="dot active" id="dot-0"></div>
+                <div class="dot" id="dot-1"></div>
+                <div class="dot" id="dot-2"></div>
+                <div class="dot" id="dot-3"></div>
+            </div>
+
+            <button class="btn-spin" id="slide-btn" onclick="nextSlide()">ДАЛЕЕ</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА БОНУСА НА 21 ДЕНЬ С ЖИВЫМ ТАЙМЕРОМ -->
+    <div id="modal-welcome-bonus" class="modal-overlay">
+        <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
+            <div style="font-size: 70px;">🎁</div>
+            <h2 style="font-size: 22px; font-weight: 900; color: #FFF;">СТАРТОВЫЙ БОНУС!</h2>
+            <div style="font-size: 36px; font-weight: 900; color: var(--accent-gold); margin: 5px 0;">+50 ⭐</div>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.4;">Приветственные 50 звезд успешно начислены в сейф! Забрать их на основной баланс можно будет по истечении таймера (21 день).</p>
+            
+            <div id="bonus-timer-box" style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; font-size: 14px; font-weight: 900; color: var(--neon-cyan);">
+                До разморозки: <span id="bonus-countdown" style="color: #FFF;">21д 00ч 00м 00с</span>
+            </div>
+
+            <button id="btn-claim-bonus" class="btn-spin disabled" style="border-color: #555; color: #888;" onclick="claimWelcomeBonus()">ЗАБРАТЬ НА БАЛАНС</button>
+            <button class="btn-back" style="width: 100%; margin-top: -8px;" onclick="closeModal('modal-welcome-bonus')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛКИ СТАНДАРТНЫЕ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
@@ -376,14 +452,128 @@
     </div>
 
     <script>
+        // ==========================================
+        // АУДИО СИНТЕЗАТОР И ЗВУКОВЫЕ ЭФФЕКТЫ (Web Audio API)
+        // ==========================================
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Фоновая релакс музыка (мягкий эмбиентный синтез)
+        let bgMusicInterval = null;
+        function startBgMusic() {
+            if (bgMusicInterval || !settings.music) return;
+            initAudio();
+            const chords = [261.63, 329.63, 392.00, 523.25]; // C major
+            bgMusicInterval = setInterval(() => {
+                if (!settings.music || !audioCtx) return;
+                try {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    let freq = chords[Math.floor(Math.random() * chords.length)];
+                    osc.frequency.setValueAtTime(freq / 2, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 3.5);
+                } catch(e) {}
+            }, 3000);
+        }
+
+        function stopBgMusic() {
+            if (bgMusicInterval) {
+                clearInterval(bgMusicInterval);
+                bgMusicInterval = null;
+            }
+        }
+
+        // Звук вращения колеса (трещотка)
+        function playWheelTickSound() {
+            if (!settings.sfx) return;
+            initAudio();
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch(e) {}
+        }
+
+        // Звук пинг-понга арены (чинь-чинь)
+        function playPingSound() {
+            if (!settings.sfx) return;
+            initAudio();
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        // Призовой победный джингл
+        function playWinSound() {
+            if (!settings.sfx) return;
+            initAudio();
+            try {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((note, index) => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(note, audioCtx.currentTime + index * 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.1 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + index * 0.1);
+                    osc.stop(audioCtx.currentTime + index * 0.1 + 0.3);
+                });
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ И НАСТРОЙКИ
+        // ==========================================
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '1040');
-        let userHasTicket = localStorage.getItem('homastar_has_ticket') === 'true';
         let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
         
         let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
-        let userName = tgUser && tgUser.first_name ? tgUser.first_name : "Деня";
-        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces";
+        let userId = localStorage.getItem('homastar_user_id');
+        if (!userId) {
+            userId = tgUser && tgUser.id ? 'tg_' + tgUser.id : 'user_' + Math.floor(Math.random() * 100000);
+            localStorage.setItem('homastar_user_id', userId);
+        }
 
+        let userName = tgUser && tgUser.first_name ? tgUser.first_name : (localStorage.getItem('homastar_username') || "Деня");
+        localStorage.setItem('homastar_username', userName);
+
+        let userAvatar = tgUser && tgUser.photo_url ? tgUser.photo_url : (localStorage.getItem('homastar_avatar') || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces");
+        localStorage.setItem('homastar_avatar', userAvatar);
+
+        let userHasTicket = localStorage.getItem('homastar_has_ticket_' + userId) === 'true';
+        
         function updateBalanceDisplay() {
             document.getElementById('user-balance-text').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
             document.getElementById('withdraw-available-bal').innerText = `${userBalance % 1 === 0 ? userBalance : userBalance.toFixed(1)} ⭐`;
@@ -409,6 +599,7 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function showWinPopup(amount, title="ПОБЕДА!") { 
+            playWinSound();
             document.getElementById('win-modal-title').innerText = title;
             document.getElementById('win-modal-amount').innerText = amount; 
             openModal('modal-win'); 
@@ -427,7 +618,144 @@
         }
 
         // ==========================================
-        // БАЗА ДАННЫХ БОТОВ (ЖИВЫЕ АВАТАРКИ: МЕМЫ, АНИМЕ, РЕАЛЬНЫЕ ЛЮДИ)
+        // ЛОГИКА СЛАЙД-ШОУ И БОНУСА НА 21 ДЕНЬ С ТАЙМЕРОМ
+        // ==========================================
+        const onboardingSlides = [
+            { icon: "🎁", title: "Бесплатное Колесо", desc: "Заходи каждые 24 часа, крути колесо абсолютно бесплатно и забирай свои звезды без риска!" },
+            { icon: "🎡", title: "Колёса на Звёзды", desc: "Испытай удачу на платных колесах: от Обычного до Алмазного. Рискуй и умножай баланс!" },
+            { icon: "🏓", title: "PvP Арена", desc: "Сражайся с другими игроками в режиме реального времени. Шарик решит, кто заберет весь банк!" },
+            { icon: "🎟️", title: "Розыгрыш 1000 ⭐", desc: "Покупай билет за 20 звезд в разделе розыгрыша и выигрывай главный куш проекта!" }
+        ];
+
+        let currentSlideIndex = 0;
+        const BONUS_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день в миллисекундах
+
+        function checkOnboarding() {
+            const isSeen = localStorage.getItem('homastar_onboarding_seen_' + userId);
+            if (!isSeen) {
+                document.getElementById('modal-onboarding').style.display = 'flex';
+                renderSlide();
+            }
+        }
+
+        function renderSlide() {
+            const slide = onboardingSlides[currentSlideIndex];
+            document.getElementById('slide-icon').innerText = slide.icon;
+            document.getElementById('slide-title').innerText = slide.title;
+            document.getElementById('slide-desc').innerText = slide.desc;
+
+            for (let i = 0; i < onboardingSlides.length; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (dot) {
+                    if (i === currentSlideIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                }
+            }
+
+            const btn = document.getElementById('slide-btn');
+            if (currentSlideIndex === onboardingSlides.length - 1) {
+                btn.innerText = "ЗАБРАТЬ 50 ЗВЁЗД И ИГРАТЬ!";
+            } else {
+                btn.innerText = "ДАЛЕЕ";
+            }
+        }
+
+        function nextSlide() {
+            currentSlideIndex++;
+            if (currentSlideIndex < onboardingSlides.length) {
+                renderSlide();
+            } else {
+                document.getElementById('modal-onboarding').style.display = 'none';
+                localStorage.setItem('homastar_onboarding_seen_' + userId, 'true');
+                
+                // Инициализируем таймер бонуса если еще не создан
+                if (!localStorage.getItem('homastar_bonus_time_' + userId)) {
+                    localStorage.setItem('homastar_bonus_time_' + userId, Date.now().toString());
+                }
+                openModal('modal-welcome-bonus');
+                updateBonusTimerUI();
+            }
+        }
+
+        function updateBonusTimerUI() {
+            let bonusTime = parseInt(localStorage.getItem('homastar_bonus_time_' + userId) || Date.now().toString());
+            let bonusClaimed = localStorage.getItem('homastar_bonus_claimed_' + userId) === 'true';
+            
+            const btnClaim = document.getElementById('btn-claim-bonus');
+            const countdownEl = document.getElementById('bonus-countdown');
+            const timerBox = document.getElementById('bonus-timer-box');
+
+            if (bonusClaimed) {
+                timerBox.innerHTML = `<span style="color: var(--accent-gold);">Бонус уже получен на баланс!</span>`;
+                btnClaim.style.display = 'none';
+                return;
+            }
+
+            let timeLeft = (bonusTime + BONUS_DURATION_MS) - Date.now();
+
+            if (timeLeft <= 0) {
+                countdownEl.innerText = "ГОТОВО К ПОЛУЧЕНИЮ!";
+                timerBox.style.borderColor = "var(--accent-gold)";
+                btnClaim.classList.remove('disabled');
+                btnClaim.style.borderColor = "var(--accent-gold)";
+                btnClaim.style.color = "var(--accent-gold)";
+                btnClaim.style.background = "rgba(255, 215, 0, 0.15)";
+                btnClaim.style.boxShadow = "0 0 15px var(--accent-gold-glow)";
+            } else {
+                let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                countdownEl.innerText = `${days}д ${hours.toString().padStart(2,'0')}ч ${minutes.toString().padStart(2,'0')}м ${seconds.toString().padStart(2,'0')}с`;
+            }
+        }
+        setInterval(updateBonusTimerUI, 1000);
+
+        function claimWelcomeBonus() {
+            let bonusTime = parseInt(localStorage.getItem('homastar_bonus_time_' + userId) || Date.now().toString());
+            let bonusClaimed = localStorage.getItem('homastar_bonus_claimed_' + userId) === 'true';
+            let timeLeft = (bonusTime + BONUS_DURATION_MS) - Date.now();
+
+            if (bonusClaimed) return alert("Бонус уже получен!");
+            if (timeLeft > 0) return alert("Время разморозки еще не прошло!");
+
+            userBalance += 50;
+            updateBalanceDisplay();
+            localStorage.setItem('homastar_bonus_claimed_' + userId, 'true');
+            playWinSound();
+            alert("🎉 Успешно! 50 ⭐ зачислены на ваш основной баланс!");
+            closeModal('modal-welcome-bonus');
+        }
+
+        // ==========================================
+        // РЕФЕРАЛЬНАЯ СИСТЕМА И НАСТРОЙКИ
+        // ==========================================
+        function copyRefLink() { 
+            const input = document.getElementById('ref-link-input');
+            input.select(); 
+            document.execCommand('copy'); 
+            alert('Реферальная ссылка скопирована!'); 
+        }
+        function shareRefLink() { 
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, забирай крутые бонусы!`, '_blank'); 
+        }
+        
+        function toggleSetting(type) { 
+            settings[type] = !settings[type]; 
+            localStorage.setItem(`homastar_${type}`, settings[type]); 
+            const toggle = document.getElementById(`toggle-${type}`); 
+            if (settings[type]) {
+                toggle.classList.add('active');
+                if(type === 'music') startBgMusic();
+            } else {
+                toggle.classList.remove('active');
+                if(type === 'music') stopBgMusic();
+            } 
+        }
+
+        // ==========================================
+        // ЛОГИКА РОЗЫГРЫША (1000 ЗВЁЗД)
         // ==========================================
         let giveawayParticipants = [
             { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
@@ -435,7 +763,7 @@
             { name: "Артурчик", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
             { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" }
         ];
-        let giveawaySecondsLeft = 36000; // 10 часов
+        let giveawaySecondsLeft = 36000;
 
         const availableBots = [
             { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
@@ -490,7 +818,7 @@
                 }
 
                 userHasTicket = false;
-                localStorage.setItem('homastar_has_ticket', 'false');
+                localStorage.setItem('homastar_has_ticket_' + userId, 'false');
                 giveawayParticipants = [
                     { name: "Илья", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
                     { name: "İbrahim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" }
@@ -507,7 +835,7 @@
             userBalance -= 20;
             userHasTicket = true;
             updateBalanceDisplay();
-            localStorage.setItem('homastar_has_ticket', 'true');
+            localStorage.setItem('homastar_has_ticket_' + userId, 'true');
             updateTicketUI();
             alert("Билет успешно куплен за 20 ⭐!");
         }
@@ -537,7 +865,6 @@
             if (!listEl) return;
             listEl.innerHTML = '';
             
-            // Выводим реального пользователя с его аватаркой из Телеграма
             if (userHasTicket) {
                 let userRow = document.createElement('div');
                 userRow.className = 'b-player-row';
@@ -573,22 +900,12 @@
             });
         }
 
-        function copyRefLink() { document.getElementById('ref-link-input').select(); document.execCommand('copy'); alert('Ссылка скопирована!'); }
-        function shareRefLink() { window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай ко мне!`, '_blank'); }
-        function toggleSetting(type) { 
-            settings[type] = !settings[type]; 
-            localStorage.setItem(`homastar_${type}`, settings[type]); 
-            const toggle = document.getElementById(`toggle-${type}`); 
-            if (settings[type]) toggle.classList.add('active'); else toggle.classList.remove('active'); 
-        }
-
         // ==========================================
-        // СОКЕТЫ И СТАБИЛЬНАЯ АРЕНА
+        // СОКЕТЫ И АРЕНА СО ЗВУКАМИ ПИНГ-ПОНГА
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
         });
-        const userId = 'user_' + Math.floor(Math.random() * 100000);
 
         const canvas = document.getElementById('arena-canvas');
         const ctx = canvas.getContext('2d');
@@ -832,8 +1149,16 @@
                 if (progress < flightDuration) {
                     ballX += ballSpeedX;
                     ballY += ballSpeedY;
-                    if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
-                    if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
+                    
+                    // Проверяем удары о стены с озвучкой чинь-чинь
+                    if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) {
+                        ballSpeedX *= -1;
+                        playPingSound();
+                    }
+                    if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) {
+                        ballSpeedY *= -1;
+                        playPingSound();
+                    }
 
                     drawCanvasFrame();
                     animFrameId = requestAnimationFrame(animate);
@@ -857,6 +1182,7 @@
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
+                playWinSound();
                 overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Зачислено на ваш баланс. Поздравляем тебя!</div>`;
             } else {
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
@@ -864,7 +1190,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КОЛЕСА (С ЦЕНАМИ НА КНОПКЕ И ПРОВЕРКОЙ БАЛАНСА)
+        // ЛОГИКА КОЛЕСА СО ЗВУКАМИ ТРЕЩОТКИ
         // ==========================================
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [1, 5, 10], weights: [90, 9.9, 0.1], icons: ['⭐', '✨', '💰'] },
@@ -1007,7 +1333,13 @@
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
+            // Имитируем тиканье трещотки при вращении колеса
+            let tickInterval = setInterval(() => {
+                playWheelTickSound();
+            }, 150);
+
             setTimeout(() => {
+                clearInterval(tickInterval);
                 isSpinning = false;
                 updateWheelButtonState();
 
@@ -1034,7 +1366,16 @@
             updateBalanceDisplay();
             initLiveTicker();
             updateTicketUI();
-            if (window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }
+            checkOnboarding();
+            
+            if (settings.music) {
+                startBgMusic();
+            }
+
+            if (window.Telegram && window.Telegram.WebApp) { 
+                window.Telegram.WebApp.ready(); 
+                window.Telegram.WebApp.expand(); 
+            }
         };
     </script>
 </body>
