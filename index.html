@@ -258,7 +258,7 @@
             <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ</button>
         </div>
 
-        <!-- 4. АРЕНА (Прямоугольная с отменой ставки) -->
+        <!-- 4. АРЕНА -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="battle-header-info">
@@ -433,7 +433,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА (ОПТИМИЗИРОВАНО)
+        // СОКЕТЫ И СТАБИЛЬНЫЙ 7-СЕКУНДНЫЙ ШАРИК
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -460,9 +460,12 @@
         let ballRadius = 14;
         let ballSpeedX = 0;
         let ballSpeedY = 0;
+        let isAnimating = false;
 
         function setQuickBet(val) {
-            document.getElementById('arena-bet-input').value = val;
+            if (!hasUserBet && arenaState === 'WAITING') {
+                document.getElementById('arena-bet-input').value = val;
+            }
         }
 
         socket.on('connect', () => {
@@ -470,6 +473,8 @@
         });
 
         socket.on('game_tick', (state) => {
+            if (isAnimating) return; // Не прерываем анимацию шарика тиками
+
             arenaBank = state.bank;
             arenaPlayers = state.players;
             arenaTimeLeft = state.time_left;
@@ -477,13 +482,13 @@
             document.getElementById('arena-timer').innerText = arenaTimeLeft;
             document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
             
-            // Проверяем, есть ли ставка текущего юзера
             let myBet = arenaPlayers.find(p => p.id === userId);
             const actionBtn = document.getElementById('arena-action-btn');
             const betInput = document.getElementById('arena-bet-input');
 
             if (myBet) {
                 hasUserBet = true;
+                userBetAmount = myBet.bet;
                 actionBtn.innerText = 'ОТМЕНИТЬ СТАВКУ';
                 actionBtn.classList.add('cancel');
                 actionBtn.classList.remove('disabled');
@@ -491,6 +496,7 @@
                 betInput.value = myBet.bet;
             } else {
                 hasUserBet = false;
+                userBetAmount = 0;
                 actionBtn.innerText = 'ПОСТАВИТЬ';
                 actionBtn.classList.remove('cancel', 'disabled');
                 betInput.disabled = false;
@@ -506,6 +512,7 @@
         });
 
         socket.on('game_over', (state) => {
+            if (isAnimating) return;
             arenaState = "PLAYING";
             document.getElementById('arena-timer').style.display = 'none';
             let winner = state.winner;
@@ -626,13 +633,14 @@
             }
         }
 
-        // Ровно 10 секунд плавного полета шарика без исчезновений
+        // Железобетонная 7-секундная анимация полета шарика
         function animateBallToServerWinner(winner, bankAmount) {
+            isAnimating = true;
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (7 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 10000; // 10 секунд
+            let flightDuration = 7000; // Ровно 7 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -647,8 +655,8 @@
                     let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
                     let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
                     
-                    ballX += (targetX - ballX) * 0.05;
-                    ballY += (targetY - ballY) * 0.05;
+                    ballX += (targetX - ballX) * 0.08;
+                    ballY += (targetY - ballY) * 0.08;
 
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
@@ -665,6 +673,7 @@
         }
 
         function showArenaResult(winner, bankAmount) {
+            isAnimating = false;
             arenaState = 'RESULT';
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
@@ -673,9 +682,9 @@
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">+${bankAmount} ⭐ автоматически зачислено!</div>`;
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл +${bankAmount} ⭐! Поздравляем тебя!</div>`;
             } else {
-                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
+                overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
             }
         }
 
