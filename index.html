@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- ПРЕМИАЛЬНЫЙ HOMASTAR APP v2.0 -->
+    <!-- ПОЛНЫЙ ИСХОДНЫЙ КОД С ИНТЕГРАЦИЕЙ ВИБРАЦИИ И ЗАЩИТЫ -->
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Homastar Mini App</title>
-
+    
+    <!-- Инициализация Telegram WebApp API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+    
     <style>
+        /* ==========================================================================
+           ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ТЕМАТИКА
+           ========================================================================== */
         :root {
+            /* Базовые цвета */
             --bg-color: #050711;
             --glass-bg: rgba(12, 16, 28, 0.6);
             --glass-border: rgba(255, 255, 255, 0.05);
             --text-color: #FFFFFF;
             --text-sub: #8B9BB4;
+            
+            /* Неоновые акценты */
             --neon-cyan: #00F3FF;
             --neon-cyan-glow: rgba(0, 243, 255, 0.4);
             --neon-purple: #A855F7;
@@ -23,8 +33,8 @@
             --neon-pink-glow: rgba(255, 46, 147, 0.4);
             --accent-gold: #FFD700;
             --accent-gold-glow: rgba(255, 215, 0, 0.4);
-
-            /* Расширенные переменные для премиум-дизайна */
+            
+            /* Цвета для премиум-сейфа */
             --vault-bg-dark: rgba(8, 12, 20, 0.9);
             --vault-border-accent: rgba(255, 215, 0, 0.3);
             --vault-text-ready: #FFD700;
@@ -32,57 +42,317 @@
             --haptic-btn-bg: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; position: relative; }
-        .app-container { width: 100%; max-width: 420px; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; position: relative; z-index: 2; }
+        /* ==========================================================================
+           СБРОС СТИЛЕЙ И БАЗОВАЯ НАСТРОЙКА
+           ========================================================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
 
-        /* ==================== BACKGROUND ANIMATIONS ==================== */
-        .bg-animated-nebula { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; background: radial-gradient(circle at 15% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 40%); animation: nebulaPulse 15s ease-in-out infinite alternate; }
-        @keyframes nebulaPulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+            position: relative; 
+        }
 
-        .floating-particles-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
-        .particle { position: absolute; opacity: 0.4; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); animation: floatAround 20s infinite linear; }
+        .app-container { 
+            width: 100%; 
+            max-width: 420px; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 16px; 
+            position: relative; 
+            z-index: 2; 
+        }
+
+        /* ==========================================================================
+           АНИМАЦИИ ФОНА (НЕБУЛА И ЧАСТИЦЫ)
+           ========================================================================== */
+        .bg-animated-nebula { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            pointer-events: none; 
+            z-index: 0; 
+            background: radial-gradient(circle at 15% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 40%), 
+                        radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 40%); 
+            animation: nebulaPulse 15s ease-in-out infinite alternate; 
+        }
+        @keyframes nebulaPulse { 
+            0% { transform: scale(1); opacity: 0.7; } 
+            100% { transform: scale(1.1); opacity: 1; } 
+        }
+
+        .floating-particles-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            pointer-events: none; 
+            z-index: 1; 
+        }
+        .particle { 
+            position: absolute; 
+            opacity: 0.4; 
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); 
+            animation: floatAround 20s infinite linear; 
+        }
         .particle.p1 { top: 10%; left: 15%; font-size: 14px; animation-duration: 25s; }
         .particle.p2 { top: 60%; left: 85%; font-size: 10px; animation-duration: 18s; animation-delay: -5s; }
         .particle.p3 { top: 35%; left: 80%; font-size: 16px; animation-duration: 30s; animation-delay: -10s; }
-        @keyframes floatAround { 0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; } 50% { transform: translateY(-40px) rotate(180deg); opacity: 0.6; } 100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; } }
+        @keyframes floatAround { 
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; } 
+            50% { transform: translateY(-40px) rotate(180deg); opacity: 0.6; } 
+            100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; } 
+        }
 
-        /* ==================== HEADER ==================== */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 16px 0; z-index: 10; position: relative; }
-        .logo { font-weight: 900; font-size: 20px; letter-spacing: 2px; background: linear-gradient(90deg, #FFFFFF, var(--neon-cyan), #FFFFFF, var(--neon-purple), #FFFFFF); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientText 5s linear infinite; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-        @keyframes gradientText { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+        /* ==========================================================================
+           ШАПКА (HEADER)
+           ========================================================================== */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 4px 0 16px 0; 
+            z-index: 10; 
+            position: relative; 
+        }
+        .logo { 
+            font-weight: 900; 
+            font-size: 20px; 
+            letter-spacing: 2px; 
+            background: linear-gradient(90deg, #FFFFFF, var(--neon-cyan), #FFFFFF, var(--neon-purple), #FFFFFF); 
+            background-size: 300% 100%; 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: gradientText 5s linear infinite; 
+            text-shadow: 0 0 20px rgba(255,255,255,0.1); 
+        }
+        @keyframes gradientText { 
+            0% { background-position: 100% 0; } 
+            100% { background-position: -100% 0; } 
+        }
 
-        .balance-group { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 8px 6px 16px; border-radius: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
-        .balance-value { font-size: 15px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold-glow); }
-        .btn-bal-action { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 14px; font-weight: 900; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s ease; }
+        .balance-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 6px 8px 6px 16px; 
+            border-radius: 40px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); 
+        }
+        .balance-value { 
+            font-size: 15px; 
+            font-weight: 900; 
+            color: var(--accent-gold); 
+            text-shadow: 0 0 15px var(--accent-gold-glow); 
+        }
+        .btn-bal-action { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--glass-border); 
+            color: #FFF; 
+            font-size: 14px; 
+            font-weight: 900; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: transform 0.1s ease; 
+        }
         .btn-bal-action:active { transform: scale(0.9); }
-        .btn-bal-action.pay { background: var(--neon-cyan); color: #000; border: none; box-shadow: 0 0 15px var(--neon-cyan-glow); }
+        .btn-bal-action.pay { 
+            background: var(--neon-cyan); 
+            color: #000; 
+            border: none; 
+            box-shadow: 0 0 15px var(--neon-cyan-glow); 
+        }
 
-        /* ==================== LIVE MARQUEE ==================== */
-        .live-bar-embedded { width: 100%; display: flex; align-items: center; margin-bottom: 12px; height: 50px; overflow: hidden; position: relative; z-index: 10; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); }
-        .live-marquee-content { display: flex; gap: 20px; animation: scrollMarquee 900s linear infinite; padding-left: 20px; }
-        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .live-pill { display: flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 30px; font-weight: 800; font-size: 14px; color: #FFFFFF; white-space: nowrap; background: rgba(10, 15, 30, 0.6); backdrop-filter: blur(10px); border: 1px solid; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .neon-cyan { border-color: var(--neon-cyan); } .neon-purple { border-color: var(--neon-purple); } .neon-pink { border-color: var(--neon-pink); }
+        /* ==========================================================================
+           ЛЕНТА НОВОСТЕЙ (БЕГУЩАЯ СТРОКА)
+           ========================================================================== */
+        .live-bar-embedded { 
+            width: 100%; 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            height: 50px; 
+            overflow: hidden; 
+            position: relative; 
+            z-index: 10; 
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); 
+        }
+        .live-marquee-content { 
+            display: flex; 
+            gap: 20px; 
+            animation: scrollMarquee 900s linear infinite; 
+            padding-left: 20px; 
+        }
+        @keyframes scrollMarquee { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+        .live-pill { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 6px 18px; 
+            border-radius: 30px; 
+            font-weight: 800; 
+            font-size: 14px; 
+            color: #FFFFFF; 
+            white-space: nowrap; 
+            background: rgba(10, 15, 30, 0.6); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+        }
+        .neon-cyan { border-color: var(--neon-cyan); } 
+        .neon-purple { border-color: var(--neon-purple); } 
+        .neon-pink { border-color: var(--neon-pink); }
 
-        /* ==================== SCREENS ==================== */
-        .screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding: 4px 0; z-index: 5; position: relative; }
+        /* ==========================================================================
+           ЭКРАНЫ (МЕНЮ)
+           ========================================================================== */
+        .screen { 
+            display: none; 
+            flex-direction: column; 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 4px 0; 
+            z-index: 5; 
+            position: relative; 
+        }
         .screen::-webkit-scrollbar { display: none; }
-        @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        .screen.active { display: flex; animation: fadeSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes fadeSlideIn { 
+            from { opacity: 0; transform: translateX(20px); } 
+            to { opacity: 1; transform: translateX(0); } 
+        }
+        .screen.active { 
+            display: flex; 
+            animation: fadeSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+        }
 
-        /* ==================== HUB CARDS ==================== */
-        .cards-stack { display: flex; flex-direction: column; padding-top: 5px; padding-bottom: 20px; }
-        .premium-card { height: 160px; border-radius: 24px; position: relative; margin-top: -65px; border: 1px solid rgba(255,255,255,0.05); border-top: 2px solid rgba(255,255,255,0.15); cursor: pointer; padding: 24px 20px; backdrop-filter: blur(20px); overflow: hidden; transition: transform 0.1s ease; }
+        /* Универсальная кнопка "Назад" */
+        .btn-back { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--glass-border); 
+            color: #FFF; 
+            font-size: 13px; 
+            padding: 8px 16px; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            align-self: flex-start; 
+            margin-bottom: 8px; 
+            transition: transform 0.1s ease; 
+        }
+        .btn-back:active { transform: scale(0.95); }
+
+        /* Карточки-контейнеры общего назначения */
+        .card-box { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 20px; 
+            padding: 16px; 
+            margin-bottom: 10px; 
+        }
+
+        /* ==========================================================================
+           КАРТОЧКИ ХАБА (ГЛАВНОЕ МЕНЮ ИГР)
+           ========================================================================== */
+        .cards-stack { 
+            display: flex; 
+            flex-direction: column; 
+            padding-top: 5px; 
+            padding-bottom: 20px; 
+        }
+        .premium-card { 
+            height: 160px; 
+            border-radius: 24px; 
+            position: relative; 
+            margin-top: -65px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-top: 2px solid rgba(255,255,255,0.15); 
+            cursor: pointer; 
+            padding: 24px 20px; 
+            backdrop-filter: blur(20px); 
+            overflow: hidden; 
+            transition: transform 0.1s ease; 
+        }
         .premium-card:active { transform: scale(0.98); }
-        .premium-card:first-child { margin-top: 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
-        .p-card-bg-icon { position: absolute; right: -10px; top: 20px; font-size: 110px; opacity: 0.04; transform: rotate(15deg); pointer-events: none; z-index: 0; filter: blur(2px); }
-        .p-card-content { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; height: 100%; }
-        .p-card-title-area h3 { font-size: 18px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-        .p-card-title-area p { font-size: 13px; color: var(--text-sub); font-weight: 600; padding-left: 30px; }
-        .w-card-btn { padding: 10px 20px; border-radius: 14px; font-weight: 900; font-size: 12px; border: none; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-top: 4px; cursor: pointer; transition: background 0.2s ease; }
+        .premium-card:first-child { 
+            margin-top: 0; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); 
+        }
+        .p-card-bg-icon { 
+            position: absolute; 
+            right: -10px; 
+            top: 20px; 
+            font-size: 110px; 
+            opacity: 0.04; 
+            transform: rotate(15deg); 
+            pointer-events: none; 
+            z-index: 0; 
+            filter: blur(2px); 
+        }
+        .p-card-content { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            position: relative; 
+            z-index: 2; 
+            height: 100%; 
+        }
+        .p-card-title-area h3 { 
+            font-size: 18px; 
+            font-weight: 800; 
+            color: #FFF; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 6px; 
+        }
+        .p-card-title-area p { 
+            font-size: 13px; 
+            color: var(--text-sub); 
+            font-weight: 600; 
+            padding-left: 30px; 
+        }
+        .w-card-btn { 
+            padding: 10px 20px; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            font-size: 12px; 
+            border: none; 
+            color: #000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); 
+            margin-top: 4px; 
+            cursor: pointer; 
+            transition: background 0.2s ease; 
+        }
 
-        /* Внешний вид карточек хаба */
+        /* Цветовые схемы карточек */
         .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)); border-top-color: var(--neon-cyan); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-cyan-glow); }
         .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)); border-top-color: #8B9BB4; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
         .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)); border-top-color: #E2E8F0; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
@@ -90,121 +360,585 @@
         .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)); border-top-color: var(--neon-purple); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
         .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)); border-top-color: var(--neon-pink); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
 
-        /* Кнопки карточек */
-        .btn-free { background: var(--neon-cyan); } .btn-common { background: #8B9BB4; color: #FFF; } .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); } .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; } .btn-battle { background: var(--neon-pink); color: #FFF; }
+        /* Кнопки внутри карточек */
+        .btn-free { background: var(--neon-cyan); } 
+        .btn-common { background: #8B9BB4; color: #FFF; } 
+        .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); } 
+        .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); } 
+        .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; } 
+        .btn-battle { background: var(--neon-pink); color: #FFF; }
 
-        /* Универсальная кнопка "Назад" */
-        .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 13px; padding: 8px 16px; border-radius: 14px; cursor: pointer; align-self: flex-start; margin-bottom: 8px; transition: transform 0.1s ease; }
-        .btn-back:active { transform: scale(0.95); }
-
-        /* ==================== WHEEL ==================== */
-        .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
-        .arrow-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--neon-cyan); z-index: 20; margin-bottom: -12px; filter: drop-shadow(0 0 15px var(--neon-cyan)); }
-        .wheel-outer-rim { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: rgba(0,0,0,0.5); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); }
-        #wheel-canvas { width: 300px; height: 300px; transition: transform 6s cubic-bezier(0.15, 0.9, 0.2, 1.0); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-
-        .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; box-shadow: 0 0 15px var(--neon-cyan-glow); transition: transform 0.1s ease, box-shadow 0.2s ease; }
+        /* ==========================================================================
+           ИГРА: КОЛЕСО ФОРТУНЫ
+           ========================================================================== */
+        .wheel-section { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            margin: auto 0; 
+            padding: 10px 0; 
+        }
+        .arrow-pointer { 
+            width: 0; 
+            height: 0; 
+            border-left: 14px solid transparent; 
+            border-right: 14px solid transparent; 
+            border-top: 26px solid var(--neon-cyan); 
+            z-index: 20; 
+            margin-bottom: -12px; 
+            filter: drop-shadow(0 0 15px var(--neon-cyan)); 
+        }
+        .wheel-outer-rim { 
+            width: 300px; 
+            height: 300px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 50%; 
+            background: rgba(0,0,0,0.5); 
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0,0,0,0.8); 
+        }
+        #wheel-canvas { 
+            width: 300px; 
+            height: 300px; 
+            transition: transform 6s cubic-bezier(0.15, 0.9, 0.2, 1.0); 
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); 
+        }
+        
+        .btn-spin { 
+            width: 100%; 
+            background: transparent; 
+            border: 2px solid var(--neon-cyan); 
+            padding: 16px; 
+            border-radius: 20px; 
+            color: var(--neon-cyan); 
+            font-weight: 900; 
+            font-size: 18px; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            box-shadow: 0 0 15px var(--neon-cyan-glow); 
+            transition: transform 0.1s ease, box-shadow 0.2s ease; 
+        }
         .btn-spin:active { transform: scale(0.98); }
-        .btn-spin.disabled { border-color: #555; color: #777; pointer-events: none; opacity: 0.7; box-shadow: none; background: rgba(255,255,255,0.02); }
+        .btn-spin.disabled { 
+            border-color: #555; 
+            color: #777; 
+            pointer-events: none; 
+            opacity: 0.7; 
+            box-shadow: none; 
+            background: rgba(255,255,255,0.02); 
+        }
 
-        /* ==================== ARENA ==================== */
-        .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
-        .arena-container-center { display: flex; justify-content: center; width: 100%; margin-bottom: 6px; }
-        .arena-wrapper { position: relative; width: 100%; max-width: 340px; aspect-ratio: 4/3; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: #0B0E17; border: 2px solid var(--glass-border); overflow: hidden; flex-shrink: 0; }
-        #arena-canvas { width: 100%; height: 100%; display: block; z-index: 1; position: relative; }
-        #arena-avatars-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-        .board-avatar { position: absolute; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; overflow: hidden; background: #111; transform: translate(-50%, -50%); box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: all 0.5s ease; }
+        /* ==========================================================================
+           ИГРА: PVP АРЕНА
+           ========================================================================== */
+        .battle-header-info { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--glass-bg); 
+            padding: 8px 14px; 
+            border-radius: 14px; 
+            border: 1px solid var(--glass-border); 
+            margin-bottom: 6px; 
+            font-weight: 800; 
+        }
+        .arena-container-center { 
+            display: flex; 
+            justify-content: center; 
+            width: 100%; 
+            margin-bottom: 6px; 
+        }
+        .arena-wrapper { 
+            position: relative; 
+            width: 100%; 
+            max-width: 340px; 
+            aspect-ratio: 4/3; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+            background: #0B0E17; 
+            border: 2px solid var(--glass-border); 
+            overflow: hidden; 
+            flex-shrink: 0; 
+        }
+        #arena-canvas { 
+            width: 100%; 
+            height: 100%; 
+            display: block; 
+            z-index: 1; 
+            position: relative; 
+        }
+        #arena-avatars-layer { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none; 
+            z-index: 2; 
+        }
+        .board-avatar { 
+            position: absolute; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            border: 2px solid #FFF; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 12px; 
+            font-weight: bold; 
+            overflow: hidden; 
+            background: #111; 
+            transform: translate(-50%, -50%); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
+            transition: all 0.5s ease; 
+        }
         .board-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .board-timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75px; height: 75px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px); border-radius: 50%; border: 2px solid var(--glass-border); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 18px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 15; text-align: center; padding: 4px; }
+        .board-timer { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 75px; 
+            height: 75px; 
+            background: rgba(10, 15, 30, 0.9); 
+            backdrop-filter: blur(5px); 
+            border-radius: 50%; 
+            border: 2px solid var(--glass-border); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 18px; 
+            font-weight: 900; 
+            color: #FFF; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+            z-index: 15; 
+            text-align: center; 
+            padding: 4px; 
+        }
 
-        .board-overlay-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; animation: fadeInResult 0.3s ease-out; padding: 15px; }
-        @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .board-overlay-result { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(4px); 
+            z-index: 20; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            animation: fadeInResult 0.3s ease-out; 
+            padding: 15px; 
+        }
+        @keyframes fadeInResult { 
+            from { opacity: 0; transform: scale(0.9); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
 
-        .b-players-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; height: 85px; overflow-y: auto; padding-right: 4px; }
+        /* Список игроков арены */
+        .b-players-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            margin-bottom: 6px; 
+            height: 85px; 
+            overflow-y: auto; 
+            padding-right: 4px; 
+        }
         .b-players-list::-webkit-scrollbar { width: 3px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-        .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 5px 10px; border-radius: 10px; border: 1px solid var(--glass-border); flex-shrink: 0; }
+        .b-player-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--glass-bg); 
+            padding: 5px 10px; 
+            border-radius: 10px; 
+            border: 1px solid var(--glass-border); 
+            flex-shrink: 0; 
+        }
         .b-player-left { display: flex; align-items: center; gap: 8px; }
-        .b-player-ava { width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; overflow: hidden; border: 2px solid; background: #111; }
+        .b-player-ava { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 10px; 
+            font-weight: bold; 
+            overflow: hidden; 
+            border: 2px solid; 
+            background: #111; 
+        }
         .b-player-ava img { width: 100%; height: 100%; object-fit: cover; }
         .b-player-info h4 { font-size: 11px; font-weight: 800; margin-bottom: 0px; display:flex; align-items:center; gap:4px; }
         .b-player-bet { font-size: 12px; font-weight: 900; color: var(--accent-gold); }
 
+        /* Контролы ставок арены */
         .b-bet-controls { display: flex; gap: 6px; margin-bottom: 6px; }
-        .b-quick-btn { flex: 1; padding: 7px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: #FFF; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .b-quick-btn { 
+            flex: 1; 
+            padding: 7px 0; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 12px; 
+            color: #FFF; 
+            font-weight: 800; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-size: 12px; 
+        }
         .b-quick-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.15); }
-
+        
         .custom-bet-row { display: flex; gap: 6px; margin-top: auto; }
-        .custom-bet-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 9px 12px; color: var(--accent-gold); font-size: 14px; font-weight: 900; text-align: center; }
-        .custom-bet-submit { width: 130px; background: var(--neon-pink); color: #FFF; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 0 15px var(--neon-pink-glow); font-size: 13px; transition: transform 0.1s; }
+        .custom-bet-input { 
+            flex: 1; 
+            background: rgba(0,0,0,0.5); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 12px; 
+            padding: 9px 12px; 
+            color: var(--accent-gold); 
+            font-size: 14px; 
+            font-weight: 900; 
+            text-align: center; 
+        }
+        .custom-bet-submit { 
+            width: 130px; 
+            background: var(--neon-pink); 
+            color: #FFF; 
+            font-weight: 900; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            box-shadow: 0 0 15px var(--neon-pink-glow); 
+            font-size: 13px; 
+            transition: transform 0.1s; 
+        }
         .custom-bet-submit:active { transform: scale(0.95); }
         .custom-bet-submit.cancel { background: #FF4444; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
-        .custom-bet-submit.disabled { background: var(--glass-bg); color: var(--text-sub); box-shadow: none; pointer-events: none; border: 1px solid var(--glass-border); }
+        .custom-bet-submit.disabled { 
+            background: var(--glass-bg); 
+            color: var(--text-sub); 
+            box-shadow: none; 
+            pointer-events: none; 
+            border: 1px solid var(--glass-border); 
+        }
 
-        /* ==================== TICKETS (GIVEAWAY) ==================== */
-        .card-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 10px; }
-
-        /* ==================== FRIENDS (REFERRALS) ==================== */
-        .friends-hero { background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid var(--neon-cyan); border-radius: 24px; padding: 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 25px rgba(0,243,255,0.15); }
+        /* ==========================================================================
+           ДРУЗЬЯ (РЕФЕРАЛЬНАЯ СИСТЕМА)
+           ========================================================================== */
+        .friends-hero { 
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(168, 85, 247, 0.1)); 
+            border: 1px solid var(--neon-cyan); 
+            border-radius: 24px; 
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            box-shadow: 0 0 25px rgba(0,243,255,0.15); 
+        }
         .friends-hero h3 { font-size: 20px; font-weight: 900; color: #FFF; margin-bottom: 6px; }
         .friends-hero p { font-size: 13px; color: var(--text-sub); line-height: 1.4; }
-        .ref-box-big { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .ref-link-field { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; outline: none; }
+        
+        .ref-box-big { 
+            background: rgba(0,0,0,0.4); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 18px; 
+            padding: 14px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        }
+        .ref-link-field { 
+            width: 100%; 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--glass-border); 
+            color: var(--neon-cyan); 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            text-align: center; 
+            outline: none; 
+        }
         .ref-actions { display: flex; gap: 10px; }
-        .ref-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; font-size: 13px; transition: transform 0.1s ease; }
+        .ref-btn { 
+            flex: 1; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none; 
+            font-size: 13px; 
+            transition: transform 0.1s ease; 
+        }
         .ref-btn:active { transform: scale(0.95); }
         .ref-btn.copy { background: rgba(255,255,255,0.1); color: #FFF; border: 1px solid var(--glass-border); }
         .ref-btn.share { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan-glow); }
 
-        /* ==================== INVENTORY (VAULT) ==================== */
-        .vault-card { background: linear-gradient(135deg, var(--vault-bg-dark), rgba(12, 16, 28, 1)); border: 1px solid var(--vault-border-accent); border-radius: 20px; padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden; box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.05); }
-        .vault-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 60%); pointer-events: none; }
-        .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; position: relative; z-index: 2; }
+        /* ==========================================================================
+           ИНВЕНТАРЬ (ПРЕМИУМ СЕЙФ НА 21 ДЕНЬ)
+           ========================================================================== */
+        .vault-card { 
+            background: linear-gradient(135deg, var(--vault-bg-dark), rgba(12, 16, 28, 1)); 
+            border: 1px solid var(--vault-border-accent); 
+            border-radius: 20px; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.05); 
+        }
+        .vault-card::before { 
+            content: ''; 
+            position: absolute; 
+            top: -50%; 
+            left: -50%; 
+            width: 200%; 
+            height: 200%; 
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 60%); 
+            pointer-events: none; 
+        }
+        .vault-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 8px; 
+            position: relative; 
+            z-index: 2; 
+        }
         .vault-title { font-weight: 800; font-size: 15px; color: #FFF; display: flex; align-items: center; gap: 8px; }
         .vault-amount { font-size: 18px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
         .vault-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 12px; line-height: 1.4; position: relative; z-index: 2; }
-        .vault-timer-box { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px 12px; margin-bottom: 12px; position: relative; z-index: 2; }
-        .vault-timer-val { font-size: 13px; font-weight: 900; color: var(--neon-cyan); font-variant-numeric: tabular-nums; }
-        .vault-btn { width: 100%; padding: 12px; border-radius: 14px; font-weight: 900; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #777; cursor: not-allowed; transition: all 0.3s ease; position: relative; z-index: 2; }
-        .vault-btn.ready { background: linear-gradient(135deg, var(--accent-gold), #FFA500); color: #000; border-color: var(--accent-gold); box-shadow: 0 0 20px var(--accent-gold-glow); cursor: pointer; }
+        
+        /* Кнопка сейфа: серая неактивная или золотая активная */
+        .vault-btn { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            font-size: 14px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.05); 
+            color: #777; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            z-index: 2; 
+        }
+        .vault-btn.ready { 
+            background: linear-gradient(135deg, var(--accent-gold), #FFA500); 
+            color: #000; 
+            border-color: var(--accent-gold); 
+            box-shadow: 0 0 20px var(--accent-gold-glow); 
+            cursor: pointer; 
+        }
         .vault-btn.ready:active { transform: scale(0.98); box-shadow: 0 0 10px var(--accent-gold-glow); }
-        .vault-btn.claimed { background: rgba(0,0,0,0.5); color: var(--text-sub); border-color: transparent; box-shadow: none; cursor: not-allowed; }
+        .vault-btn.claimed { 
+            background: rgba(0,0,0,0.5); 
+            color: var(--text-sub); 
+            border-color: transparent; 
+            box-shadow: none; 
+            cursor: not-allowed; 
+        }
 
-        /* ==================== SETTINGS ==================== */
-        .toggle-switch { width: 50px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
+        /* Таймер под кнопкой сейфа */
+        .vault-timer-below {
+            text-align: center;
+            margin-top: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ==========================================================================
+           НАСТРОЙКИ (ТУМБЛЕРЫ И СЕЛЕКТЫ)
+           ========================================================================== */
+        .toggle-switch { 
+            width: 50px; 
+            height: 28px; 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            position: relative; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
         .toggle-switch.active { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan-glow); }
-        .toggle-circle { width: 24px; height: 24px; background: #FFF; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
+        .toggle-circle { 
+            width: 24px; 
+            height: 24px; 
+            background: #FFF; 
+            border-radius: 50%; 
+            position: absolute; 
+            top: 2px; 
+            left: 2px; 
+            transition: 0.3s; 
+        }
         .toggle-switch.active .toggle-circle { left: 24px; }
-        .settings-select { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 8px 12px; border-radius: 12px; font-weight: 700; outline: none; cursor: pointer; }
+        .settings-select { 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--glass-border); 
+            color: var(--neon-cyan); 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            outline: none; 
+            cursor: pointer; 
+        }
 
-        /* ==================== BOTTOM NAV ==================== */
-        .bottom-nav { display: flex; justify-content: space-between; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 8px 16px; border-radius: 28px; position: relative; z-index: 10; margin-top: auto; }
-        .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 18px; color: var(--text-sub); opacity: 0.5; cursor: pointer; flex: 1; transition: transform 0.2s; }
+        /* ==========================================================================
+           НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (BOTTOM NAV)
+           ========================================================================== */
+        .bottom-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            padding: 8px 16px; 
+            border-radius: 28px; 
+            position: relative; 
+            z-index: 10; 
+            margin-top: auto; 
+        }
+        .nav-item { 
+            background: transparent; 
+            border: none; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 2px; 
+            font-size: 18px; 
+            color: var(--text-sub); 
+            opacity: 0.5; 
+            cursor: pointer; 
+            flex: 1; 
+            transition: transform 0.2s; 
+        }
         .nav-label { font-size: 9px; font-weight: 800; }
         .nav-item.active { opacity: 1; color: var(--neon-cyan); transform: translateY(-2px); }
 
-        /* ==================== ONBOARDING ==================== */
-        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 17, 0.98); backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; justify-content: space-between; padding: 24px 20px; }
+        /* ==========================================================================
+           СЛАЙД-ШОУ / ОНБОРДИНГ
+           ========================================================================== */
+        .onboarding-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(5, 7, 17, 0.98); 
+            backdrop-filter: blur(15px); 
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 24px 20px; 
+        }
         .onboarding-progress-container { display: flex; gap: 6px; width: 100%; margin-bottom: 20px; }
-        .onboarding-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; transition: 0.3s; }
-        .onboarding-bar .fill { width: 0%; height: 100%; background: var(--neon-cyan); transition: width 0.4s ease; box-shadow: 0 0 10px var(--neon-cyan); }
+        .onboarding-bar { 
+            flex: 1; 
+            height: 3px; 
+            background: rgba(255,255,255,0.2); 
+            border-radius: 2px; 
+            overflow: hidden; 
+            transition: 0.3s; 
+        }
+        .onboarding-bar .fill { 
+            width: 0%; 
+            height: 100%; 
+            background: var(--neon-cyan); 
+            transition: width 0.4s ease; 
+            box-shadow: 0 0 10px var(--neon-cyan); 
+        }
         .onboarding-bar.active .fill { width: 100%; }
         .onboarding-bar.passed .fill { width: 100%; }
 
-        .onboarding-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex: 1; gap: 20px; }
+        .onboarding-content { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            flex: 1; 
+            gap: 20px; 
+        }
         .slide-icon { font-size: 80px; filter: drop-shadow(0 0 20px var(--neon-cyan-glow)); }
         .slide-title { font-size: 26px; font-weight: 900; color: #FFF; letter-spacing: 1px; }
         .slide-desc { font-size: 15px; color: var(--text-sub); line-height: 1.5; padding: 0 10px; }
 
-        /* ==================== MODALS ==================== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); z-index: 999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-card { background: rgba(15, 20, 35, 0.95); border: 1px solid var(--neon-cyan); border-radius: 28px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; }
-        .btn-close-modal { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        /* ==========================================================================
+           МОДАЛЬНЫЕ ОКНА (ДЕПОЗИТ / ВЫВОД / ПОБЕДА)
+           ========================================================================== */
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(0, 0, 0, 0.8); 
+            z-index: 999; 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+            backdrop-filter: blur(5px); 
+        }
+        .modal-card { 
+            background: rgba(15, 20, 35, 0.95); 
+            border: 1px solid var(--neon-cyan); 
+            border-radius: 28px; 
+            padding: 24px; 
+            width: 100%; 
+            max-width: 360px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+        }
+        .btn-close-modal { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--glass-border); 
+            color: #FFF; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: transform 0.1s; 
+        }
         .btn-close-modal:active { transform: scale(0.9); }
-        .input-stars { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); color: var(--accent-gold); padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 900; text-align: center; outline: none; }
+        .input-stars { 
+            width: 100%; 
+            background: rgba(0, 0, 0, 0.5); 
+            border: 1px solid var(--glass-border); 
+            color: var(--accent-gold); 
+            padding: 16px; 
+            border-radius: 16px; 
+            font-size: 16px; 
+            font-weight: 900; 
+            text-align: center; 
+            outline: none; 
+        }
         .package-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .package-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: transform 0.1s; }
+        .package-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--glass-border); 
+            padding: 16px; 
+            border-radius: 16px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: transform 0.1s; 
+        }
         .package-card:active { transform: scale(0.95); }
     </style>
 </head>
@@ -219,7 +953,9 @@
     </div>
 
     <div class="app-container">
-        <!-- ШАПКА -->
+        <!-- ==========================================================================
+             ШАПКА
+             ========================================================================== -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
@@ -234,10 +970,13 @@
             <div class="live-marquee-content" id="marquee-content"></div>
         </div>
 
-        <!-- 1. ХАБ (РАЗДЕЛЫ ИГР) -->
+        <!-- ==========================================================================
+             1. ХАБ (РАЗДЕЛЫ ИГР)
+             ========================================================================== -->
         <div id="screen-hub" class="screen active">
             <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="sections">Разделы:</h2>
             <div class="cards-stack">
+                <!-- Бесплатное колесо -->
                 <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen(); haptic('medium');">
                     <div class="p-card-bg-icon">🎁</div>
                     <div class="p-card-content">
@@ -249,6 +988,7 @@
                     </div>
                 </div>
 
+                <!-- Выбор платных колес -->
                 <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list'); haptic('medium');">
                     <div class="p-card-bg-icon">🎡</div>
                     <div class="p-card-content">
@@ -260,6 +1000,7 @@
                     </div>
                 </div>
 
+                <!-- PVP Арена -->
                 <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle'); haptic('medium');">
                     <div class="p-card-bg-icon">🏓</div>
                     <div class="p-card-content">
@@ -271,6 +1012,7 @@
                     </div>
                 </div>
 
+                <!-- Розыгрыш -->
                 <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets'); haptic('medium');">
                     <div class="p-card-bg-icon">🎟️</div>
                     <div class="p-card-content">
@@ -284,7 +1026,9 @@
             </div>
         </div>
 
-        <!-- 2. СПИСОК ПЛАТНЫХ КОЛЁС -->
+        <!-- ==========================================================================
+             2. СПИСОК ПЛАТНЫХ КОЛЁС
+             ========================================================================== -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="card_wheels_title">Колёса:</h2>
@@ -316,7 +1060,9 @@
             </div>
         </div>
 
-        <!-- 3. ИГРА: КОЛЕСО ФОРТУНЫ -->
+        <!-- ==========================================================================
+             3. ИГРА: КОЛЕСО ФОРТУНЫ
+             ========================================================================== -->
         <div id="screen-game-wheel" class="screen">
             <button class="btn-back" onclick="openScreen('screen-wheel-list'); haptic('light');" id="btn-back-from-wheel" data-tr="btn_back">◄ Назад</button>
             <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
@@ -329,7 +1075,9 @@
             <button id="btn-spin-action" class="btn-spin" onclick="spinWheel();">ИГРАТЬ (20 ⭐)</button>
         </div>
 
-        <!-- 4. ИГРА: PVP АРЕНА -->
+        <!-- ==========================================================================
+             4. ИГРА: PVP АРЕНА
+             ========================================================================== -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
 
@@ -362,7 +1110,9 @@
             </div>
         </div>
 
-        <!-- 5. ИГРА: РОЗЫГРЫШ БИЛЕТОВ -->
+        <!-- ==========================================================================
+             5. ИГРА: РОЗЫГРЫШ БИЛЕТОВ
+             ========================================================================== -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
 
@@ -383,7 +1133,9 @@
             <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;"></div>
         </div>
 
-        <!-- 6. ДРУЗЬЯ (РЕФЕРАЛЬНАЯ СИСТЕМА) -->
+        <!-- ==========================================================================
+             6. ДРУЗЬЯ (РЕФЕРАЛЬНАЯ СИСТЕМА + ИСТОРИЯ)
+             ========================================================================== -->
         <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
 
@@ -407,15 +1159,16 @@
                 <div id="ref-invited-count" style="font-size: 22px; font-weight: 900; color: var(--accent-gold);">0 челов</div>
             </div>
 
-            <!-- Кнопка симуляции пополнения рефералом (ДЛЯ ТЕСТА ЛОГИКИ) -->
-            <div style="text-align: center; margin-top: 10px;">
-                <button onclick="simulateReferralDeposit(100); haptic('medium');" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 15px; border-radius: 10px; font-size: 12px; cursor: pointer;">
-                    (Test) Реферал пополнил 100 ⭐
-                </button>
+            <!-- ИСТОРИЯ ПОПОЛНЕНИЙ РЕФЕРАЛОВ -->
+            <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px; margin-top: 15px;" data-tr="ref_history">История бонусов от друзей:</div>
+            <div class="b-players-list" id="ref-history-list" style="height: 140px;">
+                <!-- Динамически заполняется скриптом -->
             </div>
         </div>
 
-        <!-- 7. ИНВЕНТАРЬ (КИБЕРПАНК СЕЙФ НА 21 ДЕНЬ) -->
+        <!-- ==========================================================================
+             7. ИНВЕНТАРЬ (КИБЕРПАНК СЕЙФ С ТАЙМЕРАМИ ВНИЗУ)
+             ========================================================================== -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь (Сейф)</h2>
@@ -425,11 +1178,13 @@
             </p>
 
             <div id="inventory-vault-list">
-                <!-- Динамически заполняется карточками сейфа -->
+                <!-- Карточки сейфа рендерятся тут -->
             </div>
         </div>
 
-        <!-- 8. НАСТРОЙКИ -->
+        <!-- ==========================================================================
+             8. НАСТРОЙКИ
+             ========================================================================== -->
         <div id="screen-settings" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 15px;" data-tr="nav_settings">⚙️ Настройки</h2>
 
@@ -453,7 +1208,9 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+        <!-- ==========================================================================
+             НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ
+             ========================================================================== -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub');">
                 <span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span>
@@ -470,7 +1227,9 @@
         </nav>
     </div>
 
-    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - ПОКАЗЫВАЕТСЯ 1 РАЗ) -->
+    <!-- ==========================================================================
+         ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - ПОКАЗЫВАЕТСЯ СТРОГО 1 РАЗ)
+         ========================================================================== -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
             <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
@@ -488,7 +1247,9 @@
         <button class="btn-spin" id="slide-btn" onclick="nextSlide();" style="margin-bottom: 20px;">ДАЛЕЕ</button>
     </div>
 
-    <!-- МОДАЛКИ СТАНДАРТНЫЕ -->
+    <!-- ==========================================================================
+         МОДАЛКИ (ДЕПОЗИТ, ВЫВОД, ПОБЕДА)
+         ========================================================================== -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -531,16 +1292,15 @@
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- СКРИПТЫ: ЛОГИКА, ВИБРАЦИЯ, СЕЙФ, АБУЗ-РЕФЕРАЛКА, СОКЕТЫ -->
-    <!-- ========================================================= -->
+    <!-- ==========================================================================
+         СКРИПТЫ: ЛОГИКА, ВИБРАЦИЯ, СЕЙФ, ИСТОРИЯ РЕФЕРАЛОВ, АРЕНА
+         ========================================================================== -->
     <script>
         // --- 1. ВИБРАЦИЯ (HAPTIC ENGINE) ---
         let hapticEnabled = localStorage.getItem('homastar_haptic') !== 'false';
 
         function haptic(type = 'light') {
             if (!hapticEnabled) return;
-            // Попытка вызвать родной API Telegram
             try {
                 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
                     if (type === 'light') window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -548,9 +1308,8 @@
                     else if (type === 'heavy') window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
                     else if (type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
                 }
-            } catch(e) { console.warn("TG Haptic API error", e); }
+            } catch(e) {}
 
-            // Фолбэк на родной браузерный API вибрации
             try {
                 if (navigator.vibrate) {
                     if (type === 'heavy') navigator.vibrate(40);
@@ -558,7 +1317,7 @@
                     else if (type === 'success') navigator.vibrate([30, 50, 30]);
                     else navigator.vibrate(10);
                 }
-            } catch(e) { console.warn("Navigator Vibrate error", e); }
+            } catch(e) {}
         }
 
         function toggleHaptic() {
@@ -576,10 +1335,10 @@
         // --- 2. ЯЗЫКИ (RU/EN) ---
         const translations = {
             ru: {
-                sections: "Разделы:", card_free_title: "Бесплатное Колесо", card_free_desc: "1 раз в 24 часа — бесплатно!", card_wheels_title: "Колёса", card_wheels_desc: "4 вида: Обычное, Серебряное...", card_arena_title: "Арена", card_arena_desc: "PVP Рулетка с игроками!", card_giveaway_title: "Розыгрыш", card_giveaway_desc: "Главный приз: 1000 STARS", btn_play: "ИГРАТЬ", btn_select: "ВЫБРАТЬ", btn_tickets: "БИЛЕТЫ", btn_back: "◄ Назад", total_bank: "Общий Банк:", btn_bet: "ПОСТАВИТЬ", giveaway_main_prize: "ГЛАВНЫЙ ПРИЗ ТИРАЖА", giveaway_timer_label: "⏱ Итоги через:", my_ticket: "Твой билет:", my_chance: "Твой шанс:", btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)", participants: "Участники розыгрыша:", ref_title: "Приглашай друзей", ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого уникального друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений в сейф!", ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА", btn_copy: "📋 Копировать", btn_share: "✈️ Пригласить", ref_invited: "ПРИГЛАШЕНО ДРУЗЕЙ", settings_lang: "🌐 Язык / Language", settings_haptic: "📳 Вибрация", nav_games: "Игры", nav_friends: "Друзья", nav_inventory: "Сейф", nav_settings: "Настройки", modal_deposit: "💳 Пополнить", btn_deposit: "ПОПОЛНИТЬ", modal_withdraw: "📤 Вывод", available_bal: "Доступно:", btn_withdraw: "ВЫВЕСТИ", btn_claim_win: "ОТЛИЧНО"
+                sections: "Разделы:", card_free_title: "Бесплатное Колесо", card_free_desc: "1 раз в 24 часа — бесплатно!", card_wheels_title: "Колёса", card_wheels_desc: "4 вида: Обычное, Серебряное...", card_arena_title: "Арена", card_arena_desc: "PVP Рулетка с игроками!", card_giveaway_title: "Розыгрыш", card_giveaway_desc: "Главный приз: 1000 STARS", btn_play: "ИГРАТЬ", btn_select: "ВЫБРАТЬ", btn_tickets: "БИЛЕТЫ", btn_back: "◄ Назад", total_bank: "Общий Банк:", btn_bet: "ПОСТАВИТЬ", giveaway_main_prize: "ГЛАВНЫЙ ПРИЗ ТИРАЖА", giveaway_timer_label: "⏱ Итоги через:", my_ticket: "Твой билет:", my_chance: "Твой шанс:", btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)", participants: "Участники розыгрыша:", ref_title: "Приглашай друзей", ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого уникального друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений в сейф!", ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА", btn_copy: "📋 Копировать", btn_share: "✈️ Пригласить", ref_invited: "ПРИГЛАШЕНО ДРУЗЕЙ", ref_history: "История бонусов от друзей:", settings_lang: "🌐 Язык / Language", settings_haptic: "📳 Вибрация", nav_games: "Игры", nav_friends: "Друзья", nav_inventory: "Сейф", nav_settings: "Настройки", modal_deposit: "💳 Пополнить", btn_deposit: "ПОПОЛНИТЬ", modal_withdraw: "📤 Вывод", available_bal: "Доступно:", btn_withdraw: "ВЫВЕСТИ", btn_claim_win: "ОТЛИЧНО"
             },
             en: {
-                sections: "Sections:", card_free_title: "Free Wheel", card_free_desc: "Once every 24 hours — free!", card_wheels_title: "Wheels", card_wheels_desc: "4 types: Common, Silver...", card_arena_title: "Arena", card_arena_desc: "PVP Roulette with players!", card_giveaway_title: "Giveaway", card_giveaway_desc: "Grand prize: 1000 STARS", btn_play: "PLAY", btn_select: "SELECT", btn_tickets: "TICKETS", btn_back: "◄ Back", total_bank: "Total Bank:", btn_bet: "PLACE BET", giveaway_main_prize: "MAIN PRIZE", giveaway_timer_label: "⏱ Results in:", my_ticket: "Your ticket:", my_chance: "Your chance:", btn_buy_ticket: "BUY TICKET (20 ⭐)", participants: "Participants:", ref_title: "Invite Friends", ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each unique friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from their deposits into the safe!", ref_link_title: "YOUR REFERRAL LINK", btn_copy: "📋 Copy", btn_share: "✈️ Share", ref_invited: "INVITED FRIENDS", settings_lang: "🌐 Language", settings_haptic: "📳 Haptic Vibration", nav_games: "Games", nav_friends: "Friends", nav_inventory: "Vault", nav_settings: "Settings", modal_deposit: "💳 Deposit", btn_deposit: "DEPOSIT", modal_withdraw: "📤 Withdraw", available_bal: "Available:", btn_withdraw: "WITHDRAW", btn_claim_win: "AWESOME"
+                sections: "Sections:", card_free_title: "Free Wheel", card_free_desc: "Once every 24 hours — free!", card_wheels_title: "Wheels", card_wheels_desc: "4 types: Common, Silver...", card_arena_title: "Arena", card_arena_desc: "PVP Roulette with players!", card_giveaway_title: "Giveaway", card_giveaway_desc: "Grand prize: 1000 STARS", btn_play: "PLAY", btn_select: "SELECT", btn_tickets: "TICKETS", btn_back: "◄ Back", total_bank: "Total Bank:", btn_bet: "PLACE BET", giveaway_main_prize: "MAIN PRIZE", giveaway_timer_label: "⏱ Results in:", my_ticket: "Your ticket:", my_chance: "Your chance:", btn_buy_ticket: "BUY TICKET (20 ⭐)", participants: "Participants:", ref_title: "Invite Friends", ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each unique friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from their deposits into the safe!", ref_link_title: "YOUR REFERRAL LINK", btn_copy: "📋 Copy", btn_share: "✈️ Share", ref_invited: "INVITED FRIENDS", ref_history: "Referral Bonus History:", settings_lang: "🌐 Language", settings_haptic: "📳 Haptic Vibration", nav_games: "Games", nav_friends: "Friends", nav_inventory: "Vault", nav_settings: "Settings", modal_deposit: "💳 Deposit", btn_deposit: "DEPOSIT", modal_withdraw: "📤 Withdraw", available_bal: "Available:", btn_withdraw: "WITHDRAW", btn_claim_win: "AWESOME"
             }
         };
 
@@ -709,34 +1468,46 @@
 
                 let div = document.createElement('div');
                 div.className = 'vault-card';
+                // Таймер расположен ПОД кнопкой "Забрать"
                 div.innerHTML = `
                     <div class="vault-header">
                         <span class="vault-title">🎁 ${item.title}</span>
                         <span class="vault-amount">+${item.amount} ⭐</span>
                     </div>
-                    <div class="vault-timer-box">
-                        <span style="font-size: 12px; color: var(--text-sub);">Таймер:</span>
-                        <span class="vault-timer-val" style="color: ${isReady && !item.claimed ? 'var(--accent-gold)' : 'var(--neon-cyan)'}">${timerDisplay}</span>
-                    </div>
                     <button class="${btnClass}" ${btnDisabled} onclick="claimVaultItem('${item.id}');">
                         ${btnText}
                     </button>
+                    <div class="vault-timer-below">
+                        <span style="font-size: 11px; color: var(--text-sub);">До разморозки: </span>
+                        <span class="vault-timer-val" style="color: ${isReady && !item.claimed ? 'var(--accent-gold)' : 'var(--neon-cyan)'}">${timerDisplay}</span>
+                    </div>
                 `;
                 listEl.appendChild(div);
             });
         }
         setInterval(renderInventoryVault, 1000);
 
-        // --- 5. РЕФЕРАЛЬНАЯ СИСТЕМА (Анти-абуз + Проценты в сейф) ---
+        // --- 5. РЕФЕРАЛЬНАЯ СИСТЕМА (Анти-абуз + История пополнений) ---
         let invitedFriendsCount = parseInt(localStorage.getItem('homastar_ref_count') || '0');
-        // В реальном проекте этот массив должен храниться на сервере (список TG ID приглашенных)
-        // Для демонстрации механики анти-абуза используем localStorage массив
         let claimedRefs = JSON.parse(localStorage.getItem('homastar_claimed_refs') || '[]');
+        
+        // Массив для хранения истории пополнений друзей (фейковые данные для отображения логики)
+        let referralHistory = JSON.parse(localStorage.getItem('homastar_ref_history') || '[]');
+        
+        // Демо-данные для истории рефералов (если пусто, добавим пару штук)
+        if (referralHistory.length === 0) {
+            referralHistory = [
+                { name: "Максим", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces", depAmount: 100, bonus: 5 },
+                { name: "Артём", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=faces", depAmount: 50, bonus: 2.5 }
+            ];
+            localStorage.setItem('homastar_ref_history', JSON.stringify(referralHistory));
+        }
 
         function updateReferralUI() {
             document.getElementById('ref-invited-count').innerText = `${invitedFriendsCount} челов`;
             let refUrl = `https://t.me/HomastarBot?start=ref_${userId}`;
             document.getElementById('ref-link-input').value = refUrl;
+            renderReferralHistory();
         }
 
         function copyRefLink() {
@@ -752,14 +1523,13 @@
             const url = document.getElementById('ref-link-input').value;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=Залетай в Homastar, стань успешным вместе со мной!`, '_blank');
 
-            // Симуляция перехода друга (ДЛЯ ТЕСТИРОВАНИЯ ЛОГИКИ)
+            // Симуляция перехода друга
             setTimeout(() => {
                 simulateInviteUniqueFriend();
             }, 3000);
         }
 
         function simulateInviteUniqueFriend() {
-            // Генерируем фейковый ID друга
             let fakeFriendId = 'friend_' + Math.floor(Math.random() * 10);
 
             // Проверка на абуз: был ли этот ID уже приглашен?
@@ -784,20 +1554,37 @@
             alert("🤝 Новый уникальный друг зарегистрировался! +2 ⭐ отправлено в ваш сейф на 21 день.");
         }
 
-        // Симуляция: Реферал пополняет баланс (5% кэшбека в сейф)
-        function simulateReferralDeposit(depAmount) {
-            haptic('medium');
-            if (invitedFriendsCount === 0) {
-                alert("У вас пока нет друзей, чтобы получать с них процент!");
+        // Рендер истории пополнений рефералов
+        function renderReferralHistory() {
+            const histList = document.getElementById('ref-history-list');
+            if (!histList) return;
+            histList.innerHTML = '';
+            
+            if (referralHistory.length === 0) {
+                histList.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding-top: 20px;">Нет активных пополнений</div>`;
                 return;
             }
-            let cashback = Math.floor(depAmount * 0.05); // 5%
-            if (cashback > 0) {
-                addVaultItem(cashback, "5% от пополнения друга");
-                haptic('success');
-                alert(`💰 Ваш друг пополнил баланс на ${depAmount} ⭐!
-Вам начислено 5% (${cashback} ⭐). Средства отправлены в сейф.`);
-            }
+            
+            referralHistory.forEach(record => {
+                let row = document.createElement('div');
+                row.className = 'b-player-row';
+                row.innerHTML = `
+                    <div class="b-player-left">
+                        <div class="b-player-ava" style="border-color: var(--neon-cyan);">
+                            <img src="${record.avatar}" alt="ava">
+                        </div>
+                        <div class="b-player-info">
+                            <h4>${record.name}</h4>
+                            <span style="font-size:10px; color:var(--text-sub);">Пополнил: ${record.depAmount} ⭐</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                        <span style="font-size:10px; color:var(--text-sub);">Твой бонус:</span>
+                        <span class="b-player-bet" style="color:var(--neon-cyan);">+${record.bonus} ⭐</span>
+                    </div>
+                `;
+                histList.appendChild(row);
+            });
         }
 
         // --- 6. МОДАЛКИ И НАВИГАЦИЯ ---
@@ -816,6 +1603,7 @@
 
             if (screenId === 'screen-tickets') updateTicketUI();
             if (screenId === 'screen-inventory') renderInventoryVault();
+            if (screenId === 'screen-friends') updateReferralUI();
         }
 
         function openModal(id) { haptic('light'); document.getElementById(id).style.display = 'flex'; }
@@ -867,7 +1655,7 @@
                 currentSlideIndex = 0;
                 renderSlide();
             } else {
-                // Если онбординг пройден, но стартовый бонус еще ни разу не выдавался
+                // Защитный механизм: если слайдшоу просмотрено, но стартовый бонус так и не начислен
                 let isBonusGiven = localStorage.getItem('homastar_start_bonus_given');
                 if (!isBonusGiven) {
                     addVaultItem(50, "Стартовый бонус");
@@ -906,17 +1694,18 @@
             if (currentSlideIndex < onboardingSlides.length) {
                 renderSlide();
             } else {
-                // Конец онбординга
+                // Закрываем окно онбординга
                 document.getElementById('modal-onboarding').style.display = 'none';
                 localStorage.setItem('homastar_onboarding_seen_' + userId, 'true');
 
-                // Выдача стартового бонуса в сейф
+                // Железобетонная выдача 50 звезд в инвентарь!
                 let isBonusGiven = localStorage.getItem('homastar_start_bonus_given');
                 if (!isBonusGiven) {
                     addVaultItem(50, "Стартовый бонус");
                     localStorage.setItem('homastar_start_bonus_given', 'true');
                 }
 
+                // Переводим пользователя в сейф, чтобы показать награду
                 openScreen('screen-inventory');
                 haptic('success');
             }
@@ -925,9 +1714,7 @@
         // --- 8. ИГРА: РОЗЫГРЫШ (GIVEAWAY) ---
         let giveawayParticipants = [
             { name: "Alexander", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Maksim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Dmitriy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces" },
-            { name: "Rustam", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" }
+            { name: "Maksim", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces" }
         ];
         let giveawaySecondsLeft = 36000;
 
@@ -1236,7 +2023,6 @@
         }
 
         // --- 10. ИГРА: PVP АРЕНА (SOCKET.IO + CANVAS PING-PONG) ---
-        // Подключение к серверу
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
         });
