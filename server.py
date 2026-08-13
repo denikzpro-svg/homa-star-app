@@ -9,14 +9,13 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 game_state = {
-    "status": "WAITING",
+    "status": "WAITING", # WAITING (ставки), PLAYING (полет шарика), PAUSE (ожидание)
     "time_left": 20,
     "bank": 0,
     "players": [],
     "winner": None
 }
 
-# База «архивных» аватарок и нормальных человеческих имен
 BOT_PROFILES = [
     {"name": "Alexander", "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces"},
     {"name": "Maxim", "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=faces"},
@@ -56,23 +55,35 @@ def add_bot():
 
 def run_game_loop():
     while True:
-        game_state["status"] = "WAITING"
-        game_state["time_left"] = 20
+        # 1. СТАТУС ПАУЗЫ (Ожидание игроков: 5-7 секунд после прошлого раунда)
+        game_state["status"] = "PAUSE"
         game_state["bank"] = 0
         game_state["players"] = []
         game_state["winner"] = None
+        socketio.emit('game_tick', game_state)
         
+        pause_duration = random.randint(5, 7)
+        socketio.sleep(pause_duration)
+
+        # 2. ФАЗА СТАВОК (20 секунд)
+        game_state["status"] = "WAITING"
+        game_state["time_left"] = 20
+        
+        # Первого бота подкидываем не сразу, а с небольшой задержкой
+        socketio.sleep(1)
         add_bot()
 
         while game_state["time_left"] > 0:
             socketio.emit('game_tick', game_state)
             
-            if len(game_state["players"]) < 5 and game_state["time_left"] > 3 and random.random() > 0.5:
+            # Боты делают ставки постепенно во время таймера
+            if len(game_state["players"]) < 5 and game_state["time_left"] > 3 and random.random() > 0.4:
                 add_bot()
 
             socketio.sleep(1)
             game_state["time_left"] -= 1
 
+        # 3. ФАЗА ИГРЫ (Полет шарика 7 секунд)
         game_state["status"] = "PLAYING"
         
         if not game_state["players"]:
@@ -90,8 +101,8 @@ def run_game_loop():
         game_state["winner"] = winner
         socketio.emit('game_over', game_state)
         
-        # 10 секунд полета шарика + 3 секунды показа результатов
-        socketio.sleep(13)
+        # Ждем завершения анимации шарика на клиенте (7 секунд) + показ результата (3 секунды)
+        socketio.sleep(10)
 
 @socketio.on('connect')
 def handle_connect():
