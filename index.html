@@ -202,8 +202,8 @@
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
                 <span id="user-balance-text" class="balance-value">1040 ⭐</span>
-                <button class="btn-bal-action pay" onclick="openModal('modal-deposit')">+</button>
-                <button class="btn-bal-action" onclick="openModal('modal-withdraw')">-</button>
+                <button class="btn-bal-action pay" onclick="openModal('modal-deposit'); haptic('light');">+</button>
+                <button class="btn-bal-action" onclick="openModal('modal-withdraw'); haptic('light');">-</button>
             </div>
         </header>
 
@@ -214,25 +214,25 @@
         <div id="screen-hub" class="screen active">
             <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="sections">Разделы:</h2>
             <div class="cards-stack">
-                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen()">
+                <div class="premium-card tier-free-dark" onclick="openFreeWheelScreen(); haptic('medium');">
                     <div class="p-card-bg-icon">🎁</div><div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🎁</span> <span data-tr="card_free_title">Бесплатное Колесо</span></h3><p data-tr="card_free_desc">1 раз в 24 часа — бесплатно!</p></div>
                         <button class="w-card-btn btn-free" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
-                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list')">
+                <div class="premium-card tier-silver-dark" onclick="openScreen('screen-wheel-list'); haptic('medium');">
                     <div class="p-card-bg-icon">🎡</div><div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🎡</span> <span data-tr="card_wheels_title">Колёса</span></h3><p data-tr="card_wheels_desc">4 вида: Обычное, Серебряное...</p></div>
                         <button class="w-card-btn btn-silver" data-tr="btn_select">ВЫБРАТЬ</button>
                     </div>
                 </div>
-                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle')">
+                <div class="premium-card tier-battle-dark" onclick="openScreen('screen-battle'); haptic('medium');">
                     <div class="p-card-bg-icon">🏓</div><div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🏓</span> <span data-tr="card_arena_title">Арена</span></h3><p data-tr="card_arena_desc">PVP Рулетка с игроками!</p></div>
                         <button class="w-card-btn btn-battle" data-tr="btn_play">ИГРАТЬ</button>
                     </div>
                 </div>
-                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets')">
+                <div class="premium-card tier-diamond-dark" onclick="openScreen('screen-tickets'); haptic('medium');">
                     <div class="p-card-bg-icon">🎟️</div><div class="p-card-content">
                         <div class="p-card-title-area"><h3><span class="t-icon">🎟️</span> <span data-tr="card_giveaway_title">Розыгрыш</span></h3><p data-tr="card_giveaway_desc">Главный приз: 1000 STARS</p></div>
                         <button class="w-card-btn btn-diamond" data-tr="btn_tickets">БИЛЕТЫ</button>
@@ -243,19 +243,19 @@
 
         <!-- 2. СПИСОК КОЛЁС -->
         <div id="screen-wheel-list" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 5px;" data-tr="card_wheels_title">Колёса:</h2>
             <div class="cards-stack">
-                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common')">
+                <div class="premium-card tier-common-dark" onclick="openPlayWheel('common'); haptic('medium');">
                     <div class="p-card-content"><div class="p-card-title-area"><h3>⚡ Обычное</h3><p>Цена: 20 Stars</p></div><button class="w-card-btn btn-common" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
-                <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver')">
+                <div class="premium-card tier-silver-dark" onclick="openPlayWheel('silver'); haptic('medium');">
                     <div class="p-card-content"><div class="p-card-title-area"><h3>🛡️ Серебряное</h3><p>Цена: 50 Stars</p></div><button class="w-card-btn btn-silver" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
-                <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold')">
+                <div class="premium-card tier-gold-dark" onclick="openPlayWheel('gold'); haptic('medium');">
                     <div class="p-card-content"><div class="p-card-title-area"><h3>👑 Золотое</h3><p>Цена: 100 Stars</p></div><button class="w-card-btn btn-gold" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
-                <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond')">
+                <div class="premium-card tier-diamond-dark" onclick="openPlayWheel('diamond'); haptic('medium');">
                     <div class="p-card-content"><div class="p-card-title-area"><h3>💎 Алмазное</h3><p>Цена: 250 Stars</p></div><button class="w-card-btn btn-diamond" data-tr="btn_play">ИГРАТЬ</button></div>
                 </div>
             </div>
@@ -263,7 +263,7 @@
 
         <!-- 3. ИГРОВОЕ КОЛЕСО -->
         <div id="screen-game-wheel" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-wheel-list'); haptic('light');" id="btn-back-from-wheel" data-tr="btn_back">◄ Назад</button>
             <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
             <div class="wheel-section">
                 <div class="arrow-pointer"></div>
@@ -274,7 +274,7 @@
 
         <!-- 4. АРЕНА -->
         <div id="screen-battle" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <div class="battle-header-info">
                 <span style="color: var(--text-sub); font-size:13px;" data-tr="total_bank">Общий Банк:</span>
                 <span id="arena-total-bank" style="color: var(--accent-gold); font-size: 16px;">⭐ 0</span>
@@ -292,21 +292,21 @@
             <div class="b-players-list" id="arena-players-list"></div>
 
             <div class="b-bet-controls" id="b-bet-controls-box">
-                <button class="b-quick-btn" onclick="setQuickBet(50)">50 ⭐</button>
-                <button class="b-quick-btn" onclick="setQuickBet(100)">100 ⭐</button>
-                <button class="b-quick-btn" onclick="setQuickBet(500)">500 ⭐</button>
-                <button class="b-quick-btn" onclick="setQuickBet(Math.floor(userBalance))">MAX</button>
+                <button class="b-quick-btn" onclick="setQuickBet(50); haptic('light');">50 ⭐</button>
+                <button class="b-quick-btn" onclick="setQuickBet(100); haptic('light');">100 ⭐</button>
+                <button class="b-quick-btn" onclick="setQuickBet(500); haptic('light');">500 ⭐</button>
+                <button class="b-quick-btn" onclick="setQuickBet(Math.floor(userBalance)); haptic('light');">MAX</button>
             </div>
 
             <div class="custom-bet-row">
                 <input type="number" id="arena-bet-input" class="custom-bet-input" placeholder="Сумма ⭐">
-                <button class="custom-bet-submit" id="arena-action-btn" onclick="handleBetAction()" data-tr="btn_bet">ПОСТАВИТЬ</button>
+                <button class="custom-bet-submit" id="arena-action-btn" onclick="handleBetAction(); haptic('heavy');" data-tr="btn_bet">ПОСТАВИТЬ</button>
             </div>
         </div>
 
         <!-- 5. БИЛЕТЫ (РОЗЫГРЫШ 1000 ЗВЁЗД) -->
         <div id="screen-tickets" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
                 <div style="font-size: 12px; color: var(--text-sub);" data-tr="giveaway_main_prize">ГЛАВНЫЙ ПРИЗ ТИРАЖА</div>
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin: 10px 0;">🏆 1000 STARS</div>
@@ -316,7 +316,7 @@
                 <div data-tr="my_ticket">Твой билет: <b id="user-tickets-count" style="color: var(--accent-gold);">0</b> / 1 макс</div>
                 <div data-tr="my_chance">Твой шанс: <b id="user-win-chance" style="color: var(--neon-cyan);">0%</b></div>
             </div>
-            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket()" data-tr="btn_buy_ticket">КУПИТЬ БИЛЕТ (20 ⭐)</button>
+            <button id="btn-buy-ticket" class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple); margin-bottom: 15px;" onclick="buyTicket(); haptic('heavy');" data-tr="btn_buy_ticket">КУПИТЬ БИЛЕТ (20 ⭐)</button>
             
             <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;" data-tr="participants">Участники розыгрыша:</div>
             <div class="b-players-list" id="giveaway-participants-list" style="height: 140px;"></div>
@@ -324,7 +324,7 @@
 
         <!-- 6. ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <div class="friends-hero">
                 <div style="font-size: 38px; margin-bottom: 8px;">🤝</div>
                 <h3 data-tr="ref_title">Приглашай друзей</h3>
@@ -334,8 +334,8 @@
                 <div style="font-size: 12px; color: var(--text-sub); text-align: center; font-weight: 800;" data-tr="ref_link_title">ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА</div>
                 <input type="text" id="ref-link-input" class="ref-link-field" value="https://t.me/HomastarBot?start=ref_123" readonly>
                 <div class="ref-actions">
-                    <button class="ref-btn copy" onclick="copyRefLink()" data-tr="btn_copy">📋 Копировать</button>
-                    <button class="ref-btn share" onclick="shareRefLink()" data-tr="btn_share">✈️ Пригласить</button>
+                    <button class="ref-btn copy" onclick="copyRefLink(); haptic('light');" data-tr="btn_copy">📋 Копировать</button>
+                    <button class="ref-btn share" onclick="shareRefLink(); haptic('medium');" data-tr="btn_share">✈️ Пригласить</button>
                 </div>
             </div>
             <div class="card-box" style="text-align: center; padding: 14px;">
@@ -346,7 +346,7 @@
 
         <!-- 7. ИНВЕНТАРЬ (СЕЙФ С БОНУСОМ НА 21 ДЕНЬ) -->
         <div id="screen-inventory" class="screen">
-            <button class="btn-back" onclick="openScreen('screen-hub')" data-tr="btn_back">◄ Назад</button>
+            <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь</h2>
             
             <div class="card-box" style="border-color: var(--accent-gold); background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(12,16,28,0.8));">
@@ -364,49 +364,42 @@
                     <span id="inv-bonus-countdown" style="font-size: 13px; font-weight: 900; color: var(--neon-cyan);">21д 00ч 00м 00с</span>
                 </div>
 
-                <button id="inv-btn-claim" class="btn-spin disabled" style="margin-top: 0; padding: 12px; font-size: 14px;" onclick="claimWelcomeBonus()" data-tr="btn_claim">ЗАБРАТЬ</button>
+                <button id="inv-btn-claim" class="btn-spin disabled" style="margin-top: 0; padding: 12px; font-size: 14px;" onclick="claimWelcomeBonus(); haptic('heavy');" data-tr="btn_claim">ЗАБРАТЬ</button>
             </div>
         </div>
 
-        <!-- НАСТРОЙКИ (С ПЕРЕКЛЮЧАТЕЛЕМ ЯЗЫКОВ) -->
+        <!-- НАСТРОЙКИ (ТОЛЬКО ЯЗЫК И ВИБРАЦИЯ) -->
         <div id="screen-settings" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 15px;" data-tr="nav_settings">⚙️ Настройки</h2>
             
-            <!-- ЯЗЫК -->
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                 <div>
                     <div style="font-size: 15px; font-weight: 700;" data-tr="settings_lang">🌐 Язык / Language</div>
                 </div>
-                <select id="language-select" onchange="changeLanguage(this.value)" style="background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 8px 12px; border-radius: 12px; font-weight: 700; outline: none;">
+                <select id="language-select" onchange="changeLanguage(this.value); haptic('light');" style="background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); color: var(--neon-cyan); padding: 8px 12px; border-radius: 12px; font-weight: 700; outline: none;">
                     <option value="ru" selected>Русский</option>
                     <option value="en">English</option>
                 </select>
             </div>
 
-            <div class="card-box" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                <div>
-                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_music">🎵 Фоновая музыка</div>
-                </div>
-                <div id="toggle-music" class="toggle-switch active" onclick="toggleSetting('music')"><div class="toggle-circle"></div></div>
-            </div>
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_sfx">🔊 Игровые звуки</div>
+                    <div style="font-size: 15px; font-weight: 700;" data-tr="settings_haptic">📳 Вибрация (Haptic)</div>
                 </div>
-                <div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div>
+                <div id="toggle-haptic" class="toggle-switch active" onclick="toggleHaptic(); haptic('light');"><div class="toggle-circle"></div></div>
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ (ЗАЛ СЛАВЫ УБРАН НАВСЕГДА) -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
-            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span></button>
-            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends')"><span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span></button>
-            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory')"><span>🎒</span><span class="nav-label" data-tr="nav_inventory">Инвентарь</span></button>
-            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings')"><span>⚙️</span><span class="nav-label" data-tr="nav_settings">Настройки</span></button>
+            <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub'); haptic('light');"><span>🎮</span><span class="nav-label" data-tr="nav_games">Игры</span></button>
+            <button id="nav-screen-friends" class="nav-item" onclick="openScreen('screen-friends'); haptic('light');"><span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span></button>
+            <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory'); haptic('light');"><span>🎒</span><span class="nav-label" data-tr="nav_inventory">Инвентарь</span></button>
+            <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings'); haptic('light');"><span>⚙️</span><span class="nav-label" data-tr="nav_settings">Настройки</span></button>
         </nav>
     </div>
 
-    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - ОДИН РАЗ ПРИ ПЕРВОМ ВХОДЕ) -->
+    <!-- ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - СТРОГО 1 РАЗ) -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
             <div class="onboarding-bar active" id="bar-0"><div class="fill"></div></div>
@@ -421,35 +414,62 @@
             <p id="slide-desc" class="slide-desc">Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков.</p>
         </div>
 
-        <button class="btn-spin" id="slide-btn" onclick="nextSlide()">ДАЛЕЕ</button>
+        <button class="btn-spin" id="slide-btn" onclick="nextSlide(); haptic('medium');">ДАЛЕЕ</button>
     </div>
 
     <!-- МОДАЛКИ СТАНДАРТНЫЕ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_deposit">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
-            <div class="package-grid"><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 50"><div style="font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 100"><div style="font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_deposit">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit'); haptic('light');">✕</button></div>
+            <div class="package-grid"><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 50; haptic('light');"><div style="font-weight: 900; color: var(--accent-gold);">50 ⭐</div></div><div class="package-card" onclick="document.getElementById('custom-deposit-input').value = 100; haptic('light');"><div style="font-weight: 900; color: var(--accent-gold);">100 ⭐</div></div></div>
             <input type="number" id="custom-deposit-input" class="input-stars" placeholder="Сумма ⭐">
-            <button class="btn-spin" onclick="executeDeposit()" data-tr="btn_deposit">ПОПОЛНИТЬ</button>
+            <button class="btn-spin" onclick="executeDeposit(); haptic('medium');" data-tr="btn_deposit">ПОПОЛНИТЬ</button>
         </div>
     </div>
     <div id="modal-withdraw" class="modal-overlay">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_withdraw">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw')">✕</button></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;" data-tr="modal_withdraw">📤 Вывод</h3><button class="btn-close-modal" onclick="closeModal('modal-withdraw'); haptic('light');">✕</button></div>
             <div style="font-size: 14px; color: var(--text-sub); text-align: center; margin-top:10px;"><span data-tr="available_bal">Доступно:</span> <b id="withdraw-available-bal" style="color: var(--accent-gold);">1040 ⭐</b></div>
             <input type="number" id="withdraw-amount-input" class="input-stars" placeholder="Сумма ⭐">
-            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="executeWithdraw()" data-tr="btn_withdraw">ВЫВЕСТИ</button>
+            <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="executeWithdraw(); haptic('medium');" data-tr="btn_withdraw">ВЫВЕСТИ</button>
         </div>
     </div>
     <div id="modal-win" class="modal-overlay">
         <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
             <div style="font-size: 70px;">🌟</div><h2 id="win-modal-title" style="font-size: 24px; font-weight: 900; color: #FFF;">ПОБЕДА!</h2>
             <div id="win-modal-amount" style="font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">+50 ⭐</div>
-            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win')" data-tr="btn_claim_win">ЗАБРАТЬ</button>
+            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win'); haptic('medium');" data-tr="btn_claim_win">ЗАБРАТЬ</button>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // ТАКТИЛЬНЫЙ ОТКЛИК (ВИБРАЦИЯ ЧЕРЕЗ TELEGRAM API)
+        // ==========================================
+        let hapticEnabled = localStorage.getItem('homastar_haptic') !== 'false';
+
+        function haptic(type = 'light') {
+            if (!hapticEnabled) return;
+            try {
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                    if (type === 'light') window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                    else if (type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                    else if (type === 'heavy') window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+                    else if (type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                } else if (navigator.vibrate) {
+                    navigator.vibrate(type === 'heavy' ? 40 : (type === 'medium' ? 25 : 10));
+                }
+            } catch(e) {}
+        }
+
+        function toggleHaptic() {
+            hapticEnabled = !hapticEnabled;
+            localStorage.setItem('homastar_haptic', hapticEnabled);
+            const toggle = document.getElementById('toggle-haptic');
+            if (hapticEnabled) toggle.classList.add('active');
+            else toggle.classList.remove('active');
+        }
+
         // ==========================================
         // ЯЗЫКОВОЙ СЛОВАРЬ (РУССКИЙ / АНГЛИЙСКИЙ)
         // ==========================================
@@ -489,8 +509,7 @@
                 bonus_timer_label: "До разморозки:",
                 btn_claim: "ЗАБРАТЬ",
                 settings_lang: "🌐 Язык / Language",
-                settings_music: "🎵 Фоновая музыка",
-                settings_sfx: "🔊 Игровые звуки",
+                settings_haptic: "📳 Вибрация",
                 nav_games: "Игры",
                 nav_friends: "Друзья",
                 nav_inventory: "Инвентарь",
@@ -537,8 +556,7 @@
                 bonus_timer_label: "Time left:",
                 btn_claim: "CLAIM",
                 settings_lang: "🌐 Language",
-                settings_music: "🎵 Background Music",
-                settings_sfx: "🔊 Game Sounds",
+                settings_haptic: "📳 Haptic Vibration",
                 nav_games: "Games",
                 nav_friends: "Friends",
                 nav_inventory: "Inventory",
@@ -568,89 +586,9 @@
         }
 
         // ==========================================
-        // АУДИО СИНТЕЗАТОР (БЕЗ ЗВУКОВ КЛИКОВ)
-        // ==========================================
-        let audioCtx = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        let bgMusicInterval = null;
-        function startBgMusic() {
-            if (bgMusicInterval || !settings.music) return;
-            initAudio();
-            const chords = [261.63, 329.63, 392.00, 523.25];
-            bgMusicInterval = setInterval(() => {
-                if (!settings.music || !audioCtx) return;
-                try {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    let freq = chords[Math.floor(Math.random() * chords.length)];
-                    osc.frequency.setValueAtTime(freq / 2, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.5);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 3.5);
-                } catch(e) {}
-            }, 3000);
-        }
-
-        function stopBgMusic() {
-            if (bgMusicInterval) {
-                clearInterval(bgMusicInterval);
-                bgMusicInterval = null;
-            }
-        }
-
-        function playWheelTickSound() {
-            if (!settings.sfx) return;
-            initAudio();
-            try {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            } catch(e) {}
-        }
-
-        function playWinSound() {
-            if (!settings.sfx) return;
-            initAudio();
-            try {
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((note, index) => {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(note, audioCtx.currentTime + index * 0.1);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + index * 0.1);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.1 + 0.3);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + index * 0.1);
-                    osc.stop(audioCtx.currentTime + index * 0.1 + 0.3);
-                });
-            } catch(e) {}
-        }
-
-        // ==========================================
         // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
         // ==========================================
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '1040');
-        let settings = { music: localStorage.getItem('homastar_music') !== 'false', sfx: localStorage.getItem('homastar_sfx') !== 'false' };
         
         let tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe ? window.Telegram.WebApp.initDataUnsafe.user : null;
         let userId = localStorage.getItem('homastar_user_id');
@@ -692,7 +630,7 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function showWinPopup(amount, title="ПОБЕДА!") { 
-            playWinSound();
+            haptic('success');
             document.getElementById('win-modal-title').innerText = title;
             document.getElementById('win-modal-amount').innerText = amount; 
             openModal('modal-win'); 
@@ -711,7 +649,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА СЛАЙД-ШОУ (ПОКАЗЫВАЕМ СТРОГО 1 РАЗ ПРИ ПЕРВОМ ВХОДЕ)
+        // ЛОГИКА СЛАЙД-ШОУ (СБРАСЫВАЕТСЯ НА 1 РАЗ)
         // ==========================================
         const onboardingSlides = [
             { icon: "🎁", title: "ЕЖЕДНЕВНЫЕ НАГРАДЫ", desc: "Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков." },
@@ -822,13 +760,13 @@
             userBalance += 50;
             updateBalanceDisplay();
             localStorage.setItem('homastar_bonus_claimed_' + userId, 'true');
-            playWinSound();
+            haptic('success');
             alert("🎉 Поздравляем! 50 ⭐ успешно переведены на ваш основной баланс!");
             updateBonusTimerUI();
         }
 
         // ==========================================
-        // РЕФЕРАЛЬНАЯ СИСТЕМА И НАСТРОЙКИ
+        // РЕФЕРАЛЬНАЯ СИСТЕМА
         // ==========================================
         function copyRefLink() { 
             const input = document.getElementById('ref-link-input');
@@ -838,19 +776,6 @@
         }
         function shareRefLink() { 
             window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link-input').value)}&text=Залетай в Homastar, стань успешным вместе со мной!`, '_blank'); 
-        }
-        
-        function toggleSetting(type) { 
-            settings[type] = !settings[type]; 
-            localStorage.setItem(`homastar_${type}`, settings[type]); 
-            const toggle = document.getElementById(`toggle-${type}`); 
-            if (settings[type]) {
-                toggle.classList.add('active');
-                if(type === 'music') startBgMusic();
-            } else {
-                toggle.classList.remove('active');
-                if(type === 'music') stopBgMusic();
-            } 
         }
 
         // ==========================================
@@ -998,7 +923,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И АРЕНА СО ЗВУКАМИ ПИНГ-ПОНГА
+        // СОКЕТЫ И АРЕНА (ВИБРАЦИЯ ПРИ ОТСКОКАХ)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -1249,11 +1174,11 @@
                     
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) {
                         ballSpeedX *= -1;
-                        playPingSound();
+                        haptic('light');
                     }
                     if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) {
                         ballSpeedY *= -1;
-                        playPingSound();
+                        haptic('light');
                     }
 
                     drawCanvasFrame();
@@ -1278,9 +1203,10 @@
             if (winner.id === userId) {
                 userBalance += bankAmount; 
                 updateBalanceDisplay();
-                playWinSound();
+                haptic('success');
                 overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:16px; font-weight:900; color:#FFF; margin-top:6px;">Ты выиграл такую-то сумму: +${bankAmount} ⭐! Зачислено на ваш баланс. Поздравляем тебя!</div>`;
             } else {
+                haptic('medium');
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Получил ${bankAmount} ⭐. Поздравляем!</div>`;
             }
         }
@@ -1430,7 +1356,7 @@
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
             let tickInterval = setInterval(() => {
-                playWheelTickSound();
+                haptic('light');
             }, 150);
 
             setTimeout(() => {
@@ -1463,9 +1389,11 @@
             updateTicketUI();
             checkOnboarding();
             changeLanguage(currentLang);
-            
-            if (settings.music) {
-                startBgMusic();
+
+            const hapticToggle = document.getElementById('toggle-haptic');
+            if (hapticToggle) {
+                if (hapticEnabled) hapticToggle.classList.add('active');
+                else hapticToggle.classList.remove('active');
             }
 
             if (window.Telegram && window.Telegram.WebApp) { 
