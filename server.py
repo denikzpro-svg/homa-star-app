@@ -9,7 +9,7 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 game_state = {
-    "status": "WAITING", # WAITING (ставки), PLAYING (полет шарика), PAUSE (ожидание)
+    "status": "PAUSE",  # PAUSE (ожидание, можно ставить), WAITING (таймер 20 сек), PLAYING (полет шарика)
     "time_left": 20,
     "bank": 0,
     "players": [],
@@ -55,7 +55,7 @@ def add_bot():
 
 def run_game_loop():
     while True:
-        # 1. СТАТУС ПАУЗЫ (Ожидание игроков: 5-7 секунд после прошлого раунда)
+        # ФАЗА 1: ПАУЗА (Ожидание игроков 5-7 сек, боты НЕ ставят, но РЕАЛЬНЫЕ игроки МОГУТ ставить!)
         game_state["status"] = "PAUSE"
         game_state["bank"] = 0
         game_state["players"] = []
@@ -65,13 +65,10 @@ def run_game_loop():
         pause_duration = random.randint(5, 7)
         socketio.sleep(pause_duration)
 
-        # 2. ФАЗА СТАВОК (20 секунд)
+        # ФАЗА 2: ТАЙМЕР СТАВОК (20 секунд, подключаются и боты, и игроки)
         game_state["status"] = "WAITING"
         game_state["time_left"] = 20
-        
-        # Первого бота подкидываем не сразу, а с небольшой задержкой
-        socketio.sleep(1)
-        add_bot()
+        socketio.emit('game_tick', game_state)
 
         while game_state["time_left"] > 0:
             socketio.emit('game_tick', game_state)
@@ -83,7 +80,7 @@ def run_game_loop():
             socketio.sleep(1)
             game_state["time_left"] -= 1
 
-        # 3. ФАЗА ИГРЫ (Полет шарика 7 секунд)
+        # ФАЗА 3: ПОЛЕТ ШАРИКА (7 секунд)
         game_state["status"] = "PLAYING"
         
         if not game_state["players"]:
@@ -101,7 +98,7 @@ def run_game_loop():
         game_state["winner"] = winner
         socketio.emit('game_over', game_state)
         
-        # Ждем завершения анимации шарика на клиенте (7 секунд) + показ результата (3 секунды)
+        # Ждем завершения анимации шарика (7 сек) + показ результатов (3 сек)
         socketio.sleep(10)
 
 @socketio.on('connect')
@@ -114,11 +111,14 @@ def handle_connect():
 
 @socketio.on('place_bet')
 def handle_bet(data):
-    if game_state["status"] != "WAITING":
+    # Разрешаем ставить и в PAUSE (игроку), и в WAITING
+    if game_state["status"] not in ["PAUSE", "WAITING"]:
         return
     
     user_id = data.get("id")
     user_name = data.get("name", "Игрок")
+    user_avatar = data.get("avatar", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces")
+    
     try:
         bet_amount = float(data.get("amount", 0))
     except (ValueError, TypeError):
@@ -134,7 +134,7 @@ def handle_bet(data):
     user_player = {
         "id": user_id,
         "name": user_name,
-        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
+        "avatar": user_avatar,
         "bet": bet_amount,
         "color": "#FFD700",
         "isUser": True
@@ -146,7 +146,7 @@ def handle_bet(data):
 
 @socketio.on('cancel_bet')
 def handle_cancel_bet(data):
-    if game_state["status"] != "WAITING":
+    if game_state["status"] not in ["PAUSE", "WAITING"]:
         return
     user_id = data.get("id")
     player = next((p for p in game_state["players"] if p["id"] == user_id and p.get("isUser")), None)
