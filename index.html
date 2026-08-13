@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <!-- ПРЕМИАЛЬНЫЙ HOMASTAR APP v2.0 -->
-    <!-- ПОЛНЫЙ ИСХОДНЫЙ КОД С ИНТЕГРАЦИЕЙ ВИБРАЦИИ И ЗАЩИТЫ -->
+    <!-- ПОЛНЫЙ ИСХОДНЫЙ КОД -->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <meta charset="UTF-8">
@@ -34,12 +34,9 @@
             --accent-gold: #FFD700;
             --accent-gold-glow: rgba(255, 215, 0, 0.4);
             
-            /* Цвета для премиум-сейфа */
-            --vault-bg-dark: rgba(8, 12, 20, 0.9);
-            --vault-border-accent: rgba(255, 215, 0, 0.3);
-            --vault-text-ready: #FFD700;
-            --vault-text-locked: #556B8D;
-            --haptic-btn-bg: rgba(255, 255, 255, 0.1);
+            /* Цвета для инвентаря */
+            --inv-bg-dark: rgba(8, 12, 20, 0.9);
+            --inv-border-accent: rgba(255, 215, 0, 0.3);
         }
 
         /* ==========================================================================
@@ -687,11 +684,11 @@
         .ref-btn.share { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan-glow); }
 
         /* ==========================================================================
-           ИНВЕНТАРЬ (ПРЕМИУМ СЕЙФ НА 21 ДЕНЬ)
+           ИНВЕНТАРЬ (ПРЕМИУМ КАРТОЧКИ С ТАЙМЕРАМИ)
            ========================================================================== */
         .vault-card { 
-            background: linear-gradient(135deg, var(--vault-bg-dark), rgba(12, 16, 28, 1)); 
-            border: 1px solid var(--vault-border-accent); 
+            background: linear-gradient(135deg, var(--inv-bg-dark), rgba(12, 16, 28, 1)); 
+            border: 1px solid var(--inv-border-accent); 
             border-radius: 20px; 
             padding: 16px; 
             margin-bottom: 12px; 
@@ -713,14 +710,14 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 8px; 
+            margin-bottom: 10px; 
             position: relative; 
             z-index: 2; 
         }
         .vault-title { font-weight: 800; font-size: 15px; color: #FFF; display: flex; align-items: center; gap: 8px; }
         .vault-amount { font-size: 18px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
         
-        /* Кнопка сейфа: серая неактивная или золотая активная */
+        /* Кнопка инвентаря: серая неактивная или золотая активная */
         .vault-btn { 
             width: 100%; 
             padding: 12px; 
@@ -734,6 +731,7 @@
             transition: all 0.3s ease; 
             position: relative; 
             z-index: 2; 
+            margin-bottom: 6px;
         }
         .vault-btn.ready { 
             background: linear-gradient(135deg, var(--accent-gold), #FFA500); 
@@ -751,10 +749,9 @@
             cursor: not-allowed; 
         }
 
-        /* Таймер под кнопкой сейфа */
+        /* Таймер под кнопкой инвентаря */
         .vault-timer-below {
             text-align: center;
-            margin-top: 8px;
             position: relative;
             z-index: 2;
         }
@@ -1133,7 +1130,7 @@
         </div>
 
         <!-- ==========================================================================
-             6. ДРУЗЬЯ (РЕФЕРАЛЬНАЯ СИСТЕМА + ИСТОРИЯ)
+             6. ДРУЗЬЯ (РЕФЕРАЛЬНАЯ СИСТЕМА + ЧИСТАЯ ИСТОРИЯ)
              ========================================================================== -->
         <div id="screen-friends" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
@@ -1141,7 +1138,7 @@
             <div class="friends-hero">
                 <div style="font-size: 38px; margin-bottom: 8px;">🤝</div>
                 <h3 data-tr="ref_title">Приглашай друзей</h3>
-                <p data-tr="ref_desc">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого уникального друга и пожизненные <b style="color: var(--neon-cyan);">5%</b> от всех его пополнений в сейф!</p>
+                <p data-tr="ref_desc">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого уникального друга и пожизненные <b style="color: var(--neon-cyan);">5%</b> от всех его пополнений в инвентарь!</p>
             </div>
 
             <div class="ref-box-big">
@@ -1158,22 +1155,22 @@
                 <div id="ref-invited-count" style="font-size: 22px; font-weight: 900; color: var(--accent-gold);">0 челов</div>
             </div>
 
-            <!-- ИСТОРИЯ ПОПОЛНЕНИЙ РЕФЕРАЛОВ (НАСТОЯЩАЯ) -->
+            <!-- ИСТОРИЯ ПОПОЛНЕНИЙ РЕФЕРАЛОВ -->
             <div style="font-size: 13px; font-weight: 800; color: var(--text-sub); margin-bottom: 6px; margin-top: 15px;" data-tr="ref_history">История бонусов от друзей:</div>
             <div class="b-players-list" id="ref-history-list" style="height: 140px;">
-                <!-- Динамически заполняется скриптом из реальных пополнений -->
+                <!-- Пустой список, заполняется только реальными пополнениями -->
             </div>
         </div>
 
         <!-- ==========================================================================
-             7. ИНВЕНТАРЬ (КИБЕРПАНК СЕЙФ С ТАЙМЕРАМИ ВНИЗУ)
+             7. ИНВЕНТАРЬ (КАРТОЧКИ С ТАЙМЕРАМИ ВНИЗУ)
              ========================================================================== -->
         <div id="screen-inventory" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub'); haptic('light');" data-tr="btn_back">◄ Назад</button>
-            <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь (Сейф)</h2>
+            <h2 style="font-size: 18px; margin-bottom: 12px;" data-tr="nav_inventory">🎒 Инвентарь</h2>
 
-            <div id="inventory-vault-list">
-                <!-- Карточки сейфа рендерятся тут -->
+            <div id="inventory-list">
+                <!-- Карточки инвентаря рендерятся тут -->
             </div>
         </div>
 
@@ -1214,7 +1211,7 @@
                 <span>👥</span><span class="nav-label" data-tr="nav_friends">Друзья</span>
             </button>
             <button id="nav-screen-inventory" class="nav-item" onclick="openScreen('screen-inventory');">
-                <span>🎒</span><span class="nav-label" data-tr="nav_inventory">Сейф</span>
+                <span>🎒</span><span class="nav-label" data-tr="nav_inventory">Инвентарь</span>
             </button>
             <button id="nav-screen-settings" class="nav-item" onclick="openScreen('screen-settings');">
                 <span>⚙️</span><span class="nav-label" data-tr="nav_settings">Настройки</span>
@@ -1223,7 +1220,7 @@
     </div>
 
     <!-- ==========================================================================
-         ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ - ПОКАЗЫВАЕТСЯ СТРОГО 1 РАЗ)
+         ПОЛНОЭКРАННОЕ СЛАЙД-ШОУ (ОНБОРДИНГ)
          ========================================================================== -->
     <div id="modal-onboarding" class="onboarding-overlay">
         <div class="onboarding-progress-container" id="onboarding-bars">
@@ -1239,7 +1236,19 @@
             <p id="slide-desc" class="slide-desc">Начни свой путь к успеху с бесплатных вращений. Получай ценные призы каждый день и приумножай свой капитал без каких-либо рисков.</p>
         </div>
 
-        <button class="btn-spin" id="slide-btn" onclick="nextSlide();" style="margin-bottom: 20px;">ЗАБРАТЬ 50 ЗВЁЗД В ИНВЕНТАРЬ!</button>
+        <button class="btn-spin" id="slide-btn" onclick="nextSlide();" style="margin-bottom: 20px;">ДАЛЕЕ</button>
+    </div>
+
+    <!-- ==========================================================================
+         МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ 50 ЗВЁЗД ПОСЛЕ СЛАЙД-ШОУ
+         ========================================================================== -->
+    <div id="modal-welcome-bonus" class="onboarding-overlay" style="z-index: 10000;">
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center;">
+            <div style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 30px var(--accent-gold-glow));">🎁</div>
+            <h2 style="font-size: 32px; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">ПОЗДРАВЛЯЕМ!</h2>
+            <p style="font-size: 16px; color: #FFF; margin-bottom: 30px; line-height: 1.5;">Ты успешно прошел обучение.<br>Забери свои первые 50 ⭐ в инвентарь!</p>
+            <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold); box-shadow: 0 0 20px var(--accent-gold-glow);" onclick="claimWelcomeBonusModal();">ЗАБРАТЬ 50 ЗВЁЗД</button>
+        </div>
     </div>
 
     <!-- ==========================================================================
@@ -1288,7 +1297,7 @@
     </div>
 
     <!-- ==========================================================================
-         СКРИПТЫ: ЛОГИКА, ВИБРАЦИЯ, СЕЙФ, ИСТОРИЯ РЕФЕРАЛОВ, АРЕНА
+         СКРИПТЫ: ЛОГИКА, ВИБРАЦИЯ, ИНВЕНТАРЬ, ИСТОРИЯ РЕФЕРАЛОВ, АРЕНА
          ========================================================================== -->
     <script>
         // --- ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ И БАЛАНСОВ ---
@@ -1357,10 +1366,10 @@
         // --- 2. ЯЗЫКИ (RU/EN) ---
         const translations = {
             ru: {
-                sections: "Разделы:", card_free_title: "Бесплатное Колесо", card_free_desc: "1 раз в 24 часа — бесплатно!", card_wheels_title: "Колёса", card_wheels_desc: "4 вида: Обычное, Серебряное...", card_arena_title: "Арена", card_arena_desc: "PVP Рулетка с игроками!", card_giveaway_title: "Розыгрыш", card_giveaway_desc: "Главный приз: 1000 STARS", btn_play: "ИГРАТЬ", btn_select: "ВЫБРАТЬ", btn_tickets: "БИЛЕТЫ", btn_back: "◄ Назад", total_bank: "Общий Банк:", btn_bet: "ПОСТАВИТЬ", giveaway_main_prize: "ГЛАВНЫЙ ПРИЗ ТИРАЖА", giveaway_timer_label: "⏱ Итоги через:", my_ticket: "Твой билет:", my_chance: "Твой шанс:", btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)", participants: "Участники розыгрыша:", ref_title: "Приглашай друзей", ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого уникального друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений в сейф!", ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА", btn_copy: "📋 Копировать", btn_share: "✈️ Пригласить", ref_invited: "ПРИГЛАШЕНО ДРУЗЕЙ", ref_history: "История бонусов от друзей:", settings_lang: "🌐 Язык / Language", settings_haptic: "📳 Вибрация", nav_games: "Игры", nav_friends: "Друзья", nav_inventory: "Сейф", nav_settings: "Настройки", modal_deposit: "💳 Пополнить", btn_deposit: "ПОПОЛНИТЬ", modal_withdraw: "📤 Вывод", available_bal: "Доступно:", btn_withdraw: "ВЫВЕСТИ", btn_claim_win: "ОТЛИЧНО"
+                sections: "Разделы:", card_free_title: "Бесплатное Колесо", card_free_desc: "1 раз в 24 часа — бесплатно!", card_wheels_title: "Колёса", card_wheels_desc: "4 вида: Обычное, Серебряное...", card_arena_title: "Арена", card_arena_desc: "PVP Рулетка с игроками!", card_giveaway_title: "Розыгрыш", card_giveaway_desc: "Главный приз: 1000 STARS", btn_play: "ИГРАТЬ", btn_select: "ВЫБРАТЬ", btn_tickets: "БИЛЕТЫ", btn_back: "◄ Назад", total_bank: "Общий Банк:", btn_bet: "ПОСТАВИТЬ", giveaway_main_prize: "ГЛАВНЫЙ ПРИЗ ТИРАЖА", giveaway_timer_label: "⏱ Итоги через:", my_ticket: "Твой билет:", my_chance: "Твой шанс:", btn_buy_ticket: "КУПИТЬ БИЛЕТ (20 ⭐)", participants: "Участники розыгрыша:", ref_title: "Приглашай друзей", ref_desc: "Получай <b style='color: var(--accent-gold);'>+2 ⭐</b> за каждого уникального друга и пожизненные <b style='color: var(--neon-cyan);'>5%</b> от всех его пополнений в инвентарь!", ref_link_title: "ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА", btn_copy: "📋 Копировать", btn_share: "✈️ Пригласить", ref_invited: "ПРИГЛАШЕНО ДРУЗЕЙ", ref_history: "История бонусов от друзей:", settings_lang: "🌐 Язык / Language", settings_haptic: "📳 Вибрация", nav_games: "Игры", nav_friends: "Друзья", nav_inventory: "Инвентарь", nav_settings: "Настройки", modal_deposit: "💳 Пополнить", btn_deposit: "ПОПОЛНИТЬ", modal_withdraw: "📤 Вывод", available_bal: "Доступно:", btn_withdraw: "ВЫВЕСТИ", btn_claim_win: "ОТЛИЧНО"
             },
             en: {
-                sections: "Sections:", card_free_title: "Free Wheel", card_free_desc: "Once every 24 hours — free!", card_wheels_title: "Wheels", card_wheels_desc: "4 types: Common, Silver...", card_arena_title: "Arena", card_arena_desc: "PVP Roulette with players!", card_giveaway_title: "Giveaway", card_giveaway_desc: "Grand prize: 1000 STARS", btn_play: "PLAY", btn_select: "SELECT", btn_tickets: "TICKETS", btn_back: "◄ Back", total_bank: "Total Bank:", btn_bet: "PLACE BET", giveaway_main_prize: "MAIN PRIZE", giveaway_timer_label: "⏱ Results in:", my_ticket: "Your ticket:", my_chance: "Your chance:", btn_buy_ticket: "BUY TICKET (20 ⭐)", participants: "Participants:", ref_title: "Invite Friends", ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each unique friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from their deposits into the safe!", ref_link_title: "YOUR REFERRAL LINK", btn_copy: "📋 Copy", btn_share: "✈️ Share", ref_invited: "INVITED FRIENDS", ref_history: "Referral Bonus History:", settings_lang: "🌐 Language", settings_haptic: "📳 Haptic Vibration", nav_games: "Games", nav_friends: "Friends", nav_inventory: "Vault", nav_settings: "Settings", modal_deposit: "💳 Deposit", btn_deposit: "DEPOSIT", modal_withdraw: "📤 Withdraw", available_bal: "Available:", btn_withdraw: "WITHDRAW", btn_claim_win: "AWESOME"
+                sections: "Sections:", card_free_title: "Free Wheel", card_free_desc: "Once every 24 hours — free!", card_wheels_title: "Wheels", card_wheels_desc: "4 types: Common, Silver...", card_arena_title: "Arena", card_arena_desc: "PVP Roulette with players!", card_giveaway_title: "Giveaway", card_giveaway_desc: "Grand prize: 1000 STARS", btn_play: "PLAY", btn_select: "SELECT", btn_tickets: "TICKETS", btn_back: "◄ Back", total_bank: "Total Bank:", btn_bet: "PLACE BET", giveaway_main_prize: "MAIN PRIZE", giveaway_timer_label: "⏱ Results in:", my_ticket: "Your ticket:", my_chance: "Your chance:", btn_buy_ticket: "BUY TICKET (20 ⭐)", participants: "Participants:", ref_title: "Invite Friends", ref_desc: "Get <b style='color: var(--accent-gold);'>+2 ⭐</b> for each unique friend and a lifelong <b style='color: var(--neon-cyan);'>5%</b> from their deposits into the inventory!", ref_link_title: "YOUR REFERRAL LINK", btn_copy: "📋 Copy", btn_share: "✈️ Share", ref_invited: "INVITED FRIENDS", ref_history: "Referral Bonus History:", settings_lang: "🌐 Language", settings_haptic: "📳 Haptic Vibration", nav_games: "Games", nav_friends: "Friends", nav_inventory: "Inventory", nav_settings: "Settings", modal_deposit: "💳 Deposit", btn_deposit: "DEPOSIT", modal_withdraw: "📤 Withdraw", available_bal: "Available:", btn_withdraw: "WITHDRAW", btn_claim_win: "AWESOME"
             }
         };
 
@@ -1378,62 +1387,62 @@
             });
         }
 
-        // --- 4. ПРЕМИАЛЬНЫЙ ИНВЕНТАРЬ (СЕЙФ) С ЗАМОРОЗКОЙ 21 ДЕНЬ ---
-        let inventoryVault = JSON.parse(localStorage.getItem('homastar_vault_inventory_' + userId) || '[]');
-        const VAULT_LOCK_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день
+        // --- 4. ПРЕМИАЛЬНЫЙ ИНВЕНТАРЬ (ЗАМОРОЗКА 21 ДЕНЬ) ---
+        let inventoryList = JSON.parse(localStorage.getItem('homastar_inventory_' + userId) || '[]');
+        const INV_LOCK_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 21 день
 
-        function addVaultItem(amount, title) {
-            inventoryVault.push({
-                id: 'vault_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        function addInventoryItem(amount, title) {
+            inventoryList.push({
+                id: 'inv_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
                 title: title,
                 amount: amount,
                 time: Date.now(),
                 claimed: false
             });
-            localStorage.setItem('homastar_vault_inventory_' + userId, JSON.stringify(inventoryVault));
-            renderInventoryVault();
+            localStorage.setItem('homastar_inventory_' + userId, JSON.stringify(inventoryList));
+            renderInventoryList();
         }
 
-        function claimVaultItem(id) {
-            let item = inventoryVault.find(i => i.id === id);
+        function claimInventoryItem(id) {
+            let item = inventoryList.find(i => i.id === id);
             if (!item || item.claimed) return;
 
             let timeElapsed = Date.now() - item.time;
-            if (timeElapsed >= VAULT_LOCK_DURATION_MS) {
+            if (timeElapsed >= INV_LOCK_DURATION_MS) {
                 haptic('success');
                 userBalance += item.amount;
                 item.claimed = true;
-                localStorage.setItem('homastar_vault_inventory_' + userId, JSON.stringify(inventoryVault));
+                localStorage.setItem('homastar_inventory_' + userId, JSON.stringify(inventoryList));
                 updateBalanceDisplay();
-                renderInventoryVault();
-                alert(`🎉 Успешно! ${item.amount} ⭐ переведены из сейфа на основной баланс.`);
+                renderInventoryList();
+                alert(`🎉 Успешно! ${item.amount} ⭐ зачислены на основной баланс.`);
             } else {
                 haptic('heavy');
             }
         }
 
-        function renderInventoryVault() {
-            const listEl = document.getElementById('inventory-vault-list');
+        function renderInventoryList() {
+            const listEl = document.getElementById('inventory-list');
             if (!listEl) return;
             listEl.innerHTML = '';
 
-            if (inventoryVault.length === 0) {
+            if (inventoryList.length === 0) {
                 listEl.innerHTML = `
                     <div style="text-align: center; color: var(--text-sub); padding: 30px; background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px dashed var(--glass-border);">
-                        В сейфе пока пусто.
+                        В инвентаре пока пусто.
                     </div>`;
                 return;
             }
 
             // Сортировка: несобранные сверху, потом по времени
-            let sortedVault = [...inventoryVault].sort((a, b) => {
+            let sortedInv = [...inventoryList].sort((a, b) => {
                 if (a.claimed === b.claimed) return b.time - a.time;
                 return a.claimed ? 1 : -1;
             });
 
-            sortedVault.forEach((item) => {
+            sortedInv.forEach((item) => {
                 let elapsed = Date.now() - item.time;
-                let timeLeft = VAULT_LOCK_DURATION_MS - elapsed;
+                let timeLeft = INV_LOCK_DURATION_MS - elapsed;
                 let isReady = timeLeft <= 0;
 
                 let timerDisplay = "";
@@ -1446,6 +1455,7 @@
                     let h = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     let m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     let s = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    // Строгий и защищенный вывод времени (серверная валидация будет сверять timestamp)
                     timerDisplay = `${d}д ${h.toString().padStart(2,'0')}ч ${m.toString().padStart(2,'0')}м ${s.toString().padStart(2,'0')}с`;
                 }
 
@@ -1467,7 +1477,7 @@
                         <span class="vault-title">🎁 ${item.title}</span>
                         <span class="vault-amount">+${item.amount} ⭐</span>
                     </div>
-                    <button class="${btnClass}" ${btnDisabled} onclick="claimVaultItem('${item.id}');">
+                    <button class="${btnClass}" ${btnDisabled} onclick="claimInventoryItem('${item.id}');">
                         ${btnText}
                     </button>
                     ${!item.claimed && !isReady ? `
@@ -1479,12 +1489,13 @@
                 listEl.appendChild(div);
             });
         }
-        setInterval(renderInventoryVault, 1000);
+        setInterval(renderInventoryList, 1000);
 
         // --- 5. РЕФЕРАЛЬНАЯ СИСТЕМА (Анти-абуз + Настоящая история пополнений) ---
         let invitedFriendsCount = parseInt(localStorage.getItem('homastar_ref_count') || '0');
-        // История теперь изначально ПУСТАЯ. Заполняется только если приходят данные о реальных людях.
+        // История изначально ПУСТАЯ. Заполняется только если приходят данные о реальных людях.
         let referralHistory = JSON.parse(localStorage.getItem('homastar_ref_history') || '[]');
+        let claimedRefs = JSON.parse(localStorage.getItem('homastar_claimed_refs') || '[]');
 
         function updateReferralUI() {
             document.getElementById('ref-invited-count').innerText = `${invitedFriendsCount} челов`;
@@ -1552,8 +1563,8 @@
                     bonus: bonusAmount
                 });
                 localStorage.setItem('homastar_ref_history', JSON.stringify(referralHistory));
-                // Добавляем в сейф на 21 день
-                addVaultItem(bonusAmount, `5% от пополнения (${friendName})`);
+                // Добавляем в инвентарь на 21 день
+                addInventoryItem(bonusAmount, `5% от пополнения (${friendName})`);
                 renderReferralHistory();
             }
         }
@@ -1573,7 +1584,7 @@
             if (activeNavBtn) activeNavBtn.classList.add('active');
 
             if (screenId === 'screen-tickets') updateTicketUI();
-            if (screenId === 'screen-inventory') renderInventoryVault();
+            if (screenId === 'screen-inventory') renderInventoryList();
             if (screenId === 'screen-friends') updateReferralUI();
         }
 
@@ -1620,19 +1631,18 @@
         let currentSlideIndex = 0;
 
         function checkOnboarding() {
-            // Очищаем старые флаги без userId, чтобы бонус 100% сработал
-            const isSeen = localStorage.getItem('homastar_onboarding_seen_' + userId);
+            // Новый уникальный ключ v3, чтобы слайд-шоу ТОЧНО сработало заново при перезагрузке
+            const isSeen = localStorage.getItem('homastar_onboarding_seen_v3_' + userId);
             
             if (!isSeen) {
                 document.getElementById('modal-onboarding').style.display = 'flex';
                 currentSlideIndex = 0;
                 renderSlide();
             } else {
-                // Если слайдшоу уже видели, но бонус так и не начислился (страховка)
-                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_' + userId);
+                // Страховочный чек на бонус
+                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v3_' + userId);
                 if (!isBonusGiven) {
-                    addVaultItem(50, "Стартовый бонус");
-                    localStorage.setItem('homastar_start_bonus_given_' + userId, 'true');
+                    document.getElementById('modal-welcome-bonus').style.display = 'flex';
                 }
             }
         }
@@ -1655,7 +1665,7 @@
 
             const btn = document.getElementById('slide-btn');
             if (currentSlideIndex === onboardingSlides.length - 1) {
-                btn.innerText = "ЗАБРАТЬ 50 ЗВЁЗД В ИНВЕНТАРЬ!";
+                btn.innerText = "ДАЛЕЕ";
             } else {
                 btn.innerText = "ДАЛЕЕ";
             }
@@ -1669,19 +1679,27 @@
             } else {
                 // Конец онбординга
                 document.getElementById('modal-onboarding').style.display = 'none';
-                localStorage.setItem('homastar_onboarding_seen_' + userId, 'true');
+                localStorage.setItem('homastar_onboarding_seen_v3_' + userId, 'true');
 
-                // ЖЕЛЕЗОБЕТОННАЯ ВЫДАЧА БОНУСА
-                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_' + userId);
+                // Показываем экран получения бонуса 50 звезд
+                let isBonusGiven = localStorage.getItem('homastar_start_bonus_given_v3_' + userId);
                 if (!isBonusGiven) {
-                    addVaultItem(50, "Стартовый бонус");
-                    localStorage.setItem('homastar_start_bonus_given_' + userId, 'true');
+                    document.getElementById('modal-welcome-bonus').style.display = 'flex';
+                } else {
+                    openScreen('screen-hub');
                 }
-
-                // Перекидываем в инвентарь
-                openScreen('screen-inventory');
-                haptic('success');
             }
+        }
+
+        function claimWelcomeBonusModal() {
+            haptic('heavy');
+            // Выдаем 50 звезд в инвентарь
+            addInventoryItem(50, "Стартовый бонус");
+            localStorage.setItem('homastar_start_bonus_given_v3_' + userId, 'true');
+            
+            document.getElementById('modal-welcome-bonus').style.display = 'none';
+            openScreen('screen-inventory');
+            haptic('success');
         }
 
         // --- 8. ИГРА: РОЗЫГРЫШ (GIVEAWAY) ---
@@ -1724,7 +1742,7 @@
                 giveawaySecondsLeft = 36000; // Рестарт
 
                 let isUserWinner = false;
-                if (userHasTicket && Math.random() < 0.05) { // Шанс 5% для теста
+                if (userHasTicket && Math.random() < 0.05) { // Шанс 5%
                     isUserWinner = true;
                 }
 
@@ -2297,7 +2315,7 @@
             updateBalanceDisplay();
             updateReferralUI();
             updateTicketUI();
-            renderInventoryVault();
+            renderInventoryList();
             checkOnboarding();
             changeLanguage(currentLang);
 
