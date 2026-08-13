@@ -73,16 +73,16 @@
         .p-card-title-area p { font-size: 13px; color: var(--text-sub); font-weight: 600; padding-left: 30px; }
         .w-card-btn { padding: 10px 20px; border-radius: 14px; font-weight: 900; font-size: 12px; border: none; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-top: 4px; cursor: pointer; }
 
-        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)); border-top-color: var(--neon-cyan); box-shadow: 0 -15px 30px rgba(0,0,0,0.7), inset 0 3px 15px var(--neon-cyan-glow); }
-        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)); border-top-color: #8B9BB4; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
-        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)); border-top-color: #E2E8F0; box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
-        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)); border-top-color: var(--accent-gold); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
-        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)); border-top-color: var(--neon-purple); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
-        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)); border-top-color: var(--neon-pink); box-shadow: 0 -15px 30px rgba(0,0,0,0.7); }
+        .tier-free-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(0, 150, 255, 0.2)); border-top-color: var(--neon-cyan); }
+        .tier-common-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(80, 90, 110, 0.25)); border-top-color: #8B9BB4; }
+        .tier-silver-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(200, 210, 230, 0.2)); border-top-color: #E2E8F0; }
+        .tier-gold-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 200, 0, 0.15)); border-top-color: var(--accent-gold); }
+        .tier-diamond-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(168, 85, 247, 0.25)); border-top-color: var(--neon-purple); }
+        .tier-battle-dark { background: linear-gradient(135deg, rgba(12, 16, 28, 0.95), rgba(255, 46, 147, 0.2)); border-top-color: var(--neon-pink); }
 
         .btn-free { background: var(--neon-cyan); } .btn-common { background: #8B9BB4; color: #FFF; } .btn-silver { background: linear-gradient(135deg, #E2E8F0, #A0AEC0); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); } .btn-diamond { background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: #FFF; } .btn-battle { background: var(--neon-pink); color: #FFF; }
 
-        /* КОЛЕСО CANVAS И АНИМАЦИЯ */
+        /* КОЛЕСО CANVAS (ОБЫЧНЫЕ ИГРЫ) */
         .btn-back { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #FFF; font-size: 13px; padding: 8px 16px; border-radius: 14px; cursor: pointer; align-self: flex-start; margin-bottom: 10px; }
         .timer-banner { background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--accent-gold); padding: 10px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 800; margin-bottom: 10px; display: none; }
         .wheel-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: auto 0; padding: 10px 0; }
@@ -92,17 +92,59 @@
         .btn-spin { width: 100%; background: transparent; border: 2px solid var(--neon-cyan); padding: 16px; border-radius: 20px; color: var(--neon-cyan); font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; }
         .btn-spin.disabled { border-color: var(--text-sub); color: var(--text-sub); pointer-events: none; }
 
-        /* НОВАЯ АРЕНА (PVP) */
+        /* =========================================
+           НОВЫЙ ВИЗУАЛ АРЕНЫ (КАК НА ВИДЕО)
+        ========================================= */
         .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 16px; font-weight: 800; }
-        .battle-arena { width: 100%; aspect-ratio: 1/1; border-radius: 24px; position: relative; overflow: hidden; margin-bottom: 16px; border: 2px solid rgba(255,255,255,0.05); background: #0B0E17; box-shadow: inset 0 0 50px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; }
-        .battle-timer { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); width: 80px; height: 80px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 900; color: #FFF; z-index: 10; box-shadow: 0 0 20px var(--neon-cyan-glow); }
         
-        .b-players-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+        /* Квадратная доска с секторами */
+        .battle-arena-board { 
+            width: 100%; aspect-ratio: 1/1; border-radius: 24px; position: relative; overflow: hidden; margin-bottom: 16px; 
+            background: #1A2235; /* По умолчанию пустая арена */
+            transition: background 0.5s ease-out; /* Плавное закрашивание секторов */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid var(--glass-border);
+        }
+        
+        /* Аватарки прямо на поле в своих секторах */
+        .board-avatar {
+            position: absolute; width: 44px; height: 44px; border-radius: 50%; 
+            border: 2px solid #FFF; display: flex; justify-content: center; align-items: center; 
+            font-size: 16px; font-weight: bold; overflow: hidden;
+            transform: translate(-50%, -50%); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            transition: all 0.5s ease; z-index: 5;
+        }
+
+        /* Таймер по центру и крутящийся шарик (рулетка) */
+        .board-center-ui {
+            position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; 
+            transform: translate(-50%, -50%); z-index: 10;
+        }
+        .board-timer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(5px); border-radius: 50%; 
+            border: 2px solid var(--glass-border); display: flex; justify-content: center; align-items: center; 
+            font-size: 32px; font-weight: 900; color: #FFF; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        /* Кольцо с шариком, которое крутится при определении победителя */
+        .board-spinner-ring {
+            position: absolute; top: -15px; left: -15px; width: 120px; height: 120px; 
+            border-radius: 50%; border: 1px dashed rgba(255,255,255,0.3);
+            /* Будет вращаться через JS */
+        }
+        .board-spinner-ball {
+            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+            width: 16px; height: 16px; background: #FFF; border-radius: 50%;
+            box-shadow: 0 0 10px #FFF, 0 0 20px var(--neon-cyan); display: none; /* Покажем при старте рулетки */
+        }
+
+        /* Список игроков внизу */
+        .b-players-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
         .b-players-list::-webkit-scrollbar { width: 4px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 10px 14px; border-radius: 16px; border: 1px solid var(--glass-border); animation: fadeSlideIn 0.3s ease-out forwards; }
         .b-player-left { display: flex; align-items: center; gap: 12px; }
-        .b-player-ava { width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; overflow: hidden; border: 2px solid; }
+        .b-player-ava { width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; overflow: hidden; border: 2px solid; }
         .b-player-info h4 { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
         .b-player-info p { font-size: 11px; color: var(--text-sub); }
         .b-player-bet { font-size: 14px; font-weight: 900; color: var(--accent-gold); }
@@ -152,7 +194,6 @@
     <div class="floating-particles-container"><div class="particle p1">✨</div><div class="particle p2">✦</div><div class="particle p3">✨</div></div>
 
     <div class="app-container">
-        <!-- ШАПКА -->
         <header class="header">
             <div class="logo">HOMASTAR</div>
             <div class="balance-group">
@@ -162,10 +203,8 @@
             </div>
         </header>
 
-        <!-- ЛЕНТА -->
         <div class="live-bar-embedded"><div class="live-marquee-content" id="marquee-content"></div></div>
 
-        <!-- 1. ХАБ -->
         <div id="screen-hub" class="screen active">
             <h2 style="font-size: 18px; margin-bottom: 5px;">Разделы:</h2>
             <div class="cards-stack">
@@ -196,7 +235,6 @@
             </div>
         </div>
 
-        <!-- 2. КОЛЕСА СПИСОК -->
         <div id="screen-wheel-list" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <h2 style="font-size: 18px; margin-bottom: 5px;">Колёса:</h2>
@@ -216,7 +254,6 @@
             </div>
         </div>
 
-        <!-- 3. ИГРА КОЛЕСО -->
         <div id="screen-game-wheel" class="screen">
             <button class="btn-back" onclick="openScreen('screen-wheel-list')" id="btn-back-from-wheel">◄ Назад</button>
             <h2 id="wheel-title" style="text-align: center; font-size: 20px;">Колесо</h2>
@@ -228,22 +265,26 @@
             <button id="btn-spin-action" class="btn-spin">ИГРАТЬ</button>
         </div>
 
-        <!-- 4. ЖИВАЯ АРЕНА (PVP) -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             
             <div class="battle-header-info">
-                <span style="color: var(--text-sub); font-size:14px;">Банк:</span>
+                <span style="color: var(--text-sub); font-size:14px;">Общий Банк:</span>
                 <span id="arena-total-bank" style="color: var(--accent-gold); font-size: 18px;">⭐ 0</span>
             </div>
             
-            <div class="battle-arena" id="arena-visual">
-                <div class="battle-timer" id="arena-timer">30</div>
+            <div class="battle-arena-board" id="arena-board">
+                <div id="arena-avatars-container"></div>
+                
+                <div class="board-center-ui">
+                    <div class="board-timer" id="arena-timer">20</div>
+                    <div class="board-spinner-ring" id="arena-spinner">
+                        <div class="board-spinner-ball" id="arena-ball"></div>
+                    </div>
+                </div>
             </div>
             
-            <div class="b-players-list" id="arena-players-list">
-                <!-- Сюда JS будет подкидывать реалистичных ботов -->
-            </div>
+            <div class="b-players-list" id="arena-players-list"></div>
 
             <div class="b-bet-controls">
                 <button class="b-bet-btn" onclick="placeUserBet(50)">⭐ 50</button>
@@ -253,7 +294,6 @@
             <button class="b-action-btn" id="arena-action-btn" onclick="placeUserBet('max')">ПОСТАВИТЬ МАКС.</button>
         </div>
 
-        <!-- 5. БИЛЕТЫ -->
         <div id="screen-tickets" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="card-box" style="text-align: center; border-color: var(--neon-purple);">
@@ -268,7 +308,6 @@
             <button class="btn-spin" style="border-color: var(--neon-purple); color: var(--neon-purple);" onclick="buyTicket()">КУПИТЬ БИЛЕТ (20 ⭐)</button>
         </div>
 
-        <!-- 6. ЗАЛ СЛАВЫ -->
         <div id="screen-leaders" class="screen">
             <h2 style="font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 5px;">🏆 Зал Славы</h2>
             <div class="podium-container">
@@ -278,7 +317,6 @@
             </div>
         </div>
 
-        <!-- 7. ДРУЗЬЯ -->
         <div id="screen-friends" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 10px;">👥 Друзья</h2>
             <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 10px;">Получай <b style="color: var(--accent-gold);">+2 ⭐</b> за каждого друга и <b style="color: var(--neon-cyan);">5%</b> от его пополнений!</p>
@@ -288,7 +326,6 @@
             </div>
         </div>
 
-        <!-- 8. ИНВЕНТАРЬ И НАСТРОЙКИ -->
         <div id="screen-inventory" class="screen"><h2 style="font-size: 18px; margin-bottom: 10px;">🎒 Инвентарь</h2><div class="card-box" style="text-align: center; color: var(--text-sub);">Пока здесь пусто. Выигрывай призы на колесе!</div></div>
         <div id="screen-settings" class="screen">
             <h2 style="font-size: 18px; margin-bottom: 10px;">⚙️ Настройки</h2>
@@ -296,7 +333,6 @@
             <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size: 15px; font-weight: 700;">🔊 Звуки</div><div id="toggle-sfx" class="toggle-switch active" onclick="toggleSetting('sfx')"><div class="toggle-circle"></div></div></div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <nav class="bottom-nav">
             <button id="nav-screen-hub" class="nav-item active" onclick="openScreen('screen-hub')"><span>🎮</span><span class="nav-label">Игры</span></button>
             <button id="nav-screen-leaders" class="nav-item" onclick="openScreen('screen-leaders')"><span>🏆</span><span class="nav-label">Лидеры</span></button>
@@ -306,7 +342,6 @@
         </nav>
     </div>
 
-    <!-- МОДАЛКИ ПОПОЛНЕНИЯ / ВЫВОДА / ПОБЕДЫ -->
     <div id="modal-deposit" class="modal-overlay">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center;"><h3 style="color:#FFF;">💳 Пополнить</h3><button class="btn-close-modal" onclick="closeModal('modal-deposit')">✕</button></div>
@@ -325,13 +360,12 @@
     </div>
     <div id="modal-win" class="modal-overlay">
         <div class="modal-card" style="text-align: center; border-color: var(--accent-gold);">
-            <div style="font-size: 70px;">🌟</div><h2 style="font-size: 24px; font-weight: 900; color: #FFF;">ПОБЕДА!</h2>
+            <div style="font-size: 70px;">🌟</div><h2 id="win-modal-title" style="font-size: 24px; font-weight: 900; color: #FFF;">ПОБЕДА!</h2>
             <div id="win-modal-amount" style="font-size: 40px; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">+50 ⭐</div>
             <button class="btn-spin" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="closeModal('modal-win')">ЗАБРАТЬ</button>
         </div>
     </div>
 
-    <!-- СКРИПТЫ -->
     <script>
         let userBalance = parseFloat(localStorage.getItem('homastar_main_balance') || '100');
         let userTickets = parseInt(localStorage.getItem('homastar_tickets') || '0');
@@ -354,47 +388,41 @@
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function showWinPopup(amount) { document.getElementById('win-modal-amount').innerText = amount; openModal('modal-win'); }
+        function showWinPopup(amount, title="ПОБЕДА!") { 
+            document.getElementById('win-modal-title').innerText = title;
+            document.getElementById('win-modal-amount').innerText = amount; 
+            openModal('modal-win'); 
+        }
 
         // ==========================================
-        // НОВАЯ СИСТЕМА АРЕНЫ С ЖИВОЙ МАССОВКОЙ
+        // НОВАЯ СИСТЕМА АРЕНЫ: ДОЛИ, СЕКТОРА И РУЛЕТКА
         // ==========================================
         
-        // База данных реалистичных ников (разные форматы)
         const fakeBotNames = [
             'Max_99', 'Илья', 'Vityok', 'Artem', '@crypto_bull', '@solana_king', 'Ton_Hunter', '0x_Whale', 
-            '***', '@dark_soul', 'Ghost', 'user_8471', 'Denys', 'Alina', 'KriptoBrat', 'Dmitry', 
-            'Sanya', 'Oleg_Trader', 'Pavel', 'Anon', 'Alexey', 'Dasha_M', '@rich_dog', 'Eth_Lover'
+            '***', '@dark_soul', 'Ghost', 'user_8471', 'Denys', 'Alina', 'KriptoBrat', 'Dmitry'
         ];
+        // Цвета секторов на арене
+        const arenaColors = ['#00F3FF', '#FF2E93', '#A855F7', '#00FF88', '#FF6600'];
         
-        // Палитра неоновых рамок для аватарок
-        const arenaColors = ['#00F3FF', '#FF2E93', '#A855F7', '#FFD700', '#00FF88'];
-        
+        let arenaPlayers = [];
         let arenaTimer = null;
-        let arenaTimeLeft = 30;
+        let arenaTimeLeft = 20; // 20 секунд на ставки
         let arenaBank = 0;
-        let arenaBotInterval = null;
         let isArenaActive = false;
+        let botCount = 0; // Строгий лимит ботов
+        let currentSpinnerRotation = 0;
 
-        // Генерация одного реалистичного бота
         function generateBotPlayer() {
             const name = fakeBotNames[Math.floor(Math.random() * fakeBotNames.length)];
-            const bet = Math.floor(Math.random() * 180) + 20; // Ставка от 20 до 200
-            const color = arenaColors[Math.floor(Math.random() * arenaColors.length)];
+            const bet = Math.floor(Math.random() * 150) + 20; 
+            const color = arenaColors[botCount % arenaColors.length]; // Раздаем цвета по порядку
             
-            // 70% шанс на фото человека (pravatar.cc), 30% шанс на букву имени (как в телеге)
-            const isPhoto = Math.random() > 0.3;
-            let avatarHtml;
-            
-            if (isPhoto) {
-                const imgId = Math.floor(Math.random() * 70) + 1; // У pravatar есть id от 1 до 70
-                avatarHtml = `<img src="https://i.pravatar.cc/100?img=${imgId}" style="width:100%; height:100%; object-fit:cover;">`;
-            } else {
-                const initial = name.replace(/[^a-zA-Zа-яА-Я]/g, '').charAt(0).toUpperCase() || 'U';
-                avatarHtml = `<div style="width:100%; height:100%; background:${color}33; display:flex; justify-content:center; align-items:center;">${initial}</div>`;
-            }
+            // Аватарка с лицами (Pravatar API)
+            const imgId = Math.floor(Math.random() * 70) + 1;
+            const avatarHtml = `<img src="https://i.pravatar.cc/100?img=${imgId}" style="width:100%; height:100%; object-fit:cover;">`;
 
-            return { name, bet, color, avatarHtml };
+            return { name, bet, color, avatarHtml, isUser: false };
         }
 
         function openArenaScreen() {
@@ -404,25 +432,29 @@
 
         function startArenaRound() {
             isArenaActive = true;
-            arenaTimeLeft = 30;
+            arenaTimeLeft = 20;
             arenaBank = 0;
+            arenaPlayers = [];
+            botCount = 0;
+            
             document.getElementById('arena-players-list').innerHTML = '';
             document.getElementById('arena-total-bank').innerText = '⭐ 0';
             document.getElementById('arena-action-btn').classList.remove('disabled');
             document.getElementById('arena-action-btn').innerText = 'ПОСТАВИТЬ МАКС.';
+            document.getElementById('arena-ball').style.display = 'none'; // Прячем шарик
+            document.getElementById('arena-spinner').style.transition = 'none'; // Убираем плавность для сброса
             
-            // Изначально закидываем 1-2 ботов для затравки
+            updateArenaBoard(); // Сброс визуала (пустая черная доска)
+
+            // Закидываем 1 бота на старте
             addBotToArena();
-            if(Math.random() > 0.5) setTimeout(addBotToArena, 800);
 
             arenaTimer = setInterval(() => {
                 arenaTimeLeft--;
                 document.getElementById('arena-timer').innerText = arenaTimeLeft;
                 
-                // Рандомный шанс влёта бота каждую секунду (чтобы создать экшен)
-                // Чем меньше времени, тем активнее могут ставить
-                let botChance = arenaTimeLeft < 10 ? 0.4 : 0.2; 
-                if (Math.random() < botChance && arenaTimeLeft > 2) {
+                // Рандомный шанс влёта бота (МАКСИМУМ 3-4 БОТА за раунд!)
+                if (botCount < 3 && arenaTimeLeft > 3 && Math.random() > 0.6) {
                     addBotToArena();
                 }
 
@@ -434,74 +466,175 @@
         }
 
         function addBotToArena() {
+            botCount++;
             const bot = generateBotPlayer();
-            addPlayerToUI(bot.name, bot.bet, bot.color, bot.avatarHtml);
+            arenaPlayers.push(bot);
             arenaBank += bot.bet;
-            document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
-        }
-
-        function addPlayerToUI(name, bet, color, avatarHtml) {
-            const list = document.getElementById('arena-players-list');
-            const row = document.createElement('div');
-            row.className = 'b-player-row';
-            row.innerHTML = `
-                <div class="b-player-left">
-                    <div class="b-player-ava" style="border-color: ${color}; color: ${color}; box-shadow: 0 0 10px ${color}80;">
-                        ${avatarHtml}
-                    </div>
-                    <div class="b-player-info">
-                        <h4>${name}</h4>
-                        <p>Влетел в банк</p>
-                    </div>
-                </div>
-                <div class="b-player-bet">⭐ ${bet}</div>
-            `;
-            // Добавляем наверх списка
-            list.prepend(row);
+            
+            updateArenaBoard(); // Динамическая перерисовка доски!
+            addPlayerToUI(bot);
         }
 
         function placeUserBet(amount) {
             if(!isArenaActive || arenaTimeLeft <= 0) return;
             
+            // Защита от спама ставками
+            if (arenaPlayers.find(p => p.isUser)) return alert('Ты уже в игре!');
+
             let betAmount = amount === 'max' ? Math.floor(userBalance) : amount;
-            if (userBalance < betAmount || betAmount <= 0) {
-                return openModal('modal-deposit');
-            }
+            if (userBalance < betAmount || betAmount <= 0) return openModal('modal-deposit');
 
             userBalance -= betAmount;
             updateBalanceDisplay();
             
-            // Игрок всегда "золотой"
-            const initial = 'Д'; // Например Деня, или можно подтягивать имя из Telegram
-            const avatarHtml = `<div style="width:100%; height:100%; background:var(--accent-gold-glow); display:flex; justify-content:center; align-items:center;">${initial}</div>`;
+            // Игрок всегда Золотой
+            const userPlayer = {
+                name: 'Ты (Игрок)', bet: betAmount, color: '#FFD700', isUser: true,
+                avatarHtml: `<div style="width:100%; height:100%; background:var(--accent-gold-glow); color:#000; display:flex; justify-content:center; align-items:center;">Д</div>`
+            };
             
-            addPlayerToUI('Ты (Игрок)', betAmount, 'var(--accent-gold)', avatarHtml);
+            arenaPlayers.push(userPlayer);
             arenaBank += betAmount;
-            document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
+            
+            updateArenaBoard(); // Доля игрока сразу сжирает кусок поля!
+            addPlayerToUI(userPlayer);
             
             document.getElementById('arena-action-btn').classList.add('disabled');
             document.getElementById('arena-action-btn').innerText = 'СТАВКА ПРИНЯТА';
         }
 
+        function addPlayerToUI(p) {
+            const list = document.getElementById('arena-players-list');
+            const row = document.createElement('div');
+            row.className = 'b-player-row';
+            row.innerHTML = `
+                <div class="b-player-left">
+                    <div class="b-player-ava" style="border-color: ${p.color}; box-shadow: 0 0 10px ${p.color}80;">
+                        ${p.avatarHtml}
+                    </div>
+                    <div class="b-player-info"><h4>${p.name}</h4><p>Шанс: ${((p.bet / arenaBank)*100).toFixed(1)}%</p></div>
+                </div>
+                <div class="b-player-bet">⭐ ${p.bet}</div>
+            `;
+            list.prepend(row);
+        }
+
+        // САМОЕ ГЛАВНОЕ: Динамическая отрисовка секторов и аватарок
+        function updateArenaBoard() {
+            const board = document.getElementById('arena-board');
+            const avatarsContainer = document.getElementById('arena-avatars-container');
+            avatarsContainer.innerHTML = ''; // Чистим старые аватарки с поля
+
+            if (arenaPlayers.length === 0) {
+                board.style.background = '#1A2235';
+                return;
+            }
+
+            let gradientParams = [];
+            let currentAngle = 0;
+
+            arenaPlayers.forEach(p => {
+                // Считаем угол в градусах (доля от 360)
+                let sliceAngle = (p.bet / arenaBank) * 360;
+                let endAngle = currentAngle + sliceAngle;
+                
+                gradientParams.push(`${p.color} ${currentAngle}deg ${endAngle}deg`);
+
+                // Математика для размещения аватарки РОВНО В ЦЕНТРЕ своего сектора
+                let midAngleRad = (currentAngle + sliceAngle / 2) * (Math.PI / 180);
+                let radiusOffset = 32; // Насколько далеко от центра (в процентах)
+                
+                // CSS conic-gradient начинает 0 градусов сверху (12 часов), поэтому синус для X, минус косинус для Y
+                let x = 50 + radiusOffset * Math.sin(midAngleRad);
+                let y = 50 - radiusOffset * Math.cos(midAngleRad);
+
+                let ava = document.createElement('div');
+                ava.className = 'board-avatar';
+                ava.style.left = `${x}%`;
+                ava.style.top = `${y}%`;
+                ava.style.borderColor = p.color;
+                ava.innerHTML = p.avatarHtml;
+                avatarsContainer.appendChild(ava);
+
+                // Сохраняем углы для анимации рулетки
+                p.startAngle = currentAngle;
+                p.endAngle = endAngle;
+
+                currentAngle = endAngle;
+            });
+
+            // Применяем круговой градиент на квадрат
+            board.style.background = `conic-gradient(${gradientParams.join(', ')})`;
+            
+            // Обновляем шансы в списке игроков
+            document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
+            const listItems = document.getElementById('arena-players-list').children;
+            // Обновляем текст процентов (проходим в обратном порядке т.к. prepend)
+            for(let i=0; i<arenaPlayers.length; i++) {
+                let p = arenaPlayers[arenaPlayers.length - 1 - i];
+                if(listItems[i]) {
+                    listItems[i].querySelector('p').innerText = `Шанс: ${((p.bet / arenaBank)*100).toFixed(1)}%`;
+                }
+            }
+        }
+
+        // ФИНАЛ: КРУТИМ ШАРИК И ВЫБИРАЕМ ПОБЕДИТЕЛЯ
         function endArenaRound() {
             isArenaActive = false;
             document.getElementById('arena-timer').innerText = '00';
             document.getElementById('arena-action-btn').classList.add('disabled');
-            document.getElementById('arena-action-btn').innerText = 'РАУНД ЗАВЕРШЁН';
+            document.getElementById('arena-action-btn').innerText = 'ИЩЕМ ПОБЕДИТЕЛЯ...';
             
-            // Здесь в будущем будет анимация бегающего шарика
-            // Для теста через 3 секунды запускаем новый раунд
+            // Показываем шарик
+            const ball = document.getElementById('arena-ball');
+            ball.style.display = 'block';
+
+            // Выбираем победителя (ВЕСОВОЙ РАНДОМ по размеру ставки)
+            let rand = Math.random() * arenaBank;
+            let winner;
+            for(let p of arenaPlayers) {
+                if(rand < p.bet) { winner = p; break; }
+                rand -= p.bet;
+            }
+            if(!winner) winner = arenaPlayers[arenaPlayers.length-1]; // Подстраховка
+
+            // Вычисляем угол, чтобы шарик остановился ровно на победителе
+            let winMidAngle = winner.startAngle + (winner.endAngle - winner.startAngle) / 2;
+            
+            // Крутим 5 полных оборотов + добавляем нужный угол. 
+            // Так как шарик начинает сверху (0 град), нам нужно крутить до winMidAngle.
+            currentSpinnerRotation += (360 * 5) + winMidAngle - (currentSpinnerRotation % 360);
+
+            const spinner = document.getElementById('arena-spinner');
+            spinner.style.transition = 'transform 5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            spinner.style.transform = `rotate(${currentSpinnerRotation}deg)`;
+
+            // Ждем 5 секунд пока крутится шарик
             setTimeout(() => {
-                alert('Раунд завершен! Победитель определен (демо).');
-                startArenaRound();
-            }, 3000);
+                // Комиссия проекта (Rake) 15%
+                const commission = Math.floor(arenaBank * 0.15);
+                const winAmount = arenaBank - commission;
+
+                if (winner.isUser) {
+                    userBalance += winAmount;
+                    updateBalanceDisplay();
+                    showWinPopup(`+${winAmount} ⭐`, "ТВОЙ БАНК!");
+                } else {
+                    showWinPopup(`Банк: ${winAmount} ⭐`, `Победил ${winner.name}`);
+                }
+
+                // Перезапуск через 4 секунды после показа победителя
+                setTimeout(() => {
+                    closeModal('modal-win');
+                    startArenaRound();
+                }, 4000);
+
+            }, 5500);
         }
 
         // ==========================================
-        // ОСТАЛЬНОЙ КОД (Колесо, Лента и т.д.)
+        // ОСТАЛЬНОЙ КОД (Колесо RNG, Лента и т.д.)
         // ==========================================
-        
-        // ... (Здесь остаётся весь старый код для Колеса RNG, который я давал в прошлом сообщении)
         const WHEEL_CONFIGS = {
             free: { title: '🎁 Бесплатное Колесо', price: 0, prizes: [100, 50, 10, 5, 1, 100, 50, 10, 5, 1], icons: ['💎', '👑', '💰', '✨', '⭐', '💎', '👑', '💰', '✨', '⭐'] },
             common: { title: '⚡ Обычное Колесо', price: 20, prizes: [500, 100, 50, 30, 25, 20, 15, 10, 5, 5], icons: ['💎', '✨', '💰', '💰', '⭐', '⭐', '⭐', '⭐', '🔹', '🔹'] },
@@ -518,7 +651,6 @@
             diamond:[0.1, 0.9, 2, 5, 7, 10, 20, 25, 15, 15]
         };
 
-        let isSpinning = false;
         let currentWheelRotation = 0;
 
         function renderWheelDisc(type) {
@@ -575,7 +707,7 @@
             
             setTimeout(() => {
                 isSpinning = false; userBalance += prizeValue; updateBalanceDisplay();
-                showWinPopup(`+${prizeValue} ⭐`);
+                showWinPopup(`+${prizeValue} ⭐`, "КОЛЕСО!");
                 if (type === 'free') { checkFreeSpinState(); } else { document.getElementById('btn-spin-action').classList.remove('disabled'); }
             }, 10000);
         }
