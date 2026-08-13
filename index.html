@@ -85,7 +85,6 @@
 
         .battle-header-info { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 8px 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 6px; font-weight: 800; }
         
-        /* Удлиненная прямоугольная арена */
         .arena-container-center { display: flex; justify-content: center; width: 100%; margin-bottom: 6px; }
         .arena-wrapper {
             position: relative; width: 100%; max-width: 340px; aspect-ratio: 4/3;
@@ -103,6 +102,7 @@
             transform: translate(-50%, -50%); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             transition: all 0.5s ease;
         }
+        .board-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .board-timer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -119,13 +119,13 @@
         }
         @keyframes fadeInResult { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* Список игроков без дерганий */
         .b-players-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; height: 85px; overflow-y: auto; padding-right: 4px; }
         .b-players-list::-webkit-scrollbar { width: 3px; }
         .b-players-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         .b-player-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 5px 10px; border-radius: 10px; border: 1px solid var(--glass-border); flex-shrink: 0; }
         .b-player-left { display: flex; align-items: center; gap: 8px; }
         .b-player-ava { width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; overflow: hidden; border: 2px solid; background: #111; }
+        .b-player-ava img { width: 100%; height: 100%; object-fit: cover; }
         .b-player-info h4 { font-size: 11px; font-weight: 800; margin-bottom: 0px; display:flex; align-items:center; gap:4px; }
         .b-player-bet { font-size: 12px; font-weight: 900; color: var(--accent-gold); }
 
@@ -139,10 +139,11 @@
             font-weight: 900; text-align: center;
         }
         .custom-bet-submit { 
-            width: 120px; background: var(--neon-pink); color: #FFF; font-weight: 900; 
+            width: 130px; background: var(--neon-pink); color: #FFF; font-weight: 900; 
             border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 0 15px var(--neon-pink-glow); 
             font-size: 13px;
         }
+        .custom-bet-submit.cancel { background: #FF4444; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
         .custom-bet-submit.disabled { background: var(--glass-bg); color: var(--text-sub); box-shadow: none; pointer-events: none; border: 1px solid var(--glass-border); }
 
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; margin-top: 30px; }
@@ -257,7 +258,7 @@
             <button id="btn-spin-action" class="btn-spin" onclick="spinWheel()">ИГРАТЬ</button>
         </div>
 
-        <!-- 4. АРЕНА (Прямоугольная) -->
+        <!-- 4. АРЕНА (Прямоугольная с отменой ставки) -->
         <div id="screen-battle" class="screen">
             <button class="btn-back" onclick="openScreen('screen-hub')">◄ Назад</button>
             <div class="battle-header-info">
@@ -276,7 +277,7 @@
             
             <div class="b-players-list" id="arena-players-list"></div>
 
-            <div class="b-bet-controls">
+            <div class="b-bet-controls" id="b-bet-controls-box">
                 <button class="b-quick-btn" onclick="setQuickBet(50)">50 ⭐</button>
                 <button class="b-quick-btn" onclick="setQuickBet(100)">100 ⭐</button>
                 <button class="b-quick-btn" onclick="setQuickBet(500)">500 ⭐</button>
@@ -285,7 +286,7 @@
 
             <div class="custom-bet-row">
                 <input type="number" id="arena-bet-input" class="custom-bet-input" placeholder="Сумма ⭐">
-                <button class="custom-bet-submit" id="arena-action-btn" onclick="placeUserBet()">ПОСТАВИТЬ</button>
+                <button class="custom-bet-submit" id="arena-action-btn" onclick="handleBetAction()">ПОСТАВИТЬ</button>
             </div>
         </div>
 
@@ -432,7 +433,7 @@
         }
 
         // ==========================================
-        // СОКЕТЫ И ПЛАВНАЯ 10-СЕКУНДНАЯ АНИМАЦИЯ ШАРИКА
+        // СОКЕТЫ И АРЕНА (ОПТИМИЗИРОВАНО)
         // ==========================================
         const socket = io('https://homastar-server.onrender.com', {
             transports: ['websocket', 'polling']
@@ -450,6 +451,8 @@
         let arenaBank = 0;
         let arenaTimeLeft = 20;
         let arenaState = 'WAITING';
+        let hasUserBet = false;
+        let userBetAmount = 0;
 
         let animFrameId = null;
         let ballX = CENTER_X;
@@ -474,12 +477,30 @@
             document.getElementById('arena-timer').innerText = arenaTimeLeft;
             document.getElementById('arena-total-bank').innerText = `⭐ ${arenaBank}`;
             
+            // Проверяем, есть ли ставка текущего юзера
+            let myBet = arenaPlayers.find(p => p.id === userId);
+            const actionBtn = document.getElementById('arena-action-btn');
+            const betInput = document.getElementById('arena-bet-input');
+
+            if (myBet) {
+                hasUserBet = true;
+                actionBtn.innerText = 'ОТМЕНИТЬ СТАВКУ';
+                actionBtn.classList.add('cancel');
+                actionBtn.classList.remove('disabled');
+                betInput.disabled = true;
+                betInput.value = myBet.bet;
+            } else {
+                hasUserBet = false;
+                actionBtn.innerText = 'ПОСТАВИТЬ';
+                actionBtn.classList.remove('cancel', 'disabled');
+                betInput.disabled = false;
+                betInput.value = '';
+            }
+
             if (state.status === "WAITING") {
                 arenaState = "WAITING";
                 document.getElementById('arena-timer').style.display = 'flex';
                 document.getElementById('arena-overlay').style.display = 'none';
-                document.getElementById('arena-action-btn').classList.remove('disabled');
-                document.getElementById('arena-action-btn').innerText = 'ПОСТАВИТЬ';
                 recalculateSectors();
             }
         });
@@ -491,23 +512,37 @@
             animateBallToServerWinner(winner, state.bank);
         });
 
-        function placeUserBet() {
-            if(arenaState !== 'WAITING') return;
-            const inputVal = parseFloat(document.getElementById('arena-bet-input').value);
-            if (!inputVal || inputVal <= 0) return alert('Введите сумму!');
-            if (userBalance < inputVal) return alert('Недостаточно средств!');
+        function handleBetAction() {
+            if (arenaState !== 'WAITING') return;
 
-            userBalance -= inputVal;
-            updateBalanceDisplay();
+            const actionBtn = document.getElementById('arena-action-btn');
             
-            socket.emit('place_bet', {
-                id: userId,
-                name: "Деня",
-                amount: inputVal
-            });
+            if (hasUserBet) {
+                // Отмена ставки
+                socket.emit('cancel_bet', { id: userId });
+                userBalance += userBetAmount;
+                updateBalanceDisplay();
+                hasUserBet = false;
+                userBetAmount = 0;
+            } else {
+                // Поставить ставку
+                const inputVal = parseFloat(document.getElementById('arena-bet-input').value);
+                if (!inputVal || inputVal <= 0) return alert('Введите сумму!');
+                if (userBalance < inputVal) return alert('Недостаточно средств!');
 
-            document.getElementById('arena-action-btn').classList.add('disabled');
-            document.getElementById('arena-action-btn').innerText = 'ПРИНЯТО';
+                userBalance -= inputVal;
+                userBetAmount = inputVal;
+                updateBalanceDisplay();
+                
+                socket.emit('place_bet', {
+                    id: userId,
+                    name: "Деня",
+                    amount: inputVal
+                });
+
+                actionBtn.classList.add('disabled');
+                actionBtn.innerText = 'СТАВКА ПРИНЯТА';
+            }
         }
 
         function recalculateSectors() {
@@ -534,7 +569,7 @@
                 ava.style.left = `${x}%`; 
                 ava.style.top = `${y}%`; 
                 ava.style.borderColor = p.color;
-                ava.innerHTML = p.isUser ? 'Д' : p.name.charAt(0);
+                ava.innerHTML = `<img src="${p.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces'}" alt="ava">`;
                 avatarsContainer.appendChild(ava);
 
                 currentAngle += sliceAngle;
@@ -543,7 +578,9 @@
                 row.className = 'b-player-row';
                 row.innerHTML = `
                     <div class="b-player-left">
-                        <div class="b-player-ava" style="border-color: ${p.color};">${p.isUser ? 'Д' : p.name.charAt(0)}</div>
+                        <div class="b-player-ava" style="border-color: ${p.color};">
+                            <img src="${p.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces'}" alt="ava">
+                        </div>
                         <div class="b-player-info">
                             <h4>${p.name} <span style="color:var(--neon-cyan);">${((p.bet / arenaBank)*100).toFixed(1)}%</span></h4>
                         </div>
@@ -589,13 +626,13 @@
             }
         }
 
-        // Плавная 10-секундная анимация шарика
+        // Ровно 10 секунд плавного полета шарика без исчезновений
         function animateBallToServerWinner(winner, bankAmount) {
             ballX = CENTER_X; ballY = CENTER_Y;
-            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
-            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 3);
+            ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 3);
+            ballSpeedY = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 3);
             let startTime = null;
-            let flightDuration = 10000; // Ровно 10 секунд полета
+            let flightDuration = 10000; // 10 секунд
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -607,7 +644,6 @@
                     if (ballX <= ballRadius || ballX >= CANVAS_WIDTH - ballRadius) ballSpeedX *= -1;
                     if (ballY <= ballRadius || ballY >= CANVAS_HEIGHT - ballRadius) ballSpeedY *= -1;
                 } else {
-                    // Последние секунды плавно примагничиваем к победителю
                     let targetX = CENTER_X + Math.cos(winner.midRad) * 140;
                     let targetY = CENTER_Y + Math.sin(winner.midRad) * 100;
                     
@@ -617,7 +653,7 @@
                     if (Math.abs(targetX - ballX) < 1 && Math.abs(targetY - ballY) < 1) {
                         cancelAnimationFrame(animFrameId);
                         drawCanvasFrame();
-                        setTimeout(() => showArenaResult(winner, bankAmount), 500);
+                        setTimeout(() => showArenaResult(winner, bankAmount), 400);
                         return;
                     }
                 }
@@ -633,12 +669,11 @@
             const overlay = document.getElementById('arena-overlay');
             overlay.style.display = 'flex';
             
-            // Автоматическое зачисление баланса без кликов
-            userBalance += bankAmount; 
-            updateBalanceDisplay();
-
+            // Автоматическое зачисление баланса победителю
             if (winner.id === userId) {
-                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">+${bankAmount} ⭐ зачислено на баланс</div>`;
+                userBalance += bankAmount; 
+                updateBalanceDisplay();
+                overlay.innerHTML = `<h3 style="color:var(--accent-gold); font-size:22px; text-shadow:0 0 15px var(--accent-gold-glow);">ПОБЕДИЛ ТЫ!</h3><div style="font-size:18px; font-weight:900; color:#FFF; margin-top:6px;">+${bankAmount} ⭐ автоматически зачислено!</div>`;
             } else {
                 overlay.innerHTML = `<h3 style="color:#FFF; font-size:16px;">ПОБЕДИТЕЛЬ РАУНДА:</h3><div style="font-size:20px; color:var(--neon-cyan); font-weight:900; margin:6px 0;">${winner.name}</div><div style="font-size:14px; color:var(--accent-gold); font-weight:800;">Забрал ${bankAmount} ⭐</div>`;
             }
