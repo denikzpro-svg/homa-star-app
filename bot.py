@@ -8,8 +8,6 @@ from datetime import datetime, timedelta, timezone
 
 from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
     CallbackQuery,
@@ -40,9 +38,9 @@ client = AsyncIOMotorClient(MONGO_URI)
 db = client["star_arena_bot"]
 users_col = db["users"]
 battles_col = db["battles"]
+queue_col = db["queue"]
 
 MSK_TZ = timezone(timedelta(hours=3))
-search_queue = []  # RAM-очередь матчмейкинга
 
 async def setup_db_indexes():
     await users_col.create_index("user_id", unique=True)
@@ -163,7 +161,7 @@ async def back_to_main(callback: CallbackQuery):
     text = f"🔥 **ГЛАВНОЕ МЕНЮ**\nФракция: **{user['faction']}**\nБаланс: {user['balance']} ⭐"
     await callback.message.edit_text(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
-# ================= МАТЧМЕЙКИНГ БЛИЦ-ТУРНИРА =================
+# ================= МАТЧМЕЙКИНГ БЛИЦ-ТУРНИРА (ЧЕРЕЗ БД) =================
 async def create_match(bot: Bot, player_a: dict, player_b: dict):
     match_id = uuid.uuid4().hex[:8]
     
@@ -190,12 +188,11 @@ async def create_match(bot: Bot, player_a: dict, player_b: dict):
 
 @router.callback_query(F.data == "start_blitz")
 async def join_blitz(callback: CallbackQuery, bot: Bot):
-    # Гарантированный моментальный ответ клиенту, чтобы кнопка не «висела»
     await callback.answer()
-    
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name
     
+    # 1. Проверяем, не сражается ли уже игрок
     active_match = await battles_col.find_one({
         "$or": [{"player_a.id": user_id}, {"player_b.id": user_id}], 
         "status": "active"
@@ -203,24 +200,27 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
     if active_match:
         return await callback.answer("❌ Ты уже участвуешь в активном бою!", show_alert=True)
     
-    # Очищаем очередь от дубликатов на всякий случай
-    global search_queue
-    search_queue = [u for u in search_queue if u["id"] != user_id]
-
-    if search_queue:
-        opponent = search_queue.pop(0)
+    # 2. Удаляем старые следы игрока из очереди базы
+    await queue_col.delete_many({"id": user_id})
+    
+    # 3. Ищем соперника в базе данных
+    opponent = await queue_col.find_one()
+    
+    if opponent and opponent["id"] != user_id:
+        # Забираем соперника из очереди
+        await queue_col.delete_one({"_id": opponent["_id"]})
         await callback.message.edit_text("🔥 **Соперник найден!** Битва создается...")
-        await create_match(bot, opponent, {"id": user_id, "name": user_name})
+        await create_match(bot, {"id": opponent["id"], "name": opponent["name"]}, {"id": user_id, "name": user_name})
     else:
-        search_queue.append({"id": user_id, "name": user_name})
+        # Если никого нет — ставим текущего игрока в очередь БД
+        await queue_col.insert_one({"id": user_id, "name": user_name})
         kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="❌ Отменить поиск", callback_data="cancel_search")]])
-        await callback.message.edit_text("⏳ **Ищем соперника для Блиц-турнира...**", reply_markup=kb, parse_mode="Markdown")
+        await callback.message.edit_text("⏳ **Ищем соперника для Блиц-турнира...**\nОжидаем второго игрока в базе данных.", reply_markup=kb, parse_mode="Markdown")
 
 @router.callback_query(F.data == "cancel_search")
 async def cancel_search(callback: CallbackQuery):
     await callback.answer()
-    global search_queue
-    search_queue = [u for u in search_queue if u["id"] != callback.from_user.id]
+    await queue_col.delete_many({"id": callback.from_user.id})
     await callback.message.edit_text("❌ Поиск отменен.", reply_markup=main_menu_kb())
 
 # ================= ПРОФИЛЬ И ТОП =================
@@ -290,7 +290,7 @@ async def main():
 
     asyncio.create_task(start_web_server())
     await bot.delete_webhook(drop_pending_updates=True)
-    logger.info("Бот успешно запущен и готов к работе без лагов!")
+    logger.info("Бот успешно запущен на Render и готов к работе!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
