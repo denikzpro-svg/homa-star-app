@@ -1,12 +1,11 @@
 import asyncio
-import json
 import logging
 import os
 import random
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from aiogram import Bot, Dispatcher, F, Router, types
+from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
@@ -100,7 +99,9 @@ async def cmd_start(message: Message, bot: Bot):
     user = await get_or_create_user(user_id, message.from_user.username, message.from_user.first_name)
     is_subbed = await check_subscription(bot, user_id)
 
-    # Логика голосования по реф-ссылке
+    faction = user.get("faction", "🔴 ОГОНЬ")
+    balance = user.get("balance", 0)
+
     if len(args) > 1 and args[1].startswith("vote_"):
         if not is_subbed:
             await message.answer(
@@ -144,7 +145,7 @@ async def cmd_start(message: Message, bot: Bot):
         await message.answer("👋 Привет! Подпишись на канал для доступа к Арене:", reply_markup=sub_kb())
         return
 
-    text = f"🔥 **ГЛАВНОЕ МЕНЮ**\nФракция: **{user['faction']}**\nБаланс: {user['balance']} ⭐"
+    text = f"🔥 **ГЛАВНОЕ МЕНЮ**\nФракция: **{faction}**\nБаланс: {balance} ⭐"
     await message.answer(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 @router.callback_query(F.data == "check_sub")
@@ -158,7 +159,10 @@ async def process_check_sub(callback: CallbackQuery, bot: Bot):
 async def back_to_main(callback: CallbackQuery):
     await callback.answer()
     user = await users_col.find_one({"user_id": callback.from_user.id})
-    text = f"🔥 **ГЛАВНОЕ МЕНЮ**\nФракция: **{user['faction']}**\nБаланс: {user['balance']} ⭐"
+    faction = user.get("faction", "🔴 ОГОНЬ") if user else "🔴 ОГОНЬ"
+    balance = user.get("balance", 0) if user else 0
+    
+    text = f"🔥 **ГЛАВНОЕ МЕНЮ**\nФракция: **{faction}**\nБаланс: {balance} ⭐"
     await callback.message.edit_text(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 # ================= МАТЧМЕЙКИНГ БЛИЦ-ТУРНИРА (ЧЕРЕЗ БД) =================
@@ -192,7 +196,6 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name
     
-    # 1. Проверяем, не сражается ли уже игрок
     active_match = await battles_col.find_one({
         "$or": [{"player_a.id": user_id}, {"player_b.id": user_id}], 
         "status": "active"
@@ -200,19 +203,14 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
     if active_match:
         return await callback.answer("❌ Ты уже участвуешь в активном бою!", show_alert=True)
     
-    # 2. Удаляем старые следы игрока из очереди базы
     await queue_col.delete_many({"id": user_id})
-    
-    # 3. Ищем соперника в базе данных
     opponent = await queue_col.find_one()
     
     if opponent and opponent["id"] != user_id:
-        # Забираем соперника из очереди
         await queue_col.delete_one({"_id": opponent["_id"]})
         await callback.message.edit_text("🔥 **Соперник найден!** Битва создается...")
         await create_match(bot, {"id": opponent["id"], "name": opponent["name"]}, {"id": user_id, "name": user_name})
     else:
-        # Если никого нет — ставим текущего игрока в очередь БД
         await queue_col.insert_one({"id": user_id, "name": user_name})
         kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="❌ Отменить поиск", callback_data="cancel_search")]])
         await callback.message.edit_text("⏳ **Ищем соперника для Блиц-турнира...**\nОжидаем второго игрока в базе данных.", reply_markup=kb, parse_mode="Markdown")
@@ -228,10 +226,15 @@ async def cancel_search(callback: CallbackQuery):
 async def show_profile(callback: CallbackQuery):
     await callback.answer()
     user = await users_col.find_one({"user_id": callback.from_user.id})
+    faction = user.get("faction", "🔴 ОГОНЬ") if user else "🔴 ОГОНЬ"
+    balance = user.get("balance", 0) if user else 0
+    wins = user.get("wins", 0) if user else 0
+    losses = user.get("losses", 0) if user else 0
+
     text = (f"👤 **ТВОЙ ПРОФИЛЬ**\n\n"
-            f"Фракция: {user['faction']}\n"
-            f"Баланс: {user['balance']} ⭐\n"
-            f"Побед: {user['wins']} | Поражений: {user['losses']}")
+            f"Фракция: {faction}\n"
+            f"Баланс: {balance} ⭐\n"
+            f"Побед: {wins} | Поражений: {losses}")
     kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]])
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
 
@@ -241,7 +244,10 @@ async def show_leaderboard(callback: CallbackQuery):
     top_users = await users_col.find().sort("wins", -1).limit(10).to_list(10)
     text = "🏆 **ТОП-10 БОЙЦОВ**\n\n"
     for i, u in enumerate(top_users):
-        text += f"{i+1}. {u['first_name']} — {u['wins']} побед ({u['faction']})\n"
+        name = u.get("first_name", "Player")
+        wins = u.get("wins", 0)
+        faction = u.get("faction", "🔴 ОГОНЬ")
+        text += f"{i+1}. {name} — {wins} побед ({faction})\n"
     kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]])
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
 
