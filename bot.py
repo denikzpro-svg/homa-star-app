@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone, timedelta
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
@@ -22,13 +22,15 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 # ================= CORE CONFIG =================
 BOT_TOKEN = "8978125889:AAH4WRBVCTUFykQCbxpzucuqp8ySXuKf4G4"
 MONGO_URI = "mongodb+srv://denikzpro_db_user:kUTYTo4uyKTgC8uE@cluster0.oome800.mongodb.net/?appName=Cluster0"
-CHANNEL_ID = "@hamster_arenas"  # Публичный канал для турнирных постов
+CHANNEL_ID = "@hamster_arenas"
 WEB_APP_URL = "https://homa-star-app.vercel.app"
 PORT = int(os.environ.get("PORT", 8080))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 router = Router()
+
+MSK_TZ = timezone(timedelta(hours=3))
 
 # ================= DATABASE LAYER =================
 client = AsyncIOMotorClient(MONGO_URI)
@@ -47,8 +49,8 @@ async def get_or_create_user(user_id: int, username: str, first_name: str):
     if not user:
         user = {
             "user_id": user_id,
-            "username": username or "Operator",
-            "first_name": first_name or "Challenger",
+            "username": username or "Student",
+            "first_name": first_name or "Player",
             "rating": 1200,
             "wins": 0,
             "losses": 0
@@ -67,20 +69,20 @@ async def check_subscription(bot: Bot, user_id: int) -> bool:
 def main_menu_kb():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="⚡ НАЧАТЬ БЛИЦ-ТУРНИР", callback_data="start_blitz")],
+            [InlineKeyboardButton(text="⚔️ НАЧАТЬ БЛИЦ-ТУРНИР", callback_data="start_blitz")],
             [
                 InlineKeyboardButton(text="👤 Профиль", callback_data="my_profile"),
                 InlineKeyboardButton(text="🏆 Зал Славы", callback_data="top_players")
             ],
-            [InlineKeyboardButton(text="🚀 КИБЕР-ПРИЛОЖЕНИЕ", web_app=WebAppInfo(url=WEB_APP_URL))]
+            [InlineKeyboardButton(text="🚀 ОТКРЫТЬ ПРИЛОЖЕНИЕ", web_app=WebAppInfo(url=WEB_APP_URL))]
         ]
     )
 
 def sub_kb():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="📢 Подписаться на Арену", url=f"https://t.me/{CHANNEL_ID[1:]}")],
-            [InlineKeyboardButton(text="🔄 Верифицировать доступ", callback_data="check_sub")]
+            [InlineKeyboardButton(text="📢 Подписаться на канал", url=f"https://t.me/{CHANNEL_ID[1:]}")],
+            [InlineKeyboardButton(text="🔄 Проверить подписку", callback_data="check_sub")]
         ]
     )
 
@@ -94,6 +96,23 @@ def battle_kb(match_id: str, name_a: str, votes_a: int, name_b: str, votes_b: in
         ]
     )
 
+def get_current_slot():
+    """Определяет текущий раунд по МСК времени"""
+    now_msk = datetime.now(MSK_TZ)
+    hour = now_msk.hour
+    
+    if 10 <= hour < 12:
+        return "10:00 – 12:00", 12
+    elif 12 <= hour < 14:
+        return "12:00 – 14:00", 14
+    elif 14 <= hour < 16:
+        return "14:00 – 16:00", 16
+    elif 16 <= hour < 18:
+        return "16:00 – 18:00", 18
+    else:
+        # Вне раундов кидаем на ближайший или утренний
+        return "10:00 – 12:00 (Следующий раунд)", 12
+
 # ================= HANDLERS =================
 @router.message(Command("start"))
 async def cmd_start(message: Message, bot: Bot):
@@ -102,30 +121,33 @@ async def cmd_start(message: Message, bot: Bot):
     is_subbed = await check_subscription(bot, user_id)
 
     if not is_subbed:
-        await message.answer("🛡️ **STAR ARENA // SYSTEM GATEWAY**\n\nДля доступа к турнирам подпишитесь на канал:", reply_markup=sub_kb(), parse_mode="Markdown")
+        await message.answer("📚 **ШКОЛЬНЫЙ СЕЗОН НА АРЕНЕ!**\n\nДля участия в блиц-турнирах подпишитесь на официальный канал:", reply_markup=sub_kb(), parse_mode="Markdown")
         return
 
-    await message.answer("⚡ **STAR ARENA // COMMAND CENTER**\n\nВыберите протокол взаимодействия:", reply_markup=main_menu_kb(), parse_mode="Markdown")
+    await message.answer("⚡ **ГЛАВНОЕ МЕНЮ // БЛИЦ-ТУРНИРЫ**\n\nВыбирай режим и залетай в битву:", reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 @router.callback_query(F.data == "check_sub")
 async def process_check_sub(callback: CallbackQuery, bot: Bot):
     await callback.answer()
     if not await check_subscription(bot, callback.from_user.id):
-        return await callback.answer("❌ Подписка не обнаружена!", show_alert=True)
-    await callback.message.edit_text("✅ **Доступ разблокирован.**", reply_markup=main_menu_kb(), parse_mode="Markdown")
+        return await callback.answer("❌ Подписка не найдена!", show_alert=True)
+    await callback.message.edit_text("✅ **Доступ открыт!** Добро пожаловать на арену.", reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 @router.callback_query(F.data == "back_to_main")
 async def back_to_main(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.edit_text("⚡ **STAR ARENA // COMMAND CENTER**\n\nВыберите протокол взаимодействия:", reply_markup=main_menu_kb(), parse_mode="Markdown")
+    await callback.message.edit_text("⚡ **ГЛАВНОЕ МЕНЮ // БЛИЦ-ТУРНИРЫ**\n\nВыбирай режим и залетай в битву:", reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 # ================= MATCHMAKING & CHANNEL POSTS =================
 async def create_match(bot: Bot, player_a: dict, player_b: dict):
     match_id = uuid.uuid4().hex[:8]
+    slot_name, end_hour = get_current_slot()
     
-    # Турнир длится ровно 2 часа с момента создания
-    ends_at = datetime.now(timezone.utc) + timedelta(hours=2)
-    ends_str = ends_at.strftime("%H:%M МСК")
+    # Расчет времени окончания текущего раунда по МСК
+    now_msk = datetime.now(MSK_TZ)
+    ends_at = now_msk.replace(hour=end_hour, minute=0, second=0, microsecond=0)
+    if ends_at <= now_msk:
+        ends_at += timedelta(days=1)
 
     match_doc = {
         "match_id": match_id,
@@ -133,17 +155,16 @@ async def create_match(bot: Bot, player_a: dict, player_b: dict):
         "player_b": {"id": player_b["id"], "name": player_b["name"], "votes": 0},
         "voted_users": [],
         "status": "active",
-        "ends_at": ends_at
+        "slot": slot_name,
+        "ends_at": ends_at.astimezone(timezone.utc)
     }
     
-    # Формируем публичный пост для канала
     post_text = (
-        f"⚔️ **ЭПИЧЕСКИЙ БЛИЦ-ТУРНИР НА АРЕНЕ** ⚔️\n"
+        f"🚨 **БЛИЦ-ТУРНИР // 1 СЕНТЯБРЯ** 🚨\n"
         f"-----------------------------------------\n"
-        f"🔴 Оператор 1: **{player_a['name']}**\n"
-        f"🔵 Оператор 2: **{player_b['name']}**\n\n"
-        f"⏳ **Турнир длится до:** `{ends_str}`\n"
-        f"📢 Голосуйте за своего фаворита прямо в посте ниже!"
+        f"⏰ **Раунд:** `{slot_name}` МСК\n\n"
+        f"🔥 **{player_a['name']}**  VS  🔥 **{player_b['name']}**\n\n"
+        f"👇 Голосуй за своего фаворита прямо в посту!"
     )
     
     markup = battle_kb(match_id, player_a['name'], 0, player_b['name'], 0)
@@ -152,14 +173,13 @@ async def create_match(bot: Bot, player_a: dict, player_b: dict):
         sent_msg = await bot.send_message(CHANNEL_ID, post_text, reply_markup=markup, parse_mode="Markdown")
         match_doc["channel_message_id"] = sent_msg.message_id
     except Exception as e:
-        logger.error(f"Не удалось отправить пост в канал: {e}")
+        logger.error(f"Ошибка отправки поста в канал: {e}")
 
     await battles_col.insert_one(match_doc)
     
-    # Уведомляем участников в личку
     for p in [player_a, player_b]:
         try:
-            await bot.send_message(p["id"], f"⚔️ **Ваш Блиц-турнир создан и опубликован в канале!** Переживайте за каждый голос.")
+            await bot.send_message(p["id"], f"⚔️ **Твой блиц-турнир создан!** Раунд: `{slot_name}`. Пост уже в канале, качай права и собирай голоса!", parse_mode="Markdown")
         except TelegramForbiddenError:
             pass
 
@@ -167,24 +187,23 @@ async def create_match(bot: Bot, player_a: dict, player_b: dict):
 async def handle_channel_vote(callback: CallbackQuery, bot: Bot):
     parts = callback.data.split("_")
     match_id = parts[1]
-    target_side = parts[2] # 'a' или 'b'
+    target_side = parts[2]
     user_id = callback.from_user.id
 
     match = await battles_col.find_one({"match_id": match_id, "status": "active"})
     if not match:
-        return await callback.answer("❌ Этот турнирный раунд уже завершен.", show_alert=True)
+        return await callback.answer("❌ Раунд этого турнира уже завершен.", show_alert=True)
     
     if user_id in match.get("voted_users", []):
-        return await callback.answer("⚠️ Вы уже отдали свой голос в этом матче!", show_alert=True)
+        return await callback.answer("⚠️ Ты уже голосовал в этом раунде!", show_alert=True)
 
-    player_key = "player_a" if target_side == "а" or target_side == "a" else "player_b"
+    player_key = "player_a" if target_side == "a" else "player_b"
     
     await battles_col.update_one(
         {"match_id": match_id},
         {"$inc": {f"{player_key}.votes": 1}, "$push": {"voted_users": user_id}}
     )
 
-    # Пересчитываем актуальные голоса для обновления кнопок в канале
     updated_match = await battles_col.find_one({"match_id": match_id})
     p_a = updated_match["player_a"]
     p_b = updated_match["player_b"]
@@ -196,7 +215,7 @@ async def handle_channel_vote(callback: CallbackQuery, bot: Bot):
     except Exception:
         pass
 
-    await callback.answer("✅ Ваш голос успешно учтен системой!")
+    await callback.answer("✅ Голос успешно учтен!")
 
 @router.callback_query(F.data == "start_blitz")
 async def join_blitz(callback: CallbackQuery, bot: Bot):
@@ -209,18 +228,19 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
         "status": "active"
     })
     if active_match:
-        return await callback.answer("⚠️ У вас уже активен турнирный бой!", show_alert=True)
+        return await callback.answer("⚠️ Ты уже участвуешь в активном раунде!", show_alert=True)
     
     await queue_col.delete_many({"id": user_id})
     opponent = await queue_col.find_one_and_delete({"id": {"$ne": user_id}})
     
     if opponent:
-        await callback.message.edit_text("⚡ **Оппонент найден! Пост с турниром опубликован в канале.**", parse_mode="Markdown")
+        await callback.message.edit_text("⚡ **Соперник найден! Пост с раундом опубликован в канале.**", parse_mode="Markdown")
         await create_match(bot, {"id": opponent["id"], "name": opponent["name"]}, {"id": user_id, "name": user_name})
     else:
+        slot_name, _ = get_current_slot()
         await queue_col.insert_one({"id": user_id, "name": user_name, "timestamp": datetime.now(timezone.utc)})
         kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="❌ Отменить поиск", callback_data="cancel_search")]])
-        await callback.message.edit_text("⏳ **Поиск Блиц-турнира... Ожидание второго участника.**", reply_markup=kb, parse_mode="Markdown")
+        await callback.message.edit_text(f"⏳ **Ищем оппонента на раунд {slot_name}...**\nОжидаем второго участника.", reply_markup=kb, parse_mode="Markdown")
 
 @router.callback_query(F.data == "cancel_search")
 async def cancel_search(callback: CallbackQuery):
@@ -232,32 +252,25 @@ async def cancel_search(callback: CallbackQuery):
 async def show_profile(callback: CallbackQuery):
     await callback.answer()
     user = await users_col.find_one({"user_id": callback.from_user.id})
-    rating = user.get("rating", 1200) if user else 1200
     wins = user.get("wins", 0) if user else 0
     losses = user.get("losses", 0) if user else 0
     
-    text = (
-        f"👤 **ПРОФИЛЬ ОПЕРАТОРА**\n"
-        f"-----------------------------------------\n"
-        f"🏆 Рейтинг: `{rating} MMR`\n"
-        f"⚡ Побед: `{wins}` | Поражений: `{losses}`"
-    )
-    kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад в хаб", callback_data="back_to_main")]])
+    text = f"👤 **ТВОЙ ПРОФИЛЬ**\n\n🏆 Побед в раундах: `{wins}`\n💀 Поражений: `{losses}`"
+    kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]])
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
 
 @router.callback_query(F.data == "top_players")
 async def show_leaderboard(callback: CallbackQuery):
     await callback.answer()
-    top_users = await users_col.find().sort("rating", -1).limit(10).to_list(10)
-    text = "🏆 **ЗАЛ СЛАВЫ // TOP-10**\n-----------------------------------------\n"
+    top_users = await users_col.find().sort("wins", -1).limit(10).to_list(10)
+    text = "🏆 **ТОП-10 УЧАСТНИКОВ**\n-----------------------------------------\n"
     for i, u in enumerate(top_users):
-        medal = "🥇" if i == 0 else "🥈" if i == 1 else "🥉" if i == 2 else f"`#{i+1}`"
-        text += f"{medal} **{u.get('first_name', 'Operator')}** — `{u.get('rating', 1200)} MMR`\n"
+        text += f"`#{i+1}` **{u.get('first_name', 'Player')}** — `{u.get('wins', 0)}` побед\n"
     
-    kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад в хаб", callback_data="back_to_main")]])
+    kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]])
     await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
 
-# ================= CRON: ПРОВЕРКА ЗАВЕРШЕНИЯ ТУРНИРОВ =================
+# ================= CRON: ЗАКРЫТИЕ РАУНДОВ ПО ВРЕМЕНИ =================
 async def check_finished_battles(bot: Bot):
     now = datetime.now(timezone.utc)
     active_matches = await battles_col.find({"status": "active", "ends_at": {"$lte": now}}).to_list(None)
@@ -266,26 +279,22 @@ async def check_finished_battles(bot: Bot):
         p_a = match["player_a"]
         p_b = match["player_b"]
         
-        # Определяем победителя по голосам
         if p_a["votes"] > p_b["votes"]:
             winner, loser = p_a, p_b
         elif p_b["votes"] > p_a["votes"]:
             winner, loser = p_b, p_a
         else:
-            winner = loser = None  эпичная ничья
+            winner = loser = None
 
-        # Закрываем матч в базе
         await battles_col.update_one({"_id": match["_id"]}, {"$set": {"status": "finished"}})
 
-        # Обновляем статистику в БД
         if winner:
-            await users_col.update_one({"user_id": winner["id"]}, {"$inc": {"wins": 1, "rating": 25}})
-            await users_col.update_one({"user_id": loser["id"]}, {"$inc": {"losses": 1, "rating": -20}})
-            result_text = f"🏁 **ТУРНИР ЗАВЕРШЕН!**\n\n🏆 Победитель: **{winner['name']}** ({winner['votes']} голосов)\n💀 Проигравший: **{loser['name']}** ({loser['votes']} голосов)"
+            await users_col.update_one({"user_id": winner["id"]}, {"$inc": {"wins": 1}})
+            await users_col.update_one({"user_id": loser["id"]}, {"$inc": {"losses": 1}})
+            result_text = f"🏁 **РАУНД ЗАВЕРШЕН!**\n\n🏆 Победитель: **{winner['name']}** ({winner['votes']} голосов)\n💀 Проигравший: **{loser['name']}** ({loser['votes']} голосов)"
         else:
-            result_text = f"🏁 **ТУРНИР ЗАВЕРШЕН!**\n\n🤝 Ничья! Оба оператора показали равное влияние."
+            result_text = f"🏁 **РАУНД ЗАВЕРШЕН!**\n\n🤝 Ничья! Равное количество голосов."
 
-        # Редактируем пост в канале, убирая кнопки и подбивая итоги
         if "channel_message_id" in match:
             try:
                 await bot.edit_message_text(
@@ -299,7 +308,7 @@ async def check_finished_battles(bot: Bot):
 
 # ================= SYSTEM BOOT =================
 async def handle_ping(request):
-    return web.Response(text="STAR_ARENA_NODE_OK")
+    return web.Response(text="OK")
 
 async def start_web_server():
     app = web.Application()
@@ -315,14 +324,13 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
 
-    # Планировщик проверяет завершение турниров каждую минуту
     scheduler = AsyncIOScheduler(timezone="UTC")
     scheduler.add_job(check_finished_battles, 'interval', minutes=1, args=[bot])
     scheduler.start()
 
     asyncio.create_task(start_web_server())
     await bot.delete_webhook(drop_pending_updates=True)
-    logger.info("🚀 [SYSTEM] Система турниров с публикацией в канал активирована.")
+    logger.info("🚀 Бот для школьного сезона 1 сентября запущен!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
