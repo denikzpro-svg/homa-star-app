@@ -123,8 +123,11 @@ async def cmd_start(message: Message, bot: Bot):
         await message.answer("👋 Доступ на Звёздную Арену открыт только для подписчиков. Вступай в ряды:", reply_markup=sub_kb())
         return
 
+    # Очищаем имя от символов, которые ломают Markdown
+    safe_name = str(user.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+
     text = (f"🔥 **ГЛАВНОЕ МЕНЮ** 🔥\n\n"
-            f"👤 Боец: {user.get('first_name', 'Боец')}\n"
+            f"👤 Боец: {safe_name}\n"
             f"🛡 Фракция: **{user.get('faction', '🔴 ОГОНЬ')}**\n"
             f"⭐ Баланс: {user.get('balance', 0)} звёзд\n\n"
             f"Выбирай действие ниже:")
@@ -140,10 +143,15 @@ async def process_check_sub(callback: CallbackQuery, bot: Bot):
 async def back_to_main(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     user = await users_col.find_one({"user_id": callback.from_user.id})
+    if not user:
+        return await callback.message.edit_text("❌ Ошибка. Напиши /start")
+        
+    safe_name = str(user.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+    
     text = (f"🔥 **ГЛАВНОЕ МЕНЮ** 🔥\n\n"
-            f"👤 Боец: {user['first_name']}\n"
-            f"🛡 Фракция: **{user['faction']}**\n"
-            f"⭐ Баланс: {user['balance']} звёзд")
+            f"👤 Боец: {safe_name}\n"
+            f"🛡 Фракция: **{user.get('faction', '🔴 ОГОНЬ')}**\n"
+            f"⭐ Баланс: {user.get('balance', 0)} звёзд")
     await callback.message.edit_text(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
 # ================= МАТЧМЕЙКИНГ =================
@@ -315,7 +323,7 @@ async def process_tournament_round(bot: Bot, current_round: int, vote_threshold:
 # ================= ПРОФИЛИ И АДМИНКА =================
 @router.callback_query(F.data == "my_profile")
 async def show_profile(callback: CallbackQuery):
-    await callback.answer() # Снимает зависание часов на кнопке
+    await callback.answer()
     user = await users_col.find_one({"user_id": callback.from_user.id})
     if not user:
         return await callback.message.answer("❌ Ошибка профиля.")
@@ -324,20 +332,25 @@ async def show_profile(callback: CallbackQuery):
     wins = user.get('wins', 0)
     winrate = round((wins / matches) * 100, 1) if matches > 0 else 0
     
+    safe_name = str(user.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+
     text = (f"👤 **ПРОФИЛЬ БОЙЦА**\n\n"
-            f"Имя: {user.get('first_name', 'Боец')}\n"
+            f"Имя: {safe_name}\n"
             f"Фракция: {user.get('faction', '🔴 ОГОНЬ')}\n"
             f"Баланс: **{user.get('balance', 0)} ⭐**\n\n"
             f"📊 Боев: {matches} | Побед: {wins} | Винрейт: {winrate}%")
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
-    
+
 @router.callback_query(F.data == "top_players")
 async def show_leaderboard(callback: CallbackQuery):
+    await callback.answer()
     top_users = await users_col.find().sort("wins", -1).limit(10).to_list(10)
     text = "🏆 **ТОП-10 БОЙЦОВ** 🏆\n\n"
     for i, u in enumerate(top_users):
-        text += f"{i+1}. {u.get('first_name', 'Боец')} | Побед: {u.get('wins', 0)}\n"
+        safe_name = str(u.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+        text += f"{i+1}. {safe_name} | Побед: {u.get('wins', 0)}\n"
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
+    
 
 @router.message(Command("admin"))
 async def cmd_admin(message: Message):
