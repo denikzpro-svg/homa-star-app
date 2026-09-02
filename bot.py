@@ -123,12 +123,10 @@ async def cmd_start(message: Message, bot: Bot):
         await message.answer("👋 Доступ на Звёздную Арену открыт только для подписчиков. Вступай в ряды:", reply_markup=sub_kb())
         return
 
-    # Очищаем имя от символов, которые ломают Markdown
     safe_name = str(user.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
-
+    
     text = (f"🔥 **ГЛАВНОЕ МЕНЮ** 🔥\n\n"
             f"👤 Боец: {safe_name}\n"
-            f"🛡 Фракция: **{user.get('faction', '🔴 ОГОНЬ')}**\n"
             f"⭐ Баланс: {user.get('balance', 0)} звёзд\n\n"
             f"Выбирай действие ниже:")
     await message.answer(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
@@ -150,7 +148,6 @@ async def back_to_main(callback: CallbackQuery, state: FSMContext):
     
     text = (f"🔥 **ГЛАВНОЕ МЕНЮ** 🔥\n\n"
             f"👤 Боец: {safe_name}\n"
-            f"🛡 Фракция: **{user.get('faction', '🔴 ОГОНЬ')}**\n"
             f"⭐ Баланс: {user.get('balance', 0)} звёзд")
     await callback.message.edit_text(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
@@ -177,7 +174,7 @@ async def create_pending_match(bot: Bot, player_a: dict, player_b: dict):
 async def join_blitz(callback: CallbackQuery, bot: Bot):
     await callback.answer()
     user_id = callback.from_user.id
-    first_name = callback.from_user.first_name
+    first_name = callback.from_user.first_name or "Боец"
     
     active_match = await battles_col.find_one({
         "$or": [{"player_a.id": user_id}, {"player_b.id": user_id}], 
@@ -186,19 +183,24 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
     if active_match:
         return await callback.answer("❌ Вы уже находитесь в турнирной сетке!", show_alert=True)
     
+    # Очищаем очередь от возможных дублей этого юзера
     await queue_col.delete_many({"id": user_id})
     opponent = await queue_col.find_one_and_delete({"id": {"$ne": user_id}, "round": {"$exists": False}})
     
+    safe_my_name = str(first_name).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+    
     if opponent:
-        # Игнорируем старые баги, если в очереди висит старый ключ "name"
+        # Достаем имя любым доступным ключом
         opp_name = opponent.get("first_name", opponent.get("name", "Боец"))
+        safe_opp_name = str(opp_name).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
+        
         await callback.message.edit_text("🔥 **Противник найден!** Подготовка арены...", parse_mode="Markdown")
         await create_pending_match(bot, 
-            {"id": opponent["id"], "first_name": opp_name}, 
-            {"id": user_id, "first_name": first_name}
+            {"id": opponent["id"], "first_name": safe_opp_name}, 
+            {"id": user_id, "first_name": safe_my_name}
         )
     else:
-        await queue_col.insert_one({"id": user_id, "first_name": first_name, "timestamp": datetime.now(timezone.utc)})
+        await queue_col.insert_one({"id": user_id, "first_name": safe_my_name, "timestamp": datetime.now(timezone.utc)})
         kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_search")]])
         await callback.message.edit_text("⏳ **Регистрация...** Ожидаем второго бойца.", reply_markup=kb, parse_mode="Markdown")
 
@@ -331,16 +333,13 @@ async def show_profile(callback: CallbackQuery):
     matches = user.get('matches_played', 0)
     wins = user.get('wins', 0)
     winrate = round((wins / matches) * 100, 1) if matches > 0 else 0
-    
     safe_name = str(user.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
 
     text = (f"👤 **ПРОФИЛЬ БОЙЦА**\n\n"
             f"Имя: {safe_name}\n"
-            f"Фракция: {user.get('faction', '🔴 ОГОНЬ')}\n"
             f"Баланс: **{user.get('balance', 0)} ⭐**\n\n"
             f"📊 Боев: {matches} | Побед: {wins} | Винрейт: {winrate}%")
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
-
 @router.callback_query(F.data == "top_players")
 async def show_leaderboard(callback: CallbackQuery):
     await callback.answer()
@@ -350,7 +349,7 @@ async def show_leaderboard(callback: CallbackQuery):
         safe_name = str(u.get('first_name', 'Боец')).replace('_', '').replace('*', '').replace('`', '').replace('[', '')
         text += f"{i+1}. {safe_name} | Побед: {u.get('wins', 0)}\n"
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
-    
+
 
 @router.message(Command("admin"))
 async def cmd_admin(message: Message):
