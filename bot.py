@@ -111,9 +111,9 @@ async def cmd_start(message: Message, bot: Bot):
         return
 
     text = (f"🔥 **ГЛАВНОЕ МЕНЮ** 🔥\n\n"
-            f"👤 Боец: {user['first_name']}\n"
-            f"🛡 Фракция: **{user['faction']}**\n"
-            f"⭐ Баланс: {user['balance']} звёзд\n\n"
+            f"👤 Боец: {user.get('first_name', 'Боец')}\n"
+            f"🛡 Фракция: **{user.get('faction', '🔴 ОГОНЬ')}**\n"
+            f"⭐ Баланс: {user.get('balance', 0)} звёзд\n\n"
             f"Выбирай действие ниже:")
     await message.answer(text, reply_markup=main_menu_kb(), parse_mode="Markdown")
 
@@ -302,8 +302,11 @@ async def process_tournament_round(bot: Bot, current_round: int, vote_threshold:
 async def show_profile(callback: CallbackQuery):
     user = await users_col.find_one({"user_id": callback.from_user.id})
     winrate = round((user['wins'] / user['matches_played']) * 100, 1) if user['matches_played'] > 0 else 0
-    text = (f"👤 **ПРОФИЛЬ БОЙЦА**\n\nИмя: {user['first_name']}\nФракция: {user['faction']}\nБаланс: **{user['balance']} ⭐**\n\n"
-            f"📊 Боев: {user['matches_played']} | Побед: {user['wins']} | Винрейт: {winrate}%")
+    text = (f"👤 **ПРОФИЛЬ БОЙЦА**\n\n"
+            f"Имя: {user.get('first_name', 'Боец')}\n"
+            f"Фракция: {user.get('faction', '🔴 ОГОНЬ')}\n"
+            f"Баланс: **{user.get('balance', 0)} ⭐**\n\n"
+            f"📊 Боев: {user.get('matches_played', 0)} | Побед: {user.get('wins', 0)} | Винрейт: {winrate}%")    
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
 
 @router.callback_query(F.data == "top_players")
