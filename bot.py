@@ -69,6 +69,19 @@ async def get_or_create_user(user_id: int, username: str, first_name: str):
             "registration_date": datetime.now(MSK_TZ)
         }
         await users_col.insert_one(user)
+    else:
+        # АВТО-ВОССТАНОВЛЕНИЕ СТАРЫХ ЗАПИСЕЙ В БАЗЕ
+        updates = {}
+        if "first_name" not in user:
+            updates["first_name"] = first_name or "Player"
+        if "faction" not in user:
+            updates["faction"] = random.choice(["🔴 ОГОНЬ", "🔵 ВОДА"])
+        if "matches_played" not in user:
+            updates["matches_played"] = user.get("wins", 0) + user.get("losses", 0)
+            
+        if updates:
+            await users_col.update_one({"user_id": user_id}, {"$set": updates})
+            user.update(updates)
     return user
 
 async def check_subscription(bot: Bot, user_id: int) -> bool:
@@ -169,9 +182,11 @@ async def join_blitz(callback: CallbackQuery, bot: Bot):
     opponent = await queue_col.find_one_and_delete({"id": {"$ne": user_id}, "round": {"$exists": False}})
     
     if opponent:
+        # Игнорируем старые баги, если в очереди висит старый ключ "name"
+        opp_name = opponent.get("first_name", opponent.get("name", "Боец"))
         await callback.message.edit_text("🔥 **Противник найден!** Подготовка арены...", parse_mode="Markdown")
         await create_pending_match(bot, 
-            {"id": opponent["id"], "first_name": opponent["first_name"]}, 
+            {"id": opponent["id"], "first_name": opp_name}, 
             {"id": user_id, "first_name": first_name}
         )
     else:
@@ -300,15 +315,22 @@ async def process_tournament_round(bot: Bot, current_round: int, vote_threshold:
 # ================= ПРОФИЛИ И АДМИНКА =================
 @router.callback_query(F.data == "my_profile")
 async def show_profile(callback: CallbackQuery):
+    await callback.answer() # Снимает зависание часов на кнопке
     user = await users_col.find_one({"user_id": callback.from_user.id})
-    winrate = round((user['wins'] / user['matches_played']) * 100, 1) if user['matches_played'] > 0 else 0
+    if not user:
+        return await callback.message.answer("❌ Ошибка профиля.")
+        
+    matches = user.get('matches_played', 0)
+    wins = user.get('wins', 0)
+    winrate = round((wins / matches) * 100, 1) if matches > 0 else 0
+    
     text = (f"👤 **ПРОФИЛЬ БОЙЦА**\n\n"
             f"Имя: {user.get('first_name', 'Боец')}\n"
             f"Фракция: {user.get('faction', '🔴 ОГОНЬ')}\n"
             f"Баланс: **{user.get('balance', 0)} ⭐**\n\n"
-            f"📊 Боев: {user.get('matches_played', 0)} | Побед: {user.get('wins', 0)} | Винрейт: {winrate}%")    
+            f"📊 Боев: {matches} | Побед: {wins} | Винрейт: {winrate}%")
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
-
+    
 @router.callback_query(F.data == "top_players")
 async def show_leaderboard(callback: CallbackQuery):
     top_users = await users_col.find().sort("wins", -1).limit(10).to_list(10)
