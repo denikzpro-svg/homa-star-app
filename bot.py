@@ -314,7 +314,7 @@ async def show_leaderboard(callback: CallbackQuery):
     top_users = await users_col.find().sort("wins", -1).limit(10).to_list(10)
     text = "🏆 **ТОП-10 БОЙЦОВ** 🏆\n\n"
     for i, u in enumerate(top_users):
-        text += f"{i+1}. {u['first_name']} | Побед: {u.get('wins', 0)}\n"
+        text += f"{i+1}. {u.get('first_name', 'Боец')} | Побед: {u.get('wins', 0)}\n"
     await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]), parse_mode="Markdown")
 
 @router.message(Command("admin"))
